@@ -39,7 +39,12 @@ defmodule Core.Device.Builder do
 
    # Функция построения базового устройства
   defp entity do
-    Success.new(%Entity{id: UUID.uuid4(), created: Date.utc_today, updated: Date.utc_today, is_active: false})
+    Success.new(%Entity{
+      id: UUID.uuid4(),
+      created: Date.utc_today,
+      updated: Date.utc_today,
+      is_active: false
+    })
   end
 
   # Функция построения ssh порта
@@ -50,7 +55,7 @@ defmodule Core.Device.Builder do
     end
   end
 
-  defp ssh_port({:error, message}, _) do
+  defp ssh_port({:error, message}, _) when is_binary(message) do
     Error.new(message)
   end
 

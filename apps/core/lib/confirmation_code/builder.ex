@@ -37,21 +37,12 @@ defmodule Core.ConfirmationCode.Builder do
          {:ok, _} <- validator.valid(new_needle) do
       Success.new(Map.put(entity, :needle, new_needle))
     else
-      false ->
-        Error.new("Не валидные данные для построения кода подтверждения")
+      false -> Error.new("Не валидные данные для построения кода подтверждения")
       {:error, error} -> {:error, error}
     end
   end
 
-  defp needle({:ok, _}, _, _) do
-    Error.new("Не валидные данные для построения кода подтверждения")
-  end
-
-  defp needle({:error, error}, _, _) do
-    {:error, error}
-  end
-
-  defp needle(_, _, _) do
-    Error.new("Не валидные данные для построения кода подтверждения")
+  defp needle({:error, message}, _, _) when is_binary(message) do
+    {:error, message}
   end
 end

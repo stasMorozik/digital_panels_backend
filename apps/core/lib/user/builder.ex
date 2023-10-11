@@ -36,16 +36,8 @@ defmodule Core.User.Builder do
     end
   end
 
-  defp email({:ok, _}, _) do
-    Error.new("Не валидные данные для построения пользователя")
-  end
-
-  defp email({:error, error}, _) do
-    {:error, error}
-  end
-
-  defp email(_, _) do
-    Error.new("Не валидные данные для построения пользователя")
+  defp email({:error, message}, _) when is_binary(message) do
+    {:error, message}
   end
 
   # Функция построения имени пользователя
@@ -56,16 +48,8 @@ defmodule Core.User.Builder do
     end
   end
 
-  defp name({:ok, _}, _) do
-    Error.new("Не валидные данные для построения пользователя")
-  end
-
-  defp name({:error, error}, _) do
-    {:error, error}
-  end
-
-  defp name(_, _) do
-    Error.new("Не валидные данные для построения пользователя")
+  defp name({:error, message}, _) when is_binary(message) do
+    {:error, message}
   end
 
   #  Функция построения фамилии пользователя
@@ -76,15 +60,7 @@ defmodule Core.User.Builder do
     end
   end
 
-  defp surname({:ok, _}, _) do
-    Error.new("Не валидные данные для построения пользователя")
-  end
-
-  defp surname({:error, error}, _) do
-    {:error, error}
-  end
-
-  defp surname(_, _) do
-    Error.new("Не валидные данные для построения пользователя")
+  defp surname({:error, message}, _) when is_binary(message) do
+    {:error, message}
   end
 end
