@@ -30,13 +30,13 @@ defmodule Core.Device.UseCases.Creating do
            true <- Kernel.function_exported?(transformer, :transform, 2),
            {:ok, user} <- authorization_use_case.auth(getter_user, args),
            {:ok, device} <- Builder.build(%{
-            ssh_port: Map.get(args, :ssh_port, ""),
-            ssh_host: Map.get(args, :ssh_host, ""),
-            ssh_user: Map.get(args, :ssh_user, ""),
-            ssh_password: Map.get(args, :ssh_password, ""),
-            address: Map.get(args, :address, ""),
-            longitude: Map.get(args, :longitude, ""),
-            latitude: Map.get(args, :latitude, "")
+              ssh_port: Map.get(args, :ssh_port, ""),
+              ssh_host: Map.get(args, :ssh_host, ""),
+              ssh_user: Map.get(args, :ssh_user, ""),
+              ssh_password: Map.get(args, :ssh_password, ""),
+              address: Map.get(args, :address, ""),
+              longitude: Map.get(args, :longitude, ""),
+              latitude: Map.get(args, :latitude, "")
            }),
            {:ok, _} <- transformer.transform(device, user) do
         Success.new(true)

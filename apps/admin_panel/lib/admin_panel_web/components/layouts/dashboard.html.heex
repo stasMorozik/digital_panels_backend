@@ -7,21 +7,33 @@
       <ul class="h-1/3">
         <li>
           <a 
-            class="flex items-center text-gray-400 flex-row pr-8 pl-8 mb-8 active:border-orange-400 active:border-l-4" 
+            class={
+              if @current_page == "devices",
+              do: "flex items-center flex-row pr-8 pl-8 mb-8 border-l-4 border-zinc-700",
+              else: "flex items-center text-zinc-400 flex-row pr-8 pl-8 mb-8 active:border-zinc-700 active:border-l-4"
+            }
             href="/devices"
           >
             <FontAwesome.LiveView.icon name="tv" type="solid" class="h-4 w-4 mr-2 text-blue-800"/>
             <div>Устройства</div>
           </a>
           <a 
-            class="flex items-center text-gray-400 flex-row pr-8 pl-8 mb-8 active:border-orange-400 active:border-l-4" 
+            class={
+              if @current_page == "playlists",
+              do: "flex items-center flex-row pr-8 pl-8 mb-8 border-l-4 border-zinc-700",
+              else: "flex items-center text-zinc-400 flex-row pr-8 pl-8 mb-8 active:border-zinc-700 active:border-l-4"
+            }
             href="/playlists"
           >
             <FontAwesome.LiveView.icon name="photo-film" type="solid" class="h-4 w-4 mr-2 text-blue-800"/>
             <div>Плейлисты</div>
           </a>
           <a 
-            class="flex items-center text-gray-400 flex-row pr-8 pl-8 mb-8 active:border-orange-400 active:border-l-4" 
+            class={
+              if @current_page == "statistic",
+              do: "flex items-center flex-row pr-8 pl-8 mb-8 border-l-4 border-zinc-700",
+              else: "flex items-center text-zinc-400 flex-row pr-8 pl-8 mb-8 active:border-zinc-700 active:border-l-4"
+            }
             href="/statistic"
           >
             <FontAwesome.LiveView.icon name="chart-simple" type="solid" class="h-4 w-4 mr-2 text-blue-800"/>
@@ -31,7 +43,7 @@
       </ul>
       <div class="flex items-end flex-column  pl-8 pr-8 font-extrabold mb-12 h-1/2">
         <a 
-          class="flex items-center flex-row active:border-orange-400 active:border-l-4" 
+          class="flex items-center flex-row active:border-zinc-700 active:border-l-4" 
           href="/logout"
         >
           <FontAwesome.LiveView.icon name="right-from-bracket" type="solid" class="h-4 w-4 mr-2 text-blue-800"/>
@@ -40,11 +52,13 @@
       </div>
     </div>
     <div class="basis-5/6 relative">
-      <div class="flex items-center justify-end flex-row  pl-8 pr-8 font-extrabold mb-12 h-12">
+      <div class="flex items-center justify-end flex-row  pl-8 pr-8 font-extrabold h-12">
         <div class="text-xs"><%= @user.name %> <%= @user.surname %></div>
         <FontAwesome.LiveView.icon name="user" type="solid" class="h-4 w-4 text-blue-800"/>
       </div>
-      <%= @inner_content %> 
+      <div class="pl-5 pr-5">
+        <%= @inner_content %> 
+      </div>
     </div>
 
   </div>

@@ -11,7 +11,7 @@ defmodule AdminPanelWeb.AuthForNotSignInPageLive do
         socket = assign(socket, :user, user)
 
         {:cont, socket}
-      {:error, message} -> {:halt, redirect(socket, to: "/sign-in")}
+      {:error, _} -> {:halt, redirect(socket, to: "/sign-in")}
     end
   end
 end

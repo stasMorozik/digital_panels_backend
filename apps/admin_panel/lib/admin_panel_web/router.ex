@@ -27,6 +27,9 @@ defmodule AdminPanelWeb.Router do
 
     live_session :for_not_sign_in_page, on_mount: AdminPanelWeb.AuthForNotSignInPageLive, layout: {AdminPanelWeb.Layouts, :dashboard} do
       live "/devices", DevicesLive
+      live "/device/new", DeviceNewLive
+      live "/playlists", PlaylistsLive
+      live "/statistic", StatisticLive
     end
   end
 

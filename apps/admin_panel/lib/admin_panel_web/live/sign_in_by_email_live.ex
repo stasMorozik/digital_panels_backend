@@ -49,7 +49,7 @@ defmodule AdminPanelWeb.SignInByEmailLive do
             required
           />
           <br>
-          <AdminPanelWeb.Components.Presentation.Buttons.Button.c
+          <AdminPanelWeb.Components.Presentation.Buttons.ButtonDefault.c
             type="submit"
             text="Продолжить"
           />
@@ -80,7 +80,7 @@ defmodule AdminPanelWeb.SignInByEmailLive do
             placeholder="Введите код который мы выслали вам на почту"
           />
           <br>
-          <AdminPanelWeb.Components.Presentation.Buttons.Button.c
+          <AdminPanelWeb.Components.Presentation.Buttons.ButtonDefault.c
             type="submit"
             text="Войти"
           />

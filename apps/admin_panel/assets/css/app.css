@@ -7,7 +7,7 @@
 html {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 14px;
-  color: #19355b;
+  color: rgb(63 63 70);
 }
 
 button {

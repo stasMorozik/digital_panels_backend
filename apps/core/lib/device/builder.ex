@@ -50,8 +50,8 @@ defmodule Core.Device.Builder do
     end
   end
 
-  defp ssh_port({:error, _}, _) do
-    Error.new("Не валидные данные для построения устройства")
+  defp ssh_port({:error, message}, _) do
+    Error.new(message)
   end
 
   # Функция построения ssh хоста
@@ -62,8 +62,8 @@ defmodule Core.Device.Builder do
     end
   end
 
-  defp ssh_host({:error, _}, _) do
-    Error.new("Не валидные данные для построения устройства")
+  defp ssh_host({:error, message}, _) when is_binary(message) do
+    Error.new(message)
   end
 
   # Функция построения пользователя ssh
@@ -74,8 +74,8 @@ defmodule Core.Device.Builder do
     end
   end
 
-  defp ssh_user({:error, _}, _) do
-    Error.new("Не валидные данные для построения устройства")
+  defp ssh_user({:error, message}, _) when is_binary(message) do
+    Error.new(message)
   end
 
   # Функция построения пароля ssh
@@ -86,8 +86,8 @@ defmodule Core.Device.Builder do
     end
   end
 
-  defp ssh_password({:error, _}, _) do
-    Error.new("Не валидные данные для построения устройства")
+  defp ssh_password({:error, message}, _) when is_binary(message) do
+    Error.new(message)
   end
 
   # Функция построения долготы
@@ -98,8 +98,8 @@ defmodule Core.Device.Builder do
     end
   end
 
-  defp longitude({:error, _}, _) do
-    Error.new("Не валидные данные для построения устройства")
+  defp longitude({:error, message}, _) when is_binary(message) do
+    Error.new(message)
   end
 
   # Функция построения широты
@@ -110,8 +110,8 @@ defmodule Core.Device.Builder do
     end
   end
 
-  defp latitude({:error, _}, _) do
-    Error.new("Не валидные данные для построения устройства")
+  defp latitude({:error, message}, _) when is_binary(message) do
+    Error.new(message)
   end
 
   # Функция построения адреса
@@ -123,7 +123,7 @@ defmodule Core.Device.Builder do
     Error.new("Не валидные данные для построения устройства")
   end
 
-  defp address({:error, _}, _) do
-    Error.new("Не валидные данные для построения устройства")
+  defp address({:error, message}, _) when is_binary(message) do
+    Error.new(message)
   end
 end

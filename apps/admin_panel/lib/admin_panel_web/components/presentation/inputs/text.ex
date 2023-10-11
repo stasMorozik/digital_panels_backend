@@ -6,9 +6,15 @@ defmodule AdminPanelWeb.Components.Presentation.Inputs.Text do
 
   attr :field, Phoenix.HTML.FormField
   attr :rest, :global
+  attr :label, :any, required: false, default: false
 
   def c(assigns) do
     ~H"""
+      <%= if @label do %>
+        <label class="mb-3 block text-zinc-950">
+          <%= @label %>
+        </label>
+      <% end %>
       <input
         id={@field.id} name={@field.name} value={@field.value}
         type="text"

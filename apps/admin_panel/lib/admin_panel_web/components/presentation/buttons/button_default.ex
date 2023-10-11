@@ -1,4 +1,4 @@
-defmodule AdminPanelWeb.Components.Presentation.Buttons.Button do
+defmodule AdminPanelWeb.Components.Presentation.Buttons.ButtonDefault do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
@@ -10,7 +10,7 @@ defmodule AdminPanelWeb.Components.Presentation.Buttons.Button do
   def c(assigns) do
     ~H"""
       <button
-        class="dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 text-center text-white bg-violet-500 rounded-md p-2 focus:ring-4 focus:outline-none focus:ring-blue-300"
+        class="text-center text-white bg-violet-500 rounded-md p-1 focus:ring-4 focus:outline-none focus:ring-violet-300 hover:bg-violet-800"
         {@rest}
       >
         <%= @text %>

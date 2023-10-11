@@ -11,7 +11,7 @@ defmodule AdminPanelWeb.AuthForSignInPageLive do
         socket = assign(socket, :user, user)
 
         {:halt, redirect(socket, to: "/devices")}
-      {:error, message} -> {:cont, socket}
+      {:error, _} -> {:cont, socket}
     end
   end
 end
