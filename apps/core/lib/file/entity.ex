@@ -8,6 +8,7 @@ defmodule Core.File.Entity do
   @type t :: %Entity{
     id: binary(),
     size: pos_integer(),
+    url: binary(),
     path: binary(),
     created: binary(),
     updated: binary()
@@ -15,6 +16,7 @@ defmodule Core.File.Entity do
 
   defstruct id: nil,
             size: nil,
+            url: nil,
             path: nil,
             created: nil,
             updated: nil
