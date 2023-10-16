@@ -16,12 +16,11 @@ defmodule Core.Content.Builder do
   @spec build(map()) :: Success.t() | Error.t()
   def build(%{
     display_duration: display_duration,
-    file: file,
-    web_dav_url: web_dav_url
+    file: file
   }) do
     entity()
+      |> file(file)
       |> display_duration(display_duration)
-      |> file(Map.put(file, :web_dav_url, web_dav_url))
   end
 
    # Функция построения базового контента
