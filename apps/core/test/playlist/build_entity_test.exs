@@ -15,19 +15,18 @@ defmodule Playlist.BuildEntityTest do
   end
 
   test "Build playlist" do
-    {result, _} =
-      Builder.build(%{
-        name: "test",
-        contents: [
-          %{
-            file: %{
-              path: "/tmp/not_emty.txt"
-            },
-            display_duration: 15
-          }
-        ],
-        web_dav_url: "http://localhost"
-      })
+    {result, _} = Builder.build(%{
+      name: "test",
+      contents: [
+        %{
+          file: %{
+            path: "/tmp/not_emty.txt"
+          },
+          display_duration: 15
+        }
+      ],
+      web_dav_url: "http://localhost"
+    })
     
     assert result == :ok
   end
@@ -51,31 +50,29 @@ defmodule Playlist.BuildEntityTest do
   end
 
   test "Empty contents" do
-    {result, _} =
-      Builder.build(%{
-        name: "test",
-        contents: [
-          
-        ],
-        web_dav_url: "http://localhost"
-      })
+    {result, _} = Builder.build(%{
+      name: "test",
+      contents: [
+        
+      ],
+      web_dav_url: "http://localhost"
+    })
     
     assert result == :error
   end
 
   test "Empty web dav url" do
-    {result, _} =
-      Builder.build(%{
-        name: "test",
-        contents: [
-          %{
-            file: %{
-              path: "/tmp/not_emty.txt"
-            },
-            display_duration: 15
-          }
-        ],
-      })
+    {result, _} = Builder.build(%{
+      name: "test",
+      contents: [
+        %{
+          file: %{
+            path: "/tmp/not_emty.txt"
+          },
+          display_duration: 15
+        }
+      ],
+    })
     
     assert result == :error
   end

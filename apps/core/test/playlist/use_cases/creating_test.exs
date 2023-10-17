@@ -1,9 +1,6 @@
 defmodule Playlist.UseCases.CreatingTest do
   use ExUnit.Case
 
-  alias FakeAdapters.Playlist.Inserting, as: InsertingPlaylist
-  alias FakeAdapters.User.Getter, as: GetterUser
-
   alias Core.User.UseCases.Authorization
 
   alias Core.Playlist.Builder, as: PlaylistBuilder
@@ -55,8 +52,8 @@ defmodule Playlist.UseCases.CreatingTest do
 
     {result, _} = Creating.create(
       Authorization,
-      GetterUser,
-      InsertingPlaylist,
+      FakeAdapters.User.Getter,
+      FakeAdapters.Playlist.Inserting,
       %{
         token: access_token,
         web_dav_url: "http://localhost",
@@ -78,8 +75,8 @@ defmodule Playlist.UseCases.CreatingTest do
   test "Invalid token" do
     {result, _} = Creating.create(
       Authorization,
-      GetterUser,
-      InsertingPlaylist,
+      FakeAdapters.User.Getter,
+      FakeAdapters.Playlist.Inserting,
       %{
         token: "invalid token",
         web_dav_url: "http://localhost",

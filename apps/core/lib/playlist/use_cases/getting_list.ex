@@ -26,33 +26,28 @@ defmodule Core.Playlist.UseCases.GettingList do
     authorization_use_case,
     getter_user,
     getter_list,
-    %{
-      token: token,
-      pagination: %{
-        page: page,
-        limit: limit
-      },
-      filter: %{
-        name: name,
-        created: created,
-        updated: updated
-      },
-      sort: %{
-        name: name,
-        created: created,
-        updated: updated
-      }
-    }
-  ) when is_atom(authorization_use_case) and is_atom(getter_list) do
+    args
+  ) when is_atom(authorization_use_case) and is_atom(getter_list) and is_map(args) do
     with true <- Kernel.function_exported?(authorization_use_case, :auth, 2),
          true <- Kernel.function_exported?(getter_list, :get, 3),
-         {:ok, _} <- authorization_use_case.auth(getter_user, %{token: token}),
-         {:ok, pagi} <- Pagination.valid(%{
-            page: page,
-            limit: limit
-         }),
-         filter <- %Filter{name: name, created: created, updated: updated},
-         sort <- %Sort{name: name, created: created, updated: updated},
+         filter <- Map.get(args, :filter, %{name: nil, created: nil, updated: nil}),
+         sort <- Map.get(args, :sort, %{name: nil, created: nil, updated: nil}),
+         pagi <- Map.get(args, :pagi, %{page: 1, limit: 10}),
+         {:ok, user} <- authorization_use_case.auth(
+            getter_user, %{token: Map.get(args, :token, "")}
+         ),
+         {:ok, pagi} <- Pagination.valid(pagi),
+         filter <- %Filter{
+            user_id: user.id, 
+            name: filter.name, 
+            created: filter.created, 
+            updated: filter.updated
+         },
+         sort <- %Sort{
+            name: sort.name, 
+            created: sort.created, 
+            updated: sort.updated
+         },
          {:ok, list} <- getter_list.get(filter, sort, pagi) do
       Success.new(list)
     else
@@ -61,7 +56,7 @@ defmodule Core.Playlist.UseCases.GettingList do
     end
   end
 
-  def get(_, _, _) do
+  def get(_, _, _, _) do
     Error.new("Не валидные аргументы для получения списка плэйлстов")
   end
 end

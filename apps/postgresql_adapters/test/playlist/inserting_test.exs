@@ -1,11 +1,9 @@
-defmodule Device.InsertingTest do
+defmodule Playlist.InsertingTest do
   use ExUnit.Case
-
-  alias PostgresqlAdapters.Device.Inserting, as: DeviceInserting
+  
   alias PostgresqlAdapters.User.Inserting, as: UserInserting
   alias PostgresqlAdapters.Playlist.Inserting, as: PlaylistInserting
 
-  alias Core.Device.Builder, as: DeviceBuilder
   alias Core.User.Builder, as: UserBuilder
   alias Core.Playlist.Builder, as: PlaylistBuilder
 
@@ -46,16 +44,6 @@ defmodule Device.InsertingTest do
       surname: "Павел"
     })
 
-    {:ok, device_entity} = DeviceBuilder.build(%{
-      ssh_port: 22,
-      ssh_host: "192.168.1.98",
-      ssh_user: "test",
-      ssh_password: "12345",
-      address: "NY Long street 1234",
-      longitude: 91.223,
-      latitude: -67.99
-    })
-
     {_, playlist_entity} = PlaylistBuilder.build(%{
       name: "test",
       contents: [
@@ -71,15 +59,13 @@ defmodule Device.InsertingTest do
 
     {_, _} = UserInserting.transform(user_entity)
 
-    {_, _} = PlaylistInserting.transform(playlist_entity, user_entity)
-
-    {result, _} = DeviceInserting.transform(device_entity, user_entity, playlist_entity)
+    {result, _} = PlaylistInserting.transform(playlist_entity, user_entity)
     
     assert result == :ok
   end
 
   test "Invalid data" do
-    {result, _} = DeviceInserting.transform(nil, nil, nil)
+    {result, _} = PlaylistInserting.transform(nil, nil)
 
     assert result == :error
   end

@@ -26,6 +26,7 @@ defmodule PostgresqlAdaptersUser.MixProject do
     [
       {:uuid, "~> 1.1"},
       {:postgrex, ">= 0.17.2"},
+      {:jason, "~> 1.4"},
       {:core, in_umbrella: true}
     ]
   end

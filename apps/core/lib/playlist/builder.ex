@@ -43,7 +43,8 @@ defmodule Core.Playlist.Builder do
     and is_binary(web_dav_url) do
 
     with cnts <- handle_contents(contents, web_dav_url),
-         nil <- Enum.find(cnts, fn tuple -> elem(tuple, 0) == :error end) do
+         nil <- Enum.find(cnts, fn tuple -> elem(tuple, 0) == :error end),
+         cnts <- Enum.map(cnts, fn tuple -> elem(tuple, 1) end) do
       Success.new(Map.put(entity, :contents, cnts))
     else
       {:error, message} -> {:error, message}

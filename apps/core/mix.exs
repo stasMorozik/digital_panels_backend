@@ -27,7 +27,7 @@ defmodule Core.MixProject do
       {:uuid, "~> 1.1"},
       {:bcrypt_elixir, "~> 3.0"},
       {:joken, "~> 2.5"},
-      {:jason, "~> 1.3"}
+      {:jason, "~> 1.4"}
     ]
   end
 

@@ -1,10 +1,6 @@
 defmodule Device.UseCases.CreatingTest do
   use ExUnit.Case
 
-  alias FakeAdapters.Device.Inserting, as: InsertingDevice
-  alias FakeAdapters.User.Getter, as: GetterUser
-  alias FakeAdapters.Playlist.Getter, as: GetterPlaylist
-
   alias Core.User.UseCases.Authorization
 
   alias Core.Playlist.Builder, as: PlaylistBuilder
@@ -88,9 +84,9 @@ defmodule Device.UseCases.CreatingTest do
 
     {result, _} = Creating.create(
       Authorization,
-      GetterUser,
-      GetterPlaylist,
-      InsertingDevice,
+      FakeAdapters.User.Getter,
+      FakeAdapters.Playlist.Getter,
+      FakeAdapters.Device.Inserting,
       %{
         token: access_token,
         ssh_port: 22,
@@ -110,9 +106,9 @@ defmodule Device.UseCases.CreatingTest do
   test "Invalid token" do
     {result, _} = Creating.create(
       Authorization,
-      GetterUser,
-      GetterPlaylist,
-      InsertingDevice,
+      FakeAdapters.User.Getter,
+      FakeAdapters.Playlist.Getter,
+      FakeAdapters.Device.Inserting,
       %{
         token: "invalid token",
         ssh_port: 22,

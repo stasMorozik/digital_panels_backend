@@ -11,7 +11,7 @@ defmodule User.GettingTest do
     :ets.new(:connections, [:set, :public, :named_table])
 
     {:ok, pid} = Postgrex.start_link(
-      hostname: "192.168.0.106",
+      hostname: "192.168.0.161",
       username: "db_user",
       password: "12345",
       database: "system_content_manager",
@@ -19,6 +19,10 @@ defmodule User.GettingTest do
     )
 
     :ets.insert(:connections, {"postgresql", "", pid})
+
+    Postgrex.query!(pid, "DELETE FROM relations_user_playlist", [])
+    Postgrex.query!(pid, "DELETE FROM relations_user_device", [])
+    Postgrex.query!(pid, "DELETE FROM relations_playlist_device", [])
 
     Postgrex.query!(pid, "DELETE FROM devices", [])
     Postgrex.query!(pid, "DELETE FROM users WHERE email != 'stasmoriniv@gmail.com'", [])
