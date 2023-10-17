@@ -31,4 +31,8 @@ defmodule Core.ConfirmationCode.UseCases.Confirming do
       false -> Error.new("Не валидные данные для подтверждения кода")
     end
   end
+
+  def confirm(_, _, _) do
+    Error.new("Не валидные данные для подтверждения кода")
+  end
 end

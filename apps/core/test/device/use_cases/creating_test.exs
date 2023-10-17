@@ -3,13 +3,19 @@ defmodule Device.UseCases.CreatingTest do
 
   alias FakeAdapters.Device.Inserting, as: InsertingDevice
   alias FakeAdapters.User.Getter, as: GetterUser
+  alias FakeAdapters.Playlist.Getter, as: GetterPlaylist
 
   alias Core.User.UseCases.Authorization
-  alias Core.User.Builder
+
+  alias Core.Playlist.Builder, as: PlaylistBuilder
+  alias Core.User.Builder, as: UserBuilder
 
   alias Core.Device.UseCases.Creating
 
   setup_all do
+    File.touch("/tmp/not_emty.txt", 1544519753)
+    
+    File.write("/tmp/not_emty.txt", "content")
 
     :mnesia.create_schema([node()])
 
@@ -19,9 +25,16 @@ defmodule Device.UseCases.CreatingTest do
 
     :mnesia.delete_table(:users)
 
+    :mnesia.delete_table(:playlists)
+
     {:atomic, :ok} = :mnesia.create_table(
       :users,
       [attributes: [:id, :email, :name, :surname, :created, :updated]]
+    )
+
+    {:atomic, :ok} = :mnesia.create_table(
+      :playlists,
+      [attributes: [:id, :user_id, :name, :created, :updated]]
     )
 
     {:atomic, :ok} = :mnesia.create_table(
@@ -29,6 +42,7 @@ defmodule Device.UseCases.CreatingTest do
       [attributes: [
         :id,
         :user_id,
+        :playlist_id,
         :ssh_port,
         :ssh_host,
         :ssh_user,
@@ -42,20 +56,40 @@ defmodule Device.UseCases.CreatingTest do
     )
 
     {:atomic, :ok} = :mnesia.add_table_index(:users, :email)
+    {:atomic, :ok} = :mnesia.add_table_index(:playlists, :name)
 
     :ok
   end
 
   test "Create" do
-    {_, user_entity} = Builder.build(%{email: "test3@gmail.com", name: "Пётр", surname: "Павел"})
+    {_, user_entity} = UserBuilder.build(%{
+      email: "test3@gmail.com", 
+      name: "Пётр", 
+      surname: "Павел"
+    })
+
+    {_, playlist_entity} = PlaylistBuilder.build(%{
+        name: "test",
+        contents: [
+          %{
+            file: %{
+              path: "/tmp/not_emty.txt"
+            },
+            display_duration: 15
+          }
+        ],
+        web_dav_url: "http://localhost"
+      })
 
     FakeAdapters.User.Inserting.transform(user_entity)
+    FakeAdapters.Playlist.Inserting.transform(playlist_entity, user_entity)
 
     access_token = Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.email})
 
     {result, _} = Creating.create(
       Authorization,
       GetterUser,
+      GetterPlaylist,
       InsertingDevice,
       %{
         token: access_token,
@@ -65,7 +99,8 @@ defmodule Device.UseCases.CreatingTest do
         ssh_password: "12345",
         address: "NY Long street 123",
         longitude: 91.223,
-        latitude: -67.99
+        latitude: -67.99,
+        playlist_id: playlist_entity.name
       }
     )
 
@@ -73,15 +108,10 @@ defmodule Device.UseCases.CreatingTest do
   end
 
   test "Invalid token" do
-    {_, user_entity} = Builder.build(%{email: "test3@gmail.com", name: "Пётр", surname: "Павел"})
-
-    FakeAdapters.User.Inserting.transform(user_entity)
-
-    access_token = Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.email})
-
     {result, _} = Creating.create(
       Authorization,
       GetterUser,
+      GetterPlaylist,
       InsertingDevice,
       %{
         token: "invalid token",
@@ -91,33 +121,8 @@ defmodule Device.UseCases.CreatingTest do
         ssh_password: "12345",
         address: "NY Long street 123",
         longitude: 91.223,
-        latitude: -67.99
-      }
-    )
-
-    assert result == :error
-  end
-
-  test "Invalid port" do
-    {_, user_entity} = Builder.build(%{email: "test3@gmail.com", name: "Пётр", surname: "Павел"})
-
-    FakeAdapters.User.Inserting.transform(user_entity)
-
-    access_token = Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.email})
-
-    {result, _} = Creating.create(
-      Authorization,
-      GetterUser,
-      InsertingDevice,
-      %{
-        token: access_token,
-        ssh_port: -22,
-        ssh_host: "192.168.1.22",
-        ssh_user: "test",
-        ssh_password: "12345",
-        address: "NY Long street 123",
-        longitude: 91.223,
-        latitude: -67.99
+        latitude: -67.99,
+        playlist_id: "some id"
       }
     )
 

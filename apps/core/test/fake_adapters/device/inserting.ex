@@ -1,7 +1,9 @@
 defmodule FakeAdapters.Device.Inserting do
   alias Core.Device.Ports.Transformer
+
   alias Core.Device.Entity, as: DeviceEntity
   alias Core.User.Entity, as: UserEntity
+  alias Core.Playlist.Entity, as: PlaylistEntity
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
@@ -28,12 +30,19 @@ defmodule FakeAdapters.Device.Inserting do
     surname: _,
     created: _,
     updated: _
+  }, %PlaylistEntity{
+    id: playlist_id,
+    name: _,
+    contents: _,
+    created: _,
+    updated: _
   }) do
     case :mnesia.transaction(
       fn -> :mnesia.write({
         :devices,
           id,
           user_id,
+          playlist_id,
           ssh_port,
           ssh_host,
           ssh_user,
