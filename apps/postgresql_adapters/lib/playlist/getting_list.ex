@@ -12,10 +12,12 @@ defmodule PostgresqlAdapters.Playlist.Inserting do
 
   @impl GetterList
   def get(%Filter{
-    user_id: user_id,
-    name: filter_by_name,
-    created: filter_by_created,
-    updated: filter_by_updated
+    user_id: filter_by_user_id,
+    name: filter_by_user_name,
+    created_f: filter_by_user_created_f,
+    created_t: filter_by_user_created_t,
+    updated_f: filter_by_user_updated_f,
+    updated_t: filter_by_user_updated_t
   }, %Sort{
     name: sort_by_name,
     created: sort_by_created,
@@ -33,10 +35,12 @@ defmodule PostgresqlAdapters.Playlist.Inserting do
         end
 
         query(%Filter{
-          user_id: user_id,
-          name: filter_by_name,
-          created: filter_by_created,
-          updated: filter_by_updated
+          user_id: filter_by_user_id,
+          name: filter_by_user_name,
+          created_f: filter_by_user_created_f,
+          created_t: filter_by_user_created_t,
+          updated_f: filter_by_user_updated_f,
+          updated_t: filter_by_user_updated_t
         },%Sort{
           name: sort_by_name,
           created: sort_by_created,
@@ -53,61 +57,71 @@ defmodule PostgresqlAdapters.Playlist.Inserting do
   end
 
   defp query(%Filter{
-    user_id: user_id,
-    name: filter_by_name,
-    created: _,
-    updated: _
+    user_id: filter_by_user_id,
+    name: filter_by_user_name,
+    created_f: filter_by_user_created_f,
+    created_t: filter_by_user_created_t,
+    updated_f: filter_by_user_updated_f,
+    updated_t: filter_by_user_updated_t
   }, %Sort{
-    name: _,
-    created: _,
-    updated: _
-  }, limit, offset, connection) when is_binary(name) do
-    query = Postgrex.prepare!(
-      connection,
-      "",
-      "
-        SELECT 
-          pl.id, pl.name, pl.contents, pl.created, pl.updated
-        FROM 
-          relations_user_playlist AS rl_u_p
-        JOIN 
-          playlists AS pl ON pl.id = rl_u_p.playlist_id
-        WHERE 
-          rl_u_p.user_id = $1 AND
-          pl.name = $2
-        LIMIT $3 OFFSET $4
-      "
-    )
-
-    Postgrex.execute(connection, query, [user_id, filter_by_name, limit, offset])
-  end
-
-  defp query(%Filter{
-    user_id: user_id,
-    name: _,
-    created: _,
-    updated: _
-  }, %Sort{
-    name: _,
-    created: _,
-    updated: _
+    name: sort_by_name,
+    created: sort_by_created,
+    updated: sort_by_updated
   }, limit, offset, connection) do
-    query = Postgrex.prepare!(
-      connection,
-      "",
-      "
-        SELECT 
-          pl.id, pl.name, pl.contents, pl.created, pl.updated
-        FROM 
-          relations_user_playlist AS rl_u_p
-        JOIN 
-          playlists AS pl ON pl.id = rl_u_p.playlist_id
-        WHERE 
-          rl_u_p.user_id = $1 
-        LIMIT $2 OFFSET $3
-      "
-    )
 
-    Postgrex.execute(connection, query, [user_id, limit, offset]) 
+    filter_map = %{
+      count: 3,
+      name: "",
+      created_f: "",
+      created_t: "",
+      updated_f: "",
+      updated_t: ""
+    }
+
+    Map.put(filter_map, :name, )
+
+    # where = cond do
+    #   filter_by_user_name != nil -> 
+    #     where_count = where_count + 1
+        
+    #     "AND name LIKE $#{where_count}"
+    #   filter_by_user_name == nil -> ""
+    # end
+
+    # where = cond do
+    #   filter_by_user_created_f != nil && where_count ==  -> "AND name LIKE $4"
+    #   created == nil -> ""
+    # end
+
+    # text_query = "
+    #   SELECT 
+    #     pl.id, pl.name, pl.contents, pl.created, pl.updated
+    #   FROM 
+    #     relations_user_playlist AS rl_u_p
+    #   JOIN 
+    #     playlists AS pl ON pl.id = rl_u_p.playlist_id
+    #   WHERE 
+    #     rl_u_p.user_id = $1
+
+    #   LIMIT $2 OFFSET $3
+    # "
+
+    # query = Postgrex.prepare!(
+    #   connection,
+    #   "",
+    #   "
+    #     SELECT 
+    #       pl.id, pl.name, pl.contents, pl.created, pl.updated
+    #     FROM 
+    #       relations_user_playlist AS rl_u_p
+    #     JOIN 
+    #       playlists AS pl ON pl.id = rl_u_p.playlist_id
+    #     WHERE 
+    #       rl_u_p.user_id = $1
+    #     LIMIT $2 OFFSET $3
+    #   "
+    # )
+
+    # Postgrex.execute(connection, query, [user_id, limit, offset]) 
   end
 end

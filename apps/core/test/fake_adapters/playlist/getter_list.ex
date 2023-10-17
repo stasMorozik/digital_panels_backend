@@ -13,9 +13,12 @@ defmodule FakeAdapters.Playlist.GetterList do
 
   @impl GetterList
   def get(%Filter{
+    user_id: _,
     name: name,
-    created: _,
-    updated: _
+    created_f: _,
+    created_t: _,
+    updated_f: _,
+    updated_t: _
   }, %Sort{
     name: _,
     created: _,
