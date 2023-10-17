@@ -16,14 +16,19 @@ defmodule Core.Playlist.Builder do
     name: name,
     contents: contents,
     web_dav_url: web_dav_url
-  }) do
-    entity()
+  }) when is_binary(name) do
+    entity(name)
       |> contents(contents, web_dav_url)
   end
 
+  def build(_) do
+    Error.new("Не валидные данные для построения файла")
+  end
+
    # Функция построения базового плэйлиста
-   defp entity do
+  defp entity(name) do
     Success.new(%Entity{
+      name: name,
       id: UUID.uuid4(),
       created: Date.utc_today,
       updated: Date.utc_today
@@ -32,7 +37,11 @@ defmodule Core.Playlist.Builder do
 
   # Функция построения контента
   defp contents({ :ok, entity }, contents, web_dav_url) 
-    when length(contents) > 0 and is_struct(entity) and is_binary(web_dav_url) do
+    when is_list(contents) 
+    and length(contents) > 0 
+    and is_struct(entity) 
+    and is_binary(web_dav_url) do
+
     with cnts <- handle_contents(contents, web_dav_url),
          nil <- Enum.find(cnts, fn tuple -> elem(tuple, 0) == :error end) do
       Success.new(Map.put(entity, :contents, cnts))
@@ -41,7 +50,10 @@ defmodule Core.Playlist.Builder do
     end
   end
 
-  defp contents({ :ok, entity }, contents, _) when length(contents) == 0 and is_struct(entity) do
+  defp contents({ :ok, entity }, contents, _) 
+    when is_list(contents) 
+    and length(contents) == 0 
+    and is_struct(entity) do
     Error.new("Пустой список контента")
   end
 

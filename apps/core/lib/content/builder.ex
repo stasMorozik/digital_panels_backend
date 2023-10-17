@@ -15,12 +15,17 @@ defmodule Core.Content.Builder do
 
   @spec build(map()) :: Success.t() | Error.t()
   def build(%{
+    web_dav_url: web_dav_url,
     display_duration: display_duration,
     file: file
-  }) do
+  }) when is_map(file) do
     entity()
-      |> file(file)
+      |> file(Map.put(file, :web_dav_url, web_dav_url))
       |> display_duration(display_duration)
+  end
+
+  def build(_) do
+    Error.new("Не валидные данные для построения контента")
   end
 
    # Функция построения базового контента

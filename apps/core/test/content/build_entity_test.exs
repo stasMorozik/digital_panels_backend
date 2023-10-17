@@ -18,9 +18,9 @@ defmodule Content.BuildEntityTest do
     {result, _} =
       Builder.build(%{
         file: %{
-          path: "/tmp/not_emty.txt",
-          web_dav_url: "http://localhost"
+          path: "/tmp/not_emty.txt"
         },
+        web_dav_url: "http://localhost",
         display_duration: 15
       })
 
@@ -31,9 +31,9 @@ defmodule Content.BuildEntityTest do
     {result, _} =
       Builder.build(%{
         file: %{
-          path: "/tmp/emty.txt",
-          web_dav_url: "http://localhost"
+          path: "/tmp/emty.txt"
         },
+        web_dav_url: "http://localhost",
         display_duration: 15
       })
 
@@ -44,9 +44,9 @@ defmodule Content.BuildEntityTest do
     {result, _} =
       Builder.build(%{
         file: %{
-          path: "/tmp/not_emty.txt",
-          web_dav_url: "http://localhost"
+          path: "/tmp/not_emty.txt"
         },
+        web_dav_url: "http://localhost",
         display_duration: 0
       })
 
