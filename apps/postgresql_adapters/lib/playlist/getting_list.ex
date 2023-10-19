@@ -56,29 +56,30 @@ defmodule PostgresqlAdapters.Playlist.Inserting do
     Error.new("Не валидные данные для получения списка плэйлистов")
   end
 
-  defp query(%Filter{
-    user_id: filter_by_user_id,
-    name: filter_by_user_name,
-    created_f: filter_by_user_created_f,
-    created_t: filter_by_user_created_t,
-    updated_f: filter_by_user_updated_f,
-    updated_t: filter_by_user_updated_t
-  }, %Sort{
-    name: sort_by_name,
-    created: sort_by_created,
-    updated: sort_by_updated
-  }, limit, offset, connection) do
-
-    filter_map = %{
-      count: 3,
-      name: "",
-      created_f: "",
-      created_t: "",
-      updated_f: "",
-      updated_t: ""
+  defp make_query_map(filter, sort) do
+    query_map = %{
+      counter: 3
     }
 
-    Map.put(filter_map, :name, )
+    with <- do
+    end
+
+    # if Map.has_key?(filter, :name) do
+    #   query_map = Map.put(filter, :filter_by_user_name, filter.name)
+    # end
+  end
+
+  defp query(filter, sort, limit, offset, connection) do
+
+    Map.put_new_lazy(query_map, :b, fun)
+    
+    # where_name = Map.get_lazy(filter, :name, fun = fn -> 
+    #   counter = counter + 1
+
+    #   "AND name LIKE $#{counter}"
+    # end)
+
+    # Map.put(filter_map, :name, )
 
     # where = cond do
     #   filter_by_user_name != nil -> 
@@ -122,6 +123,7 @@ defmodule PostgresqlAdapters.Playlist.Inserting do
     #   "
     # )
 
-    # Postgrex.execute(connection, query, [user_id, limit, offset]) 
+    # Postgrex.execute(connection, query, [user_id, limit, offset])
+    
   end
 end
