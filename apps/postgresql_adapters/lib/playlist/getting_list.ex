@@ -53,7 +53,7 @@ defmodule PostgresqlAdapters.Playlist.GettingList do
           limit: limit
         }
 
-        {result, data} = {"
+        {"
           SELECT 
             pl.id, pl.name, pl.created, pl.updated
           FROM 
@@ -72,9 +72,6 @@ defmodule PostgresqlAdapters.Playlist.GettingList do
                |> limit_offset(pagi)
                |> query(connection)
                |> mapper()
-
-        Success.new(true)
-
 
       [] -> Error.new("Database connection error")
       _ -> Error.new("Database connection error")
@@ -239,18 +236,16 @@ defmodule PostgresqlAdapters.Playlist.GettingList do
   end
 
   defp mapper({:ok, data}) do
-    IO.inspect(data)
-
     data = Enum.map(data, fn [id, name, created, updated] -> 
       %PlaylistEntity{
-        id: id,
+        id: UUID.binary_to_string!(id),
         name: name,
         created: created,
         updated: updated
       }
     end)
 
-    {:ok, data}
+    Success.new(data)
   end
 
   defp mapper({:error, message}) do

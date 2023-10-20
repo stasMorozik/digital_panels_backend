@@ -17,6 +17,7 @@ defmodule PostgresqlAdapters.User.Getting do
              {:ok, _, result} <- Postgrex.execute(connection, q, [email]),
              true <- result.num_rows > 0,
              [ [id, email, name, surname, created, updated] ] <- result.rows do
+             
           Success.new(%Entity{
             id: UUID.binary_to_string!(id),
             email: email,

@@ -1,4 +1,4 @@
-defmodule Playlist.GettingListTest do
+defmodule Playlist.GettingTest do
   use ExUnit.Case
   
   alias PostgresqlAdapters.User.Inserting, as: UserInserting
@@ -7,13 +7,9 @@ defmodule Playlist.GettingListTest do
   alias Core.User.Builder, as: UserBuilder
   alias Core.Playlist.Builder, as: PlaylistBuilder
 
-  alias PostgresqlAdapters.Playlist.GettingList
+  alias PostgresqlAdapters.Playlist.Getting
 
-  alias Core.Playlist.Types.Filter
-  alias Core.Playlist.Types.Sort
-  alias Core.Shared.Types.Pagination
-
-  doctest GettingList
+  doctest Getting
 
   setup_all do
     File.touch("/tmp/not_emty.txt", 1544519753)
@@ -67,21 +63,7 @@ defmodule Playlist.GettingListTest do
 
     {_, _} = PlaylistInserting.transform(playlist_entity, user_entity)
 
-    {result, _} = GettingList.get(%Filter{
-      user_id: user_entity.id,
-      name: nil,
-      created_f: nil,
-      created_t: nil,
-      updated_f: nil,
-      updated_t: nil
-    }, %Sort{
-      name: nil,
-      created: nil,
-      updated: nil
-    }, %Pagination{
-      page: 1,
-      limit: 10
-    })
+    {result, _} = Getting.get(playlist_entity.id)
 
     assert result == :ok
   end

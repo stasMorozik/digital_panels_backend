@@ -12,7 +12,7 @@ defmodule ConfirmationCode.UpdateingConfirmedTest do
     :ets.new(:connections, [:set, :public, :named_table])
 
     {:ok, pid} = Postgrex.start_link(
-      hostname: "192.168.0.103",
+      hostname: "192.168.0.161",
       username: "db_user",
       password: "12345",
       database: "system_content_manager",
