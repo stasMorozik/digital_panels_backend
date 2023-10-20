@@ -10,7 +10,7 @@ defmodule AdminPanelWeb.Components.Presentation.Hrefs.Link do
   def c(assigns) do
     ~H"""
       <a
-        class="font-medium text-orange-500 dark:text-blue-500 hover:underline"
+        class="font-medium text-blue-500 dark:text-blue-500 hover:underline"
         {@rest}
       >
         <%= @text %>

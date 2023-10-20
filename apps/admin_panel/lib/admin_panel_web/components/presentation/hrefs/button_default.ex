@@ -10,7 +10,7 @@ defmodule AdminPanelWeb.Components.Presentation.Hrefs.ButtonDefault do
   def c(assigns) do
     ~H"""
       <a
-        class="border-gray-300 text-center text-white bg-violet-500 rounded-md p-1 focus:ring-4 focus:outline-none focus:ring-violet-300 hover:bg-violet-800"
+        class="border-gray-300 text-center text-white bg-blue-500 rounded-md p-2 focus:ring-4 focus:outline-none focus:ring-blue-300 hover:bg-blue-800"
         {@rest}
       >
         <%= @text %>
