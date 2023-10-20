@@ -12,29 +12,22 @@ defmodule PostgresqlAdapters.User.Getting do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
 
-        query = Postgrex.prepare!(
-          connection,
-          "",
-          "SELECT * FROM users WHERE email = $1"
-        )
-
-        case Postgrex.execute(connection, query, [email]) do
-          {:ok, _, result} ->
-            with true <- result.num_rows > 0,
-                 [ [id, email, name, surname, created, updated] ] <- result.rows do
-
-              Success.new(%Entity{
-                id: UUID.binary_to_string!(id),
-                email: email,
-                name: name,
-                surname: surname,
-                created: created,
-                updated: updated
-              })
-            else
-              false -> Error.new("Пользователь не найден")
-            end
-          {:error, _} -> Error.new("Что то пошло не так")
+        with query <- "SELECT * FROM users WHERE email = $1",
+             {:ok, q} <- Postgrex.prepare(connection, "", query),
+             {:ok, _, result} <- Postgrex.execute(connection, q, [email]),
+             true <- result.num_rows > 0,
+             [ [id, email, name, surname, created, updated] ] <- result.rows do
+          Success.new(%Entity{
+            id: UUID.binary_to_string!(id),
+            email: email,
+            name: name,
+            surname: surname,
+            created: created,
+            updated: updated
+          })
+        else
+          false -> Error.new("Пользователь не найден")
+          {:error, _} -> Error.new("Ошибка запроса к базе данных")
         end
 
       [] -> Error.new("Database connection error")

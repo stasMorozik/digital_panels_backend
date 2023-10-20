@@ -12,28 +12,21 @@ defmodule PostgresqlAdapters.ConfirmationCode.Getting do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
 
-        query = Postgrex.prepare!(
-          connection,
-          "",
-          "SELECT * FROM confirmation_codes WHERE needle = $1"
-        )
+        with query <- "SELECT * FROM confirmation_codes WHERE needle = $1",
+             {:ok, q} <- Postgrex.prepare(connection, "", query),
+             {:ok, _, result} <- Postgrex.execute(connection, q, [needle]),
+             true <- result.num_rows > 0,
+             [ [needle, code, confirmed, created] ] <- result.rows do
 
-        case Postgrex.execute(connection, query, [needle]) do
-          {:ok, _, result} ->
-            with true <- result.num_rows > 0,
-                 [ [needle, code, confirmed, created] ] <- result.rows do
-
-              Success.new(%Entity{
-                needle: needle,
-                created: created,
-                code: code,
-                confirmed: confirmed
-              })
-
-            else
-              false -> Error.new("Код подтверждения не найден")
-            end
-          {:error, _} -> Error.new("Что то пошло не так")
+          Success.new(%Entity{
+            needle: needle,
+            created: created,
+            code: code,
+            confirmed: confirmed
+          })
+        else
+          {:error, _} -> Error.new("Ошибка запроса к базе данных")
+          false -> Error.new("Код подтверждения не найден")
         end
 
       [] -> Error.new("Database connection error")

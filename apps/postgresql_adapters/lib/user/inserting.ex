@@ -19,15 +19,14 @@ defmodule PostgresqlAdapters.User.Inserting do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
 
-        query = Postgrex.prepare!(
-          connection,
-          "",
-          "INSERT INTO users (id, email, name, surname, created, updated) VALUES($1, $2, $3, $4, $5, $6)"
-        )
+        query = "INSERT INTO users (id, email, name, surname, created, updated) VALUES($1, $2, $3, $4, $5, $6)"
 
-        case Postgrex.execute(connection, query, [UUID.string_to_binary!(id), email, name, surname, created, updated]) do
-          {:ok, _, _} -> Success.new(true)
-          {:error, _} -> Error.new("Пользователь с такой электронной почтой уже существует")
+        with {:ok, q} <- Postgrex.prepare(connection, "", query),
+             data <- [UUID.string_to_binary!(id), email, name, surname, created, updated],
+             {:ok, _, _} <- Postgrex.execute(connection, q, data) do
+          Success.new(true)
+        else
+          {:error, _} -> Error.new("Ошибка запроса к базе данных")
         end
 
       [] -> Error.new("Database connection error")

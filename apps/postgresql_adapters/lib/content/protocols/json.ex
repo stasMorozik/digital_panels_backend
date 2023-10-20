@@ -6,7 +6,7 @@ defimpl Jason.Encoder, for: Core.Content.Entity do
 
     file_map = Map.take(file_struct, [:id, :size, :url, :path, :created, :updated])
 
-    Map.put(content_map, :file, file_map)
+    content_map = Map.put(content_map, :file, file_map)
     
     Jason.Encode.map(content_map, opts)
   end

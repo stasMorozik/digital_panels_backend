@@ -17,17 +17,14 @@ defmodule PostgresqlAdapters.ConfirmationCode.UpdatingConfirmed do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
 
-        query = Postgrex.prepare!(
-          connection,
-          "",
-          "UPDATE confirmation_codes SET confirmed = true WHERE needle = $1"
-        )
-
-        case Postgrex.execute(connection, query, [needle]) do
-          {:ok, _, _} -> Success.new(true)
-          {:error, _} -> Error.new("Не удалоьс обновить код подтверждения")
+        with query <- "UPDATE confirmation_codes SET confirmed = true WHERE needle = $1",
+             {:ok, q} <- Postgrex.prepare(connection, "", query),
+             {:ok, _, _} <- Postgrex.execute(connection, q, [needle]) do
+          Success.new(true)
+        else
+          {:error, _} -> Error.new("Ошибка запроса к базе данных")
         end
-
+        
       [] -> Error.new("Database connection error")
       _ -> Error.new("Database connection error")
     end

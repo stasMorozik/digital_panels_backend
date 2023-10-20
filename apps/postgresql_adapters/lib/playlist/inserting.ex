@@ -27,50 +27,48 @@ defmodule PostgresqlAdapters.Playlist.Inserting do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
 
-        query_0 = Postgrex.prepare!(
-          connection,
-          "",
-          "INSERT INTO playlists (
-              id,
-              name,
-              contents,
-              created,
-              updated
-            ) VALUES(
-              $1, $2, $3, $4, $5
-            )"
-        )
+        query_0 = "
+          INSERT INTO playlists (
+            id,
+            name,
+            contents,
+            created,
+            updated
+          ) VALUES(
+            $1, $2, $3, $4, $5
+          )
+        "
 
-        query_1 = Postgrex.prepare!(
-          connection,
-          "",
-          "INSERT INTO relations_user_playlist (
-              user_id,
-              playlist_id
-            ) VALUES(
-              $1, $2
-            )"
-        )
+        query_1 = "
+          INSERT INTO relations_user_playlist (
+            user_id,
+            playlist_id
+          ) VALUES(
+            $1, $2
+          )
+        "
 
-        case Postgrex.transaction( 
-          connection, 
-          fn(conn) ->
-            Postgrex.execute(conn, query_0, [
-              UUID.string_to_binary!(id),
-              name,
-              Jason.encode!(contents),
-              created,
-              updated
-            ])
-
-            Postgrex.execute(conn, query_1, [
-              UUID.string_to_binary!(user_id),
-              UUID.string_to_binary!(id),
-            ])
-          end
-        ) do
-          {:ok, res} -> Success.new(true)
-          {:error, _} -> Error.new("Устройство уже существует")
+        with {:ok, q_0} <- Postgrex.prepare(connection, "", query_0),
+             {:ok, q_1} <- Postgrex.prepare(connection,"", query_1),
+             d_0 <- [
+                UUID.string_to_binary!(id),
+                name,
+                Jason.encode!(contents),
+                created,
+                updated
+             ],
+             d_1 <- [
+                UUID.string_to_binary!(user_id),
+                UUID.string_to_binary!(id),
+             ],
+             fun <- fn(conn) ->
+                Postgrex.execute(conn, q_0, d_0)
+                Postgrex.execute(conn, q_1, d_1)
+             end,
+             {:ok, _} <- Postgrex.transaction(connection, fun) do
+          Success.new(true)
+        else 
+          {:error, _} -> Error.new("Ошибка запроса к базе данных")
         end
 
       [] -> Error.new("Database connection error")
