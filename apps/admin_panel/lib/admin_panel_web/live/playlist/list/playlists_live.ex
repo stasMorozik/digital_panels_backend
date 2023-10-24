@@ -6,10 +6,4 @@ defmodule AdminPanelWeb.PlaylistsLive do
 
     {:ok, socket}
   end
-
-  def render(assigns) do
-    ~H"""
-
-    """
-  end
 end

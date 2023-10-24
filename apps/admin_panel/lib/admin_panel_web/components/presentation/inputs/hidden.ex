@@ -9,7 +9,6 @@ defmodule AdminPanelWeb.Components.Presentation.Inputs.Hidden do
 
   def c(assigns) do
     ~H"""
-      <div><%= @field.value %></div>
       <input
         id={@field.id} name={@field.name} value={@field.value}
         type="hidden"

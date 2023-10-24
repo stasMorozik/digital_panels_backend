@@ -29,6 +29,7 @@ defmodule AdminPanelWeb.Router do
       live "/devices", DevicesLive
       live "/device/new", DeviceNewLive
       live "/playlists", PlaylistsLive
+      live "/playlist/new", PlaylistNewLive
       live "/statistic", StatisticLive
     end
   end

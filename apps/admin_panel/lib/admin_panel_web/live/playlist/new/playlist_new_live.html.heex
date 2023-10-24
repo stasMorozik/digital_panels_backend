@@ -1,0 +1,60 @@
+<div class="flex flex-row items-center mb-12">
+  <h2 class="mr-10 text-lg text-black">Добавление нового плэйлиста</h2>
+
+</div>
+<div class="mt-12">
+  <.form for={@form} phx-submit="create_playlist" phx-change="change">
+    <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
+      field={@form[:access_token]}
+      value={@access_token}
+      required
+    />
+    <AdminPanelWeb.Components.Presentation.Inputs.Text.c
+      field={@form[:name]}
+      value={@form.params["name"]}
+      required
+      autocomplete="off"
+      label="Название"
+    />
+    <br>
+    <br>
+    <.live_file_input upload={@uploads.image} />
+    <br>
+    <br>
+    <section class="overflow-hidden" phx-drop-target={@uploads.image.ref}>
+      <div class="grid grid-cols-4 gap-4 w-full overflow-x-auto">
+        <%= for entry <- @uploads.image.entries do %>
+          <article>
+            <figure>
+              <.live_img_preview entry={entry} class="object-cover h-48 w-96 rounded" />
+              <br>
+              <figcaption class="truncate"><%= entry.client_name %></figcaption>
+            </figure>
+            <AdminPanelWeb.Components.Presentation.Inputs.Text.c
+              field={@form[entry.ref]}
+              required
+              autocomplete="off"
+              placeholder="Время показа"
+            />
+            <button 
+              type="button" 
+              phx-click="cancel-upload" 
+              phx-value-ref={entry.ref} 
+              aria-label="cancel">
+              &times;
+            </button>
+          </article>
+        <% end %>
+      </div>
+    </section>
+    <br><br><br>
+    <AdminPanelWeb.Components.Presentation.Buttons.ButtonDefault.c 
+      type="submit" 
+      text="Добавить плэйлист"
+    />
+    <AdminPanelWeb.Components.Presentation.Hrefs.ButtonWarning.c 
+      href="/playlists" 
+      text="Отмена"
+    />
+  </.form>
+</div>
