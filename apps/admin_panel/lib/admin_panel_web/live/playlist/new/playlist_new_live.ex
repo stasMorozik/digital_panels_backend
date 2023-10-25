@@ -5,6 +5,7 @@ defmodule AdminPanelWeb.PlaylistNewLive do
   alias PostgresqlAdapters.User.GettingById, as: GettingUser
 
   alias Core.Playlist.UseCases.Creating
+  alias HttpAdapters.File.Putting
   alias PostgresqlAdapters.Playlist.Inserting
 
   def mount(_params, session, socket) do
@@ -85,10 +86,11 @@ defmodule AdminPanelWeb.PlaylistNewLive do
       web_dav_url: Application.fetch_env!(:core, :web_dav_url),
       token: Map.get(form, "access_token", "")
     }
-    
+
     case Creating.create(
       Authorization,
       GettingUser,
+      Putting,
       Inserting,
       args
     ) do
@@ -101,6 +103,9 @@ defmodule AdminPanelWeb.PlaylistNewLive do
 
         {:noreply, socket}
       {:error, message} -> 
+        socket = assign(socket, :form, to_form(%{
+          name: ""
+        }))
         socket = assign(socket, :success, false)
         socket = assign(socket, :alert, message)
 

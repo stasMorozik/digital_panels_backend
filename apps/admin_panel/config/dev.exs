@@ -31,7 +31,7 @@ config :postgresql_adapters,
   port: 5437
 
 config :http_adapters,
-  user: "user"
+  user: "user",
   password: "12345"
 
 # ## SSL Support

@@ -58,7 +58,7 @@ defmodule PostgresqlAdapters.Playlist.Getting do
          contents <- Enum.map(map, fun) do
 
       %PlaylistEntity{
-        id: id,
+        id: UUID.binary_to_string!(id),
         name: name,
         contents: contents,
         created: created,

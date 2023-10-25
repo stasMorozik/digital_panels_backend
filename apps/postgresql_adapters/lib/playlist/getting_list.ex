@@ -100,7 +100,7 @@ defmodule PostgresqlAdapters.Playlist.GettingList do
       name -> 
         data_list = data_list ++ ["%#{name}%"]
 
-        query_string = query_string <> " AND pl.name LIKE $#{length(data_list)}"
+        query_string = query_string <> " AND pl.name ILIKE $#{length(data_list)}"
 
         {query_string, data_list}
     end

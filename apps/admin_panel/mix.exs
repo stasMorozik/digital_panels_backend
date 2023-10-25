@@ -52,7 +52,8 @@ defmodule AdminPanel.MixProject do
       {:ex_fontawesome, "~> 0.7.2"},
       {:core, in_umbrella: true},
       {:postgresql_adapters, in_umbrella: true},
-      {:smtp_adapters, in_umbrella: true}
+      {:smtp_adapters, in_umbrella: true},
+      {:http_adapters, in_umbrella: true}
     ]
   end
 

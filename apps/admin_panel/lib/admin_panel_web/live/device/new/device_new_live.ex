@@ -30,16 +30,7 @@ defmodule AdminPanelWeb.DeviceNewLive do
 
     socket = assign(socket, :selected_playlist, "")
 
-    socket = assign(socket, :form, to_form(%{
-      "address": "",
-      "ssh_port": "",
-      "ssh_host": "",
-      "ssh_user": "",
-      "ssh_password": "",
-      "longitude": "",
-      "latitude": "",
-      "playlist_id": ""
-    }))
+    socket = default_form(socket)
 
     socket = assign(socket, :form_searching, to_form(%{
       "searching_value": ""
@@ -228,77 +219,54 @@ defmodule AdminPanelWeb.DeviceNewLive do
   end
 
   def handle_event("create_device", form, socket) do
-    # args = %{
-    #   ssh_port: String.to_integer( Map.get(form, "ssh_port", "") ),
-    #   ssh_host: Map.get(form, "ssh_host", ""),
-    #   ssh_user: Map.get(form, "ssh_user", ""),
-    #   ssh_password: Map.get(form, "ssh_password", ""),
-    #   address: Map.get(form, "address", ""),
-    #   longitude: String.to_float(Map.get(form, "longitude", "")),
-    #   latitude: String.to_float(Map.get(form, "latitude", "")),
-    #   playlist_id: Map.get(form, "playlist_id", "")
-    # }
+    IO.inspect(form)
 
-    # csrf_token = Map.get(form, "csrf_token", "")
+    args = %{
+      ssh_port: String.to_integer( Map.get(form, "ssh_port", "") ),
+      ssh_host: Map.get(form, "ssh_host", ""),
+      ssh_user: Map.get(form, "ssh_user", ""),
+      ssh_password: Map.get(form, "ssh_password", ""),
+      address: Map.get(form, "address", ""),
+      longitude: String.to_float(Map.get(form, "longitude", "")),
+      latitude: String.to_float(Map.get(form, "latitude", "")),
+      playlist_id: Map.get(form, "playlist_id", ""),
+      token: Map.get(form, "access_token", "")
+    }
 
-    # with [{_, "", access_token}] <- :ets.lookup(:access_tokens, csrf_token),
-    #      args = Map.put(args, :token, access_token),
-    #      {:ok, _} <- Creating.create(
-    #         Authorization, 
-    #         GettingUser, 
-    #         GettingPlaylist, 
-    #         Inserting, 
-    #         args
-    #       ) do
+    case Creating.create(
+      Authorization, 
+      GettingUser, 
+      GettingPlaylist, 
+      Inserting, 
+      args
+    ) do
+      {:ok, _} -> 
+        socket = assign(socket, :success, true)
+        socket = assign(socket, :alert, "Устройство успешно добавлено")
+        socket = assign(socket, :selected_playlist, "")
+        socket = default_form(socket)
 
-    #   Logger.info("Пользователь добавил устройство - #{args}")
+        {:noreply, socket}
+      {:error, message} -> 
+        socket = assign(socket, :success, false)
+        socket = assign(socket, :alert, message)
+        socket = assign(socket, :selected_playlist, "")
+        socket = default_form(socket)
 
-    #   {
-    #     :noreply,
-    #     assign(socket, :state, %{
-    #       playlists: [],
-    #       geting_playlists: false,
-    #       success_creating_device: nil,
-    #       error: "",
-    #       form: to_form( %{
-    #         address: "",
-    #         ssh_port: "",
-    #         ssh_host: "",
-    #         ssh_user: "",
-    #         ssh_password: "",
-    #         longitude: "",
-    #         latitude: "",
-    #         playlist_id: "",
-    #         csrf_token: Map.get(form, "csrf_token", "")
-    #       })
-    #     })
-    #   }
-    # else
-    #   [] -> {:noreply, push_redirect(socket, to: "/sign-in")}
-    #   {:error, message} ->
+        {:noreply, socket}
+    end
+  end
 
-    #     Logger.notice(message)
-
-    #     {
-    #       :noreply,
-    #       assign(socket, :state, %{
-    #         playlists: [],
-    #         geting_playlists: false,
-    #         success_creating_device: false,
-    #         error: message,
-    #         form: to_form( %{
-    #           address: Map.get(form, "address", ""),
-    #           ssh_port: Map.get(form, "ssh_port", ""),
-    #           ssh_host: Map.get(form, "ssh_host", ""),
-    #           ssh_user: Map.get(form, "ssh_user", ""),
-    #           ssh_password: Map.get(form, "ssh_password", ""),
-    #           longitude: Map.get(form, "longitude", ""),
-    #           latitude: Map.get(form, "latitude", ""),
-    #           playlist_id: Map.get(form, "playlist_id", ""),
-    #           csrf_token: Map.get(form, "csrf_token", "")
-    #         })
-    #       })
-    #     }
-    # end
+  defp default_form(socket) do
+    assign(socket, :form, to_form(%{
+      "address": "",
+      "ssh_port": "",
+      "ssh_host": "",
+      "ssh_user": "",
+      "ssh_password": "",
+      "longitude": "",
+      "latitude": "",
+      "playlist_id": ""
+    }))
   end
 end

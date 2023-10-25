@@ -52,7 +52,7 @@ defmodule Core.Playlist.UseCases.Creating do
       end
   end
 
-  def create(_, _, _, _) do
+  def create(_, _, _, _, _) do
     Error.new("Не валидные аргументы для создания плэйлиста")
   end
 

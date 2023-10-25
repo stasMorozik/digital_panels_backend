@@ -140,6 +140,7 @@
       field={@form[:address]}
       value={@form.params["address"]}
       phx-blur="address"
+      phx-value-playlist_id={@form.params["playlist_id"]}
       phx-value-latitude={@form.params["latitude"]}
       phx-value-longitude={@form.params["longitude"]}
       phx-value-ssh_port={@form.params["ssh_port"]}
@@ -156,6 +157,7 @@
       field={@form[:latitude]}
       value={@form.params["latitude"]}
       phx-blur="latitude"
+      phx-value-playlist_id={@form.params["playlist_id"]}
       phx-value-address={@form.params["address"]}
       phx-value-longitude={@form.params["longitude"]}
       phx-value-ssh_port={@form.params["ssh_port"]}
@@ -172,6 +174,7 @@
       field={@form[:longitude]}
       value={@form.params["longitude"]}
       phx-blur="longitude"
+      phx-value-playlist_id={@form.params["playlist_id"]}
       phx-value-address={@form.params["address"]}
       phx-value-latitude={@form.params["latitude"]}
       phx-value-ssh_port={@form.params["ssh_port"]}
@@ -188,6 +191,7 @@
       field={@form[:ssh_port]}
       value={@form.params["ssh_port"]}
       phx-blur="ssh_port"
+      phx-value-playlist_id={@form.params["playlist_id"]}
       phx-value-address={@form.params["address"]}
       phx-value-latitude={@form.params["latitude"]}
       phx-value-longitude={@form.params["longitude"]}
@@ -204,6 +208,7 @@
       field={@form[:ssh_host]}
       value={@form.params["ssh_host"]}
       phx-blur="ssh_host"
+      phx-value-playlist_id={@form.params["playlist_id"]}
       phx-value-address={@form.params["address"]}
       phx-value-latitude={@form.params["latitude"]}
       phx-value-longitude={@form.params["longitude"]}
@@ -221,6 +226,7 @@
       value={@form.params["ssh_user"]}
       required
       phx-blur="ssh_user"
+      phx-value-playlist_id={@form.params["playlist_id"]}
       phx-value-address={@form.params["address"]}
       phx-value-latitude={@form.params["latitude"]}
       phx-value-longitude={@form.params["longitude"]}
@@ -237,6 +243,7 @@
       value={@form.params["ssh_password"]}
       required
       phx-blur="ssh_password"
+      phx-value-playlist_id={@form.params["playlist_id"]}
       phx-value-address={@form.params["address"]}
       phx-value-latitude={@form.params["latitude"]}
       phx-value-longitude={@form.params["longitude"]}
