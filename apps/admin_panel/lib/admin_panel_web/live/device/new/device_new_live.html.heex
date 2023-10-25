@@ -1,7 +1,15 @@
 <%= if @is_open_drop_down == true do %>
   <div 
-    phx-click="close_drop_down"
     class="fixed w-full h-full z-10 top-0 bottom-0 right-0 left-0"
+    phx-click="close_drop_down"
+    phx-value-playlist_id={@form.params["playlist_id"]}
+    phx-value-address={@form.params["address"]}
+    phx-value-latitude={@form.params["latitude"]}
+    phx-value-longitude={@form.params["longitude"]}
+    phx-value-ssh_port={@form.params["ssh_port"]}
+    phx-value-ssh_host={@form.params["ssh_host"]}
+    phx-value-ssh_user={@form.params["ssh_user"]}
+    phx-value-ssh_password={@form.params["ssh_password"]}
   >
   </div>
 <% end %>
@@ -9,16 +17,47 @@
   <h2 class="mr-10 text-lg text-black">Добавление нового устройства</h2>
 </div>
 <div class="mt-12">
+  <%= if @success != nil do %>
+    <div class="fixed w-full h-full z-10 top-0 bottom-0 right-0 left-0 bg-slate-800 bg-opacity-50">
+      <div class="m-auto p-3 w-1/2 bg-white mt-20 rounded">
+        <%= if @success == false do %>
+          <AdminPanelWeb.Components.Presentation.Alerts.Warning.c
+            message={@alert}
+            id="alert"
+          />
+        <% end %>
+        <%= if @success == true do %>
+          <AdminPanelWeb.Components.Presentation.Alerts.Success.c
+            message={@alert}
+            id="alert"
+          />
+        <% end %>
+        <AdminPanelWeb.Components.Presentation.Buttons.ButtonDefault.c 
+          text="Ок"
+          phx-click="close_alert"
+        />
+      </div>
+    </div>
+  <% end %>
   <%= if @is_open_drop_down == false do %>
     <div class="relative">
       <label class="mb-3 block text-zinc-950">
         Плэйлист
       </label>
-      <div class="border border-slate rounded-lg p-2 flex justify-end">
+      <div class="border border-slate rounded-lg p-2 flex justify-between items-center">
+        <div><%= @selected_playlist %></div>
         <AdminPanelWeb.Components.Presentation.Buttons.ButtonDown.c 
           type="button"
           phx-click="get_playlists"
           phx-value-access_token={@access_token}
+          phx-value-playlist_id={@form.params["playlist_id"]}
+          phx-value-address={@form.params["address"]}
+          phx-value-latitude={@form.params["latitude"]}
+          phx-value-longitude={@form.params["longitude"]}
+          phx-value-ssh_port={@form.params["ssh_port"]}
+          phx-value-ssh_host={@form.params["ssh_host"]}
+          phx-value-ssh_user={@form.params["ssh_user"]}
+          phx-value-ssh_password={@form.params["ssh_password"]}
         />
       </div>
     </div>
@@ -28,49 +67,85 @@
       <label class="mb-3 block text-zinc-950">
         Плэйлист
       </label>
-      <div class="border border-slate rounded-lg p-2 flex justify-end">
+      <div class="border border-slate rounded-lg p-2 flex justify-between items-center">
+        <div><%= @selected_playlist %></div>
         <AdminPanelWeb.Components.Presentation.Buttons.ButtonUp.c 
-          type="submit"
           phx-click="close_drop_down"
+          phx-value-playlist_id={@form.params["playlist_id"]}
+          phx-value-address={@form.params["address"]}
+          phx-value-latitude={@form.params["latitude"]}
+          phx-value-longitude={@form.params["longitude"]}
+          phx-value-ssh_port={@form.params["ssh_port"]}
+          phx-value-ssh_host={@form.params["ssh_host"]}
+          phx-value-ssh_user={@form.params["ssh_user"]}
+          phx-value-ssh_password={@form.params["ssh_password"]}
         />
       </div>
       <div 
         class="absolute bg-white border border-slate w-full p-2 rounded-lg mt-1 z-20 h-72"
       >
-        <%= for playlist <- @playlists do %>
-          <div><%= playlist.name %></div>
-        <% end %>
+        <.form 
+          for={@form_searching} 
+          phx-submit="search_playlists" 
+          phx-change="change_for_search_playlists"
+        >
+            <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
+              field={@form_searching[:access_token]}
+              value={@access_token}
+              required
+            />
+            <AdminPanelWeb.Components.Presentation.Inputs.Text.c
+              field={@form_searching[:searching_value]}
+              value={@form_searching.params["searching_value"]}
+              autofocus
+              autocomplete="off"
+              placeholder="Поиск плэйлиста"
+            />
+        </.form>
+        <div class="h-full h-3/4 overflow-y-auto">
+          <%= for playlist <- @playlists do %>
+            <button 
+              class="text-white bg-slate-400 rounded-md p-2 focus:ring-4 focus:outline-none focus:ring-slate-200 hover:bg-slate-500 w-1/4 w-full text-left mt-2"
+              phx-click="select_device"
+              phx-value-playlist_name={playlist.name}
+              phx-value-playlist_id={playlist.id}
+              phx-value-address={@form.params["address"]}
+              phx-value-latitude={@form.params["latitude"]}
+              phx-value-longitude={@form.params["longitude"]}
+              phx-value-ssh_port={@form.params["ssh_port"]}
+              phx-value-ssh_host={@form.params["ssh_host"]}
+              phx-value-ssh_user={@form.params["ssh_user"]}
+              phx-value-ssh_password={@form.params["ssh_password"]}
+            >
+              <%= playlist.name %>
+            </button>
+          <% end %>
+        </div>
       </div>
     </div>
   <% end %>
   <.form for={@form} phx-submit="create_device">
-    <%= if @error != nil do %>
-      <AdminPanelWeb.Components.Presentation.Alerts.Warning.c
-        message={@error}
-        id="alert"
-      />
-    <% end %>
     <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
       field={@form[:access_token]}
       value={@access_token}
       required
     />
     <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
-      field={@form[:id_playlist]}
-      value={@form.params.id_playlist}
+      field={@form[:playlist_id]}
+      value={@form.params["playlist_id"]}
       required
     />
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:address]}
-      value={@form.params.address}
+      value={@form.params["address"]}
       phx-blur="address"
-      phx-value-latitude={@form.params.latitude}
-      phx-value-longitude={@form.params.longitude}
-      phx-value-ssh_port={@form.params.ssh_port}
-      phx-value-ssh_host={@form.params.ssh_host}
-      phx-value-ssh_user={@form.params.ssh_user}
-      phx-value-ssh_password={@form.params.ssh_password}
+      phx-value-latitude={@form.params["latitude"]}
+      phx-value-longitude={@form.params["longitude"]}
+      phx-value-ssh_port={@form.params["ssh_port"]}
+      phx-value-ssh_host={@form.params["ssh_host"]}
+      phx-value-ssh_user={@form.params["ssh_user"]}
+      phx-value-ssh_password={@form.params["ssh_password"]}
       required
       autocomplete="off"
       label="Адрес"
@@ -79,14 +154,14 @@
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:latitude]}
-      value={@form.params.latitude}
+      value={@form.params["latitude"]}
       phx-blur="latitude"
-      phx-value-address={@form.params.address}
-      phx-value-longitude={@form.params.longitude}
-      phx-value-ssh_port={@form.params.ssh_port}
-      phx-value-ssh_host={@form.params.ssh_host}
-      phx-value-ssh_user={@form.params.ssh_user}
-      phx-value-ssh_password={@form.params.ssh_password}
+      phx-value-address={@form.params["address"]}
+      phx-value-longitude={@form.params["longitude"]}
+      phx-value-ssh_port={@form.params["ssh_port"]}
+      phx-value-ssh_host={@form.params["ssh_host"]}
+      phx-value-ssh_user={@form.params["ssh_user"]}
+      phx-value-ssh_password={@form.params["ssh_password"]}
       required
       autocomplete="off"
       label="Широта"
@@ -95,14 +170,14 @@
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:longitude]}
-      value={@form.params.longitude}
+      value={@form.params["longitude"]}
       phx-blur="longitude"
-      phx-value-address={@form.params.address}
-      phx-value-latitude={@form.params.latitude}
-      phx-value-ssh_port={@form.params.ssh_port}
-      phx-value-ssh_host={@form.params.ssh_host}
-      phx-value-ssh_user={@form.params.ssh_user}
-      phx-value-ssh_password={@form.params.ssh_password}
+      phx-value-address={@form.params["address"]}
+      phx-value-latitude={@form.params["latitude"]}
+      phx-value-ssh_port={@form.params["ssh_port"]}
+      phx-value-ssh_host={@form.params["ssh_host"]}
+      phx-value-ssh_user={@form.params["ssh_user"]}
+      phx-value-ssh_password={@form.params["ssh_password"]}
       required
       autocomplete="off"
       label="Долгота"
@@ -111,14 +186,14 @@
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:ssh_port]}
-      value={@form.params.ssh_port}
+      value={@form.params["ssh_port"]}
       phx-blur="ssh_port"
-      phx-value-address={@form.params.address}
-      phx-value-latitude={@form.params.latitude}
-      phx-value-longitude={@form.params.longitude}
-      phx-value-ssh_host={@form.params.ssh_host}
-      phx-value-ssh_user={@form.params.ssh_user}
-      phx-value-ssh_password={@form.params.ssh_password}
+      phx-value-address={@form.params["address"]}
+      phx-value-latitude={@form.params["latitude"]}
+      phx-value-longitude={@form.params["longitude"]}
+      phx-value-ssh_host={@form.params["ssh_host"]}
+      phx-value-ssh_user={@form.params["ssh_user"]}
+      phx-value-ssh_password={@form.params["ssh_password"]}
       required
       autocomplete="off"
       placeholder="Порт для подключения по SSH"
@@ -127,14 +202,14 @@
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:ssh_host]}
-      value={@form.params.ssh_host}
+      value={@form.params["ssh_host"]}
       phx-blur="ssh_host"
-      phx-value-address={@form.params.address}
-      phx-value-latitude={@form.params.latitude}
-      phx-value-longitude={@form.params.longitude}
-      phx-value-ssh_port={@form.params.ssh_port}
-      phx-value-ssh_user={@form.params.ssh_user}
-      phx-value-ssh_password={@form.params.ssh_password}
+      phx-value-address={@form.params["address"]}
+      phx-value-latitude={@form.params["latitude"]}
+      phx-value-longitude={@form.params["longitude"]}
+      phx-value-ssh_port={@form.params["ssh_port"]}
+      phx-value-ssh_user={@form.params["ssh_user"]}
+      phx-value-ssh_password={@form.params["ssh_password"]}
       required
       autocomplete="off"
       placeholder="Хост для подключения по SSH"
@@ -143,15 +218,15 @@
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:ssh_user]}
-      value={@form.params.ssh_user}
+      value={@form.params["ssh_user"]}
       required
       phx-blur="ssh_user"
-      phx-value-address={@form.params.address}
-      phx-value-latitude={@form.params.latitude}
-      phx-value-longitude={@form.params.longitude}
-      phx-value-ssh_port={@form.params.ssh_port}
-      phx-value-ssh_host={@form.params.ssh_host}
-      phx-value-ssh_password={@form.params.ssh_password}
+      phx-value-address={@form.params["address"]}
+      phx-value-latitude={@form.params["latitude"]}
+      phx-value-longitude={@form.params["longitude"]}
+      phx-value-ssh_port={@form.params["ssh_port"]}
+      phx-value-ssh_host={@form.params["ssh_host"]}
+      phx-value-ssh_password={@form.params["ssh_password"]}
       autocomplete="off"
       placeholder="Пользователь для подключения по SSH"
       label="Пользователь SSH"
@@ -159,15 +234,15 @@
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:ssh_password]}
-      value={@form.params.ssh_password}
+      value={@form.params["ssh_password"]}
       required
       phx-blur="ssh_password"
-      phx-value-address={@form.params.address}
-      phx-value-latitude={@form.params.latitude}
-      phx-value-longitude={@form.params.longitude}
-      phx-value-ssh_port={@form.params.ssh_port}
-      phx-value-ssh_host={@form.params.ssh_host}
-      phx-value-ssh_user={@form.params.ssh_user}
+      phx-value-address={@form.params["address"]}
+      phx-value-latitude={@form.params["latitude"]}
+      phx-value-longitude={@form.params["longitude"]}
+      phx-value-ssh_port={@form.params["ssh_port"]}
+      phx-value-ssh_host={@form.params["ssh_host"]}
+      phx-value-ssh_user={@form.params["ssh_user"]}
       autocomplete="off"
       placeholder="Пароль для подключения по SSH"
       label="Пароль SSH"

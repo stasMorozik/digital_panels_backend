@@ -3,7 +3,7 @@ defmodule SmtpAdapters.MixProject do
 
   def project do
     [
-      app: :smtp_adapters,
+      app: :http_adapters,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "./config/config.exs",
@@ -24,9 +24,7 @@ defmodule SmtpAdapters.MixProject do
 
   defp deps do
     [
-      {:hackney, "~> 1.9"},
-      {:swoosh, "~> 1.11"},
-      {:gen_smtp, "~> 1.0"},
+      {:httpoison, "~> 2.0"},
       {:core, in_umbrella: true}
     ]
   end

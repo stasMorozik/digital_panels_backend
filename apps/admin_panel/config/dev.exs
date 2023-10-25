@@ -26,6 +26,7 @@ config :admin_panel,
   password_postgresql: "12345",
   database_postgresql: "system_content_manager",
   port_postgresql: 5437
+  web_dav_url: "http://192.168.0.161:8100/upload"
 
 # ## SSL Support
 #

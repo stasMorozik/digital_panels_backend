@@ -3,6 +3,28 @@
 
 </div>
 <div class="mt-12">
+  <%= if @success != nil do %>
+    <div class="fixed w-full h-full z-10 top-0 bottom-0 right-0 left-0 bg-slate-800 bg-opacity-50">
+      <div class="m-auto p-3 w-1/2 bg-white mt-20 rounded">
+        <%= if @success == false do %>
+          <AdminPanelWeb.Components.Presentation.Alerts.Warning.c
+            message={@alert}
+            id="alert"
+          />
+        <% end %>
+        <%= if @success == true do %>
+          <AdminPanelWeb.Components.Presentation.Alerts.Success.c
+            message={@alert}
+            id="alert"
+          />
+        <% end %>
+        <AdminPanelWeb.Components.Presentation.Buttons.ButtonDefault.c 
+          text="Ок"
+          phx-click="close_alert"
+        />
+      </div>
+    </div>
+  <% end %>
   <.form for={@form} phx-submit="create_playlist" phx-change="change">
     <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
       field={@form[:access_token]}
@@ -18,7 +40,15 @@
     />
     <br>
     <br>
-    <.live_file_input upload={@uploads.image} />
+    <div 
+      class="relative text-center text-white bg-slate-500 rounded-md p-2 focus:ring-4 focus:outline-none focus:ring-slate-300 hover:bg-slate-800 w-1/4"
+    >
+      Добавить файл
+      <.live_file_input 
+        class="absolute w-full h-full opacity-0 top-0 left-0 cursor-pointer" 
+        upload={@uploads.image} 
+      />
+    </div>
     <br>
     <br>
     <section class="overflow-hidden" phx-drop-target={@uploads.image.ref}>

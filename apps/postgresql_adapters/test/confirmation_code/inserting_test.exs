@@ -11,11 +11,11 @@ defmodule ConfirmationCode.InsertingTest do
     :ets.new(:connections, [:set, :public, :named_table])
 
     {:ok, pid} = Postgrex.start_link(
-      hostname: "192.168.0.161",
-      username: "db_user",
-      password: "12345",
-      database: "system_content_manager",
-      port: 5437
+      hostname: Application.fetch_env!(:postgresql_adapters, :hostname),
+      username: Application.fetch_env!(:postgresql_adapters, :username),
+      password: Application.fetch_env!(:postgresql_adapters, :password),
+      database: Application.fetch_env!(:postgresql_adapters, :database),
+      port: Application.fetch_env!(:postgresql_adapters, :port)
     )
 
     :ets.insert(:connections, {"postgresql", "", pid})

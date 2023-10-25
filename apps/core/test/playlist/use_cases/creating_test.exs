@@ -53,6 +53,7 @@ defmodule Playlist.UseCases.CreatingTest do
     {result, _} = Creating.create(
       Authorization,
       FakeAdapters.User.Getter,
+      FakeAdapters.File.Inserting,
       FakeAdapters.Playlist.Inserting,
       %{
         token: access_token,
@@ -76,6 +77,7 @@ defmodule Playlist.UseCases.CreatingTest do
     {result, _} = Creating.create(
       Authorization,
       FakeAdapters.User.Getter,
+      FakeAdapters.File.Inserting,
       FakeAdapters.Playlist.Inserting,
       %{
         token: "invalid token",
