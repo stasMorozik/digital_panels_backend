@@ -53,7 +53,7 @@ defmodule Core.Device.UseCases.Creating do
       else
         false -> Error.new("Не валидные аргументы для создания устройства")
         {:error, message} -> {:error, message}
-        :error -> Error.new("Не валидный UUID: #{Map.get(args, :playlist_id)}")
+        :error -> Error.new("Не валидный UUID плэйлиста: #{Map.get(args, :playlist_id)}")
       end
   end
 
