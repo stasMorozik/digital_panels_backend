@@ -1,4 +1,6 @@
 defmodule HttpAdapters.File.Putting do
+  use HTTPoison.Base
+
   alias Core.File.Ports.Transformer
   
   alias Core.File.Entity, as: FileEntity
@@ -20,14 +22,23 @@ defmodule HttpAdapters.File.Putting do
   }, _) do
     user = Application.fetch_env!(:http_adapters, :user)
     password = Application.fetch_env!(:http_adapters, :password)
+    header_content = "Basic " <> Base.encode64("#{user}:#{password}")
 
     case HTTPoison.put(
       url,
       {:file, path},
-      [{"Authorization", "Basic #{user}:#{password}"}]
+      [{"Authorization", header_content}]
     ) do
-      {:ok, _} -> Success.new(true),
-      {:error, _} -> Error.new("Не удалось записать файл на сервер")
+      {:ok, %HTTPoison.Response{
+        status_code: code
+      }} when code >= 200 and code <= 299 ->
+        Success.new(true)
+      {:ok, %HTTPoison.Response{
+        status_code: _
+      }} ->
+        Error.new("Не удалось записать файл на сервер")
+      {:error, _} -> 
+        Error.new("Не удалось записать файл на сервер")
     end
   end
 

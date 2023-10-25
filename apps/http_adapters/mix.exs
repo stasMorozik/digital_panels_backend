@@ -1,4 +1,4 @@
-defmodule SmtpAdapters.MixProject do
+defmodule HttpAdapters.MixProject do
   use Mix.Project
 
   def project do

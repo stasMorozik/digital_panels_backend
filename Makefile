@@ -6,6 +6,10 @@ build_postgresql_adapters_test:
 	docker build -f Dockerfile.postgresql_adapters.test ./  -t postgresql_adapters_test
 postgresql_adapters_test:
 	docker run --rm --name postgresql_adapters_test -v $(CURDIR)/apps/postgresql_adapters/test:/app/apps/postgresql_adapters/test -v $(CURDIR)/apps/postgresql_adapters/lib:/app/apps/postgresql_adapters/lib postgresql_adapters_test
+build_http_adapters_test:
+	docker build -f Dockerfile.http_adapters.test ./  -t http_adapters_test
+http_adapters_test:
+	docker run --rm --name http_adapters_test -v $(CURDIR)/apps/http_adapters/test:/app/apps/http_adapters/test -v $(CURDIR)/apps/http_adapters/lib:/app/apps/http_adapters/lib http_adapters_test
 build_admin_panel_dev:
 	docker build -f Dockerfile.admin_panel.dev ./  -t admin_panel_dev
 run_admin_panel_dev:

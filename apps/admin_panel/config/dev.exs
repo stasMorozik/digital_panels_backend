@@ -20,13 +20,19 @@ config :admin_panel, AdminPanelWeb.Endpoint,
   ]
 
 
-config :admin_panel,
-  hostname_postgresql: "192.168.0.161",
-  username_postgresql: "db_user",
-  password_postgresql: "12345",
-  database_postgresql: "system_content_manager",
-  port_postgresql: 5437
+config :core,
   web_dav_url: "http://192.168.0.161:8100/upload"
+
+config :postgresql_adapters,
+  hostname: "192.168.0.161",
+  username: "db_user",
+  password: "12345",
+  database: "system_content_manager",
+  port: 5437
+
+config :http_adapters,
+  user: "user"
+  password: "12345"
 
 # ## SSL Support
 #

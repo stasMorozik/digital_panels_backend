@@ -82,7 +82,7 @@ defmodule AdminPanelWeb.PlaylistNewLive do
     args = %{
       name: Map.get(form, "name", ""),
       contents: contents,
-      web_dav_url: Application.fetch_env!(:admin_panel, :web_dav_url),
+      web_dav_url: Application.fetch_env!(:core, :web_dav_url),
       token: Map.get(form, "access_token", "")
     }
     
