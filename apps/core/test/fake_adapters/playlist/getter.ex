@@ -9,7 +9,7 @@ defmodule FakeAdapters.Playlist.Getter do
 
   @impl Getter
   def get(id) when is_binary(id) do
-    case :mnesia.transaction(fn -> :mnesia.index_read(:playlists, id, :name) end) do
+    case :mnesia.transaction(fn -> :mnesia.index_read(:playlists, id, :id) end) do
       {:atomic, list_playlists} ->
         if length(list_playlists) > 0 do
 

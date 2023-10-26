@@ -89,14 +89,10 @@ defmodule Playlist.UseCases.GettingListTest do
           limit: 10
         },
         filter: %{
-          name: "test_0",
-          created: "test",
-          updated: "test"
+          name: "test_0"
         },
         sort: %{
-          name: "test",
-          created: "test",
-          updated: "test"
+          name: "test"
         }
       }
     )
@@ -116,14 +112,10 @@ defmodule Playlist.UseCases.GettingListTest do
           limit: 10
         },
         filter: %{
-          name: "test_0",
-          created: "test",
-          updated: "test"
+          name: "test_0"
         },
         sort: %{
-          name: "test",
-          created: "test",
-          updated: "test"
+          name: "test"
         }
       }
     )

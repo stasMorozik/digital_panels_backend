@@ -52,7 +52,7 @@ defmodule Device.UseCases.CreatingTest do
     )
 
     {:atomic, :ok} = :mnesia.add_table_index(:users, :email)
-    {:atomic, :ok} = :mnesia.add_table_index(:playlists, :name)
+    {:atomic, :ok} = :mnesia.add_table_index(:playlists, :id)
 
     :ok
   end
@@ -96,10 +96,10 @@ defmodule Device.UseCases.CreatingTest do
         address: "NY Long street 123",
         longitude: 91.223,
         latitude: -67.99,
-        playlist_id: playlist_entity.name
+        playlist_id: playlist_entity.id
       }
     )
-
+    
     assert result == :ok
   end
 

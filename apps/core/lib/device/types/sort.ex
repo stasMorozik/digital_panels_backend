@@ -7,8 +7,8 @@ defmodule Core.Device.Types.Sort do
 
   @type t :: %Sort{
     is_active: boolean() | none(),
-    created: binary()    | none(),
-    updated: binary()    | none()
+    created:   binary()  | none(),
+    updated:   binary()  | none()
   }
 
   defstruct is_active: nil, created: nil, updated: nil

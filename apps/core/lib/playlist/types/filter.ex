@@ -6,8 +6,8 @@ defmodule Core.Playlist.Types.Filter do
   alias Core.Playlist.Types.Filter
 
   @type t :: %Filter{
-    user_id: binary(),
-    name: binary()    | none(),
+    user_id:   binary(),
+    name:      binary() | none(),
     created_f: binary() | none(),
     created_t: binary() | none(),
     updated_f: binary() | none(),
