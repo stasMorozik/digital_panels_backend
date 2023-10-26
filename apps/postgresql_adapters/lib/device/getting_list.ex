@@ -57,9 +57,7 @@ defmodule PostgresqlAdapters.Device.GettingList do
 
         {"
           SELECT 
-            d.id, d.address, d.ssh_port, d.ssh_host, d.ssh_user,
-            d.ssh_password, d.longitude, d.latitude, d.is_active,
-            d.created, d.updated
+            d.id, d.address, d.ssh_host, d.is_active, d.created, d.updated
           FROM 
             relations_user_device AS rl_u_d
           JOIN 
@@ -266,10 +264,12 @@ defmodule PostgresqlAdapters.Device.GettingList do
   end
 
   defp mapper({:ok, data}) do
-    data = Enum.map(data, fn [id, name, created, updated] -> 
-      %PlaylistEntity{
+    data = Enum.map(data, fn [id, address, ssh_host, is_active, created, updated] -> 
+      %Entity{
         id: UUID.binary_to_string!(id),
-        name: name,
+        ssh_host: ssh_host,
+        address: address,
+        is_active: is_active,
         created: created,
         updated: updated
       }

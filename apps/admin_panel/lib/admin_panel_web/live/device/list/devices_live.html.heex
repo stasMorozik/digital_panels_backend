@@ -1,4 +1,132 @@
 <div class="flex flex-row items-center">
   <h2 class="mr-10 text-lg text-black">Список устройств</h2>
-  <AdminPanelWeb.Components.Presentation.Hrefs.ButtonDefault.c href="/device/new" text="Добавить устройство"/>
+  <AdminPanelWeb.Components.Presentation.Hrefs.ButtonDefault.c 
+    href="/device/new" 
+    text="Добавить устройство"
+  />
+</div>
+<%= if @success != nil do %>
+  <div class="fixed w-full h-full z-10 top-0 bottom-0 right-0 left-0 bg-slate-800 bg-opacity-50">
+    <div class="m-auto p-3 w-1/2 bg-white mt-20 rounded">
+      <%= if @success == false do %>
+        <AdminPanelWeb.Components.Presentation.Alerts.Warning.c
+          message={@alert}
+          id="alert"
+        />
+      <% end %>
+      <%= if @success == true do %>
+        <AdminPanelWeb.Components.Presentation.Alerts.Success.c
+          message={@alert}
+          id="alert"
+        />
+      <% end %>
+      <AdminPanelWeb.Components.Presentation.Buttons.ButtonDefault.c 
+        text="Ок"
+        phx-click="close_alert"
+      />
+    </div>
+  </div>
+<% end %>
+<div class="mt-12">
+  <%= if @is_showed_filter_form == false do %>
+    <button 
+      class="flex items-center justify-between text-slate-500" 
+      phx-click="open_filter"
+      phx-value-is_open="true"
+    >
+      Фильтрация/Сортировка
+      <FontAwesome.LiveView.icon name="filter" type="solid" class="h-4 w-4 ms-2"/>
+    </button>
+  <% end %>
+  <%= if @is_showed_filter_form == true do %>
+    <button 
+      class="flex items-center justify-between text-slate-800" 
+      phx-click="open_filter"
+      phx-value-is_open="false"
+    >
+      Фильтрация/Сортировка
+      <FontAwesome.LiveView.icon name="filter" type="solid" class="h-4 w-4 ms-2"/>
+    </button>
+    <.form 
+      for={@form} 
+      phx-submit="filter" 
+    > 
+      <div class="mt-4 text-zinc-950">Фильтрация</div>
+      <div class="grid gap-3 grid-cols-3 mt-3 border border-slate p-5 rounded-md">
+        <div>
+          <label class="mb-3 block text-zinc-950">
+            По дате создания
+          </label>
+          <div class="flex items-center justify-between">
+            <span class="me-2">с</span>
+            <AdminPanelWeb.Components.Presentation.Inputs.Date.c
+              field={@form[:created_f]}
+              value={@form.params["created_f"]}
+              autocomplete="off"
+            />
+            <span class="ms-2 me-2">по</span>
+            <AdminPanelWeb.Components.Presentation.Inputs.Date.c
+              field={@form[:created_t]}
+              value={@form.params["created_t"]}
+              autocomplete="off"
+            />
+          </div>
+        </div>
+        <div>
+          <AdminPanelWeb.Components.Presentation.Inputs.Text.c
+            field={@form[:address]}
+            value={@form.params["address"]}
+            autocomplete="off"
+            label="По адресу"
+          />
+        </div>
+        <div>
+          <AdminPanelWeb.Components.Presentation.Inputs.Text.c
+            field={@form[:ssh_host]}
+            value={@form.params["ssh_host"]}
+            autocomplete="off"
+            label="По хосту"
+          />
+        </div>
+        <div>
+          <label class="mb-3 block text-zinc-950">
+            По активности
+          </label>
+          <select class="rounded-lg w-full" name="form[is_active]">
+            <option selected>Не выбрано</option>
+            <option value="true">Активные</option>
+            <option value="false">Не активные</option>
+          </select>
+        </div>
+      </div>
+      <div class="mt-4 text-zinc-950">Сортировка</div>
+      <div class="grid gap-3 grid-cols-3 mt-3 border border-slate p-5 rounded-md">
+        <div>
+          <label class="mb-3 block text-zinc-950">
+            По дате создания
+          </label>
+          <select class="rounded-lg w-full" name="form[is_active]">
+            <option selected>Не выбрано</option>
+            <option value="true">По возрастанию</option>
+            <option value="false">По убыванию</option>
+          </select>
+        </div>
+        <div>
+          <label class="mb-3 block text-zinc-950">
+            По активности
+          </label>
+          <select class="rounded-lg w-full" name="form[is_active]">
+            <option selected>Не выбрано</option>
+            <option value="true">Сначала неактивные</option>
+            <option value="false">Сначала активные</option>
+          </select>
+        </div>
+      </div>
+      <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
+        field={@form[:access_token]}
+        value={@access_token}
+        required
+      />
+    </.form>
+  <% end %>
 </div>

@@ -1,9 +1,7 @@
 defmodule PostgresqlAdapters.Playlist.GettingList do
   alias Core.Playlist.Ports.GetterList
 
-  alias Core.Playlist.Entity, as: PlaylistEntity
-  alias Core.Content.Entity, as: ContentEntity
-  alias Core.File.Entity, as: FileEntity
+  alias Core.Playlist.Entity
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
@@ -237,7 +235,7 @@ defmodule PostgresqlAdapters.Playlist.GettingList do
 
   defp mapper({:ok, data}) do
     data = Enum.map(data, fn [id, name, created, updated] -> 
-      %PlaylistEntity{
+      %Entity{
         id: UUID.binary_to_string!(id),
         name: name,
         created: created,

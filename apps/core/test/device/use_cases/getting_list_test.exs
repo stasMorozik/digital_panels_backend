@@ -129,7 +129,7 @@ defmodule Devices.UseCases.GettingListTest do
     assert result == :ok
   end
 
-  test "Get list" do
+  test "Invalid token" do
     {_, user_entity} = UserBuilder.build(%{
       email: "test4@gmail.com", 
       name: "Пётр", 
