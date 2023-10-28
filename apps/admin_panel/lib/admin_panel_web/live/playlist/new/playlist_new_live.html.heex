@@ -27,6 +27,11 @@
 <div class="mt-12">
   <.form for={@form} phx-submit="create_playlist" phx-change="change">
     <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
+      field={@form[:csrf_token]}
+      value={@csrf_token}
+      required
+    />
+    <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
       field={@form[:access_token]}
       value={@access_token}
       required
