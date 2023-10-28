@@ -17,9 +17,11 @@ defmodule AdminPanelWeb.DevicesLive do
 
     socket = assign(socket, :access_token, access_token)
 
+    socket = assign(socket, :csrf_token, csrf_token)
+
     socket = assign(socket, :is_showed_filter_form, false)
 
-    socket = assign(socket, :form, to_form(%{
+    :ets.insert(:filter_devices_forms, {csrf_token, "", %{
       "filter_by_address": nil,
       "filter_by_ssh_host": nil,
       "filter_by_created_f": nil,
@@ -27,6 +29,16 @@ defmodule AdminPanelWeb.DevicesLive do
       "filter_by_is_active": nil,
       "sort_by_is_active": nil,
       "sort_by_created": nil
+    }})
+
+    socket = assign(socket, :form, to_form(%{
+      "filter_by_address": "",
+      "filter_by_ssh_host": "",
+      "filter_by_created_f": "",
+      "filter_by_created_t": "",
+      "filter_by_is_active": "",
+      "sort_by_is_active": "",
+      "sort_by_created": ""
     }))
 
     {:ok, socket}
@@ -35,13 +47,19 @@ defmodule AdminPanelWeb.DevicesLive do
   def handle_event("open_filter", form, socket) do
     socket = assign(socket, :is_showed_filter_form, form["is_open"] == "true")
 
+    [{_, "", old_form}] = :ets.lookup(:filter_devices_forms, form["csrf_token"])
+
+    IO.inspect(old_form)
+
+    socket = assign(socket, :form, to_form(old_form))
+
     {:noreply, socket}
   end
 
-  def handle_event("test", form, socket) do
-    # socket = assign(socket, :is_showed_filter_form, form["is_open"] == "true")
+  def handle_event("change_filtration_form", form, socket) do
+    new_form = Map.drop(form, ["_target", "access_token", "csrf_token"])
 
-    IO.inspect(form)
+    :ets.insert(:filter_devices_forms, {form["csrf_token"], "", new_form})
 
     {:noreply, socket}
   end

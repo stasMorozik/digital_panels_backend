@@ -23,6 +23,10 @@ defmodule AdminPanel.Application do
     :ets.new(:connections, [:set, :public, :named_table])
     :ets.new(:device_new_forms, [:set, :public, :named_table])
     :ets.new(:playlist_new_forms, [:set, :public, :named_table])
+    :ets.new(:device_edit_forms, [:set, :public, :named_table])
+    :ets.new(:playlist_edit_forms, [:set, :public, :named_table])
+    :ets.new(:filter_playlists_forms, [:set, :public, :named_table])
+    :ets.new(:filter_devices_forms, [:set, :public, :named_table])
 
     {:ok, pid} = Postgrex.start_link(
       hostname: Application.fetch_env!(:postgresql_adapters, :hostname),

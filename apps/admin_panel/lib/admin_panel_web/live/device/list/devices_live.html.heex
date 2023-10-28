@@ -33,6 +33,7 @@
       class="flex items-center justify-between text-slate-500" 
       phx-click="open_filter"
       phx-value-is_open="true"
+      phx-value-csrf_token={@csrf_token}
     >
       Фильтрация/Сортировка
       <FontAwesome.LiveView.icon name="filter" type="solid" class="h-4 w-4 ms-2"/>
@@ -43,13 +44,15 @@
       class="flex items-center justify-between text-slate-800" 
       phx-click="open_filter"
       phx-value-is_open="false"
+      phx-value-csrf_token={@csrf_token}
     >
       Фильтрация/Сортировка
       <FontAwesome.LiveView.icon name="filter" type="solid" class="h-4 w-4 ms-2"/>
     </button>
     <.form 
       for={@form} 
-      phx-submit="filter" 
+      phx-submit="filter"
+      phx-change="change_filtration_form"
     > 
       <div class="mt-4 text-zinc-950">Фильтрация</div>
       <div class="grid gap-3 grid-cols-3 mt-3 border border-slate p-5 rounded-md">
@@ -95,12 +98,26 @@
           <select 
             class="rounded-lg w-full" 
             name="filter_by_is_active"
-            phx-change="test"
             phx-value-playlist_id="true"
           >
-            <option selected>Не выбрано</option>
-            <option value="true">Показать активные</option>
-            <option value="false">Показать не активные</option>
+            <option 
+              selected={@form["filter_by_is_active"] == ""}
+              value=""
+            >
+              Не выбрано
+            </option>
+            <option 
+              selected={@form["filter_by_is_active"] == "true"} 
+              value="true"
+            >
+              Показать активные
+            </option>
+            <option 
+              selected={@form["filter_by_is_active"] == "false"} 
+              value="false"
+            >
+              Показать не активные
+            </option>
           </select>
         </div>
       </div>
@@ -110,28 +127,39 @@
           <label class="mb-3 block text-zinc-950">
             По дате создания
           </label>
-          <%=select(
-              @form, 
-              :filter_by_created, ["По возрастанию": "DESC", "По убыванию": "ASC"], 
-              prompt: "Не выбрано",
-              class: "rounded-lg w-full"
-          )%>
+          <select 
+            class="rounded-lg w-full" 
+            name="sort_by_created"
+            phx-value-playlist_id="true"
+          >
+            <option selected value="">Не выбрано</option>
+            <option value="DESC">Сначала старые</option>
+            <option value="ASC">Сначала новые</option>
+          </select>
         </div>
         <div>
           <label class="mb-3 block text-zinc-950">
             По активности
           </label>
-          <%=select(
-              @form, 
-              :sort_by_is_active, ["Сначала активные": true, "Сначала не активные": false], 
-              prompt: "Не выбрано",
-              class: "rounded-lg w-full"
-          )%>
+          <select 
+            class="rounded-lg w-full" 
+            name="sort_by_is_active"
+            phx-value-playlist_id="true"
+          >
+            <option selected value="">Не выбрано</option>
+            <option value="DESC">Сначала активные</option>
+            <option value="ASC">Сначала не активные</option>
+          </select>
         </div>
       </div>
       <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
         field={@form[:access_token]}
         value={@access_token}
+        required
+      />
+      <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
+        field={@form[:csrf_token]}
+        value={@csrf_token}
         required
       />
     </.form>
