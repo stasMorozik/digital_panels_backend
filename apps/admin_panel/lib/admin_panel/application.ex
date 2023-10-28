@@ -21,6 +21,8 @@ defmodule AdminPanel.Application do
     :ets.new(:access_tokens, [:set, :public, :named_table])
     :ets.new(:refresh_tokens, [:set, :public, :named_table])
     :ets.new(:connections, [:set, :public, :named_table])
+    :ets.new(:device_new_forms, [:set, :public, :named_table])
+    :ets.new(:playlist_new_forms, [:set, :public, :named_table])
 
     {:ok, pid} = Postgrex.start_link(
       hostname: Application.fetch_env!(:postgresql_adapters, :hostname),

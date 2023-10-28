@@ -2,14 +2,7 @@
   <div 
     class="fixed w-full h-full z-10 top-0 bottom-0 right-0 left-0"
     phx-click="close_drop_down"
-    phx-value-playlist_id={@form.params["playlist_id"]}
-    phx-value-address={@form.params["address"]}
-    phx-value-latitude={@form.params["latitude"]}
-    phx-value-longitude={@form.params["longitude"]}
-    phx-value-ssh_port={@form.params["ssh_port"]}
-    phx-value-ssh_host={@form.params["ssh_host"]}
-    phx-value-ssh_user={@form.params["ssh_user"]}
-    phx-value-ssh_password={@form.params["ssh_password"]}
+    phx-value-csrf_token={@csrf_token}
   >
   </div>
 <% end %>
@@ -35,6 +28,7 @@
         <AdminPanelWeb.Components.Presentation.Buttons.ButtonDefault.c 
           text="Ок"
           phx-click="close_alert"
+          phx-value-csrf_token={@csrf_token}
         />
       </div>
     </div>
@@ -50,14 +44,7 @@
           type="button"
           phx-click="get_playlists"
           phx-value-access_token={@access_token}
-          phx-value-playlist_id={@form.params["playlist_id"]}
-          phx-value-address={@form.params["address"]}
-          phx-value-latitude={@form.params["latitude"]}
-          phx-value-longitude={@form.params["longitude"]}
-          phx-value-ssh_port={@form.params["ssh_port"]}
-          phx-value-ssh_host={@form.params["ssh_host"]}
-          phx-value-ssh_user={@form.params["ssh_user"]}
-          phx-value-ssh_password={@form.params["ssh_password"]}
+          phx-value-csrf_token={@csrf_token}
         />
       </div>
     </div>
@@ -71,14 +58,7 @@
         <div><%= @selected_playlist %></div>
         <AdminPanelWeb.Components.Presentation.Buttons.ButtonUp.c 
           phx-click="close_drop_down"
-          phx-value-playlist_id={@form.params["playlist_id"]}
-          phx-value-address={@form.params["address"]}
-          phx-value-latitude={@form.params["latitude"]}
-          phx-value-longitude={@form.params["longitude"]}
-          phx-value-ssh_port={@form.params["ssh_port"]}
-          phx-value-ssh_host={@form.params["ssh_host"]}
-          phx-value-ssh_user={@form.params["ssh_user"]}
-          phx-value-ssh_password={@form.params["ssh_password"]}
+          phx-value-csrf_token={@csrf_token}
         />
       </div>
       <div 
@@ -86,9 +66,14 @@
       >
         <.form 
           for={@form_searching} 
-          phx-submit="search_playlists" 
-          phx-change="change_for_search_playlists"
+          phx-submit="search_playlists"
+          phx-change="change_searching_playlists_form"
         >
+            <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
+              field={@form_searching[:csrf_token]}
+              value={@csrf_token}
+              required
+            />
             <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
               field={@form_searching[:access_token]}
               value={@access_token}
@@ -107,15 +92,9 @@
             <button 
               class="text-white bg-slate-400 rounded-md p-2 focus:ring-4 focus:outline-none focus:ring-slate-200 hover:bg-slate-500 w-1/4 w-full text-left mt-2"
               phx-click="select_device"
+              phx-value-csrf_token={@csrf_token}
               phx-value-playlist_name={playlist.name}
               phx-value-playlist_id={playlist.id}
-              phx-value-address={@form.params["address"]}
-              phx-value-latitude={@form.params["latitude"]}
-              phx-value-longitude={@form.params["longitude"]}
-              phx-value-ssh_port={@form.params["ssh_port"]}
-              phx-value-ssh_host={@form.params["ssh_host"]}
-              phx-value-ssh_user={@form.params["ssh_user"]}
-              phx-value-ssh_password={@form.params["ssh_password"]}
             >
               <%= playlist.name %>
             </button>
@@ -124,7 +103,12 @@
       </div>
     </div>
   <% end %>
-  <.form for={@form} phx-submit="create_device">
+  <.form for={@form} phx-submit="create_device" phx-change="change_creating_form">
+    <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
+      field={@form_searching[:csrf_token]}
+      value={@csrf_token}
+      required
+    />
     <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
       field={@form[:access_token]}
       value={@access_token}
@@ -139,14 +123,6 @@
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:address]}
       value={@form.params["address"]}
-      phx-blur="address"
-      phx-value-playlist_id={@form.params["playlist_id"]}
-      phx-value-latitude={@form.params["latitude"]}
-      phx-value-longitude={@form.params["longitude"]}
-      phx-value-ssh_port={@form.params["ssh_port"]}
-      phx-value-ssh_host={@form.params["ssh_host"]}
-      phx-value-ssh_user={@form.params["ssh_user"]}
-      phx-value-ssh_password={@form.params["ssh_password"]}
       required
       autocomplete="off"
       label="Адрес"
@@ -156,14 +132,6 @@
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:latitude]}
       value={@form.params["latitude"]}
-      phx-blur="latitude"
-      phx-value-playlist_id={@form.params["playlist_id"]}
-      phx-value-address={@form.params["address"]}
-      phx-value-longitude={@form.params["longitude"]}
-      phx-value-ssh_port={@form.params["ssh_port"]}
-      phx-value-ssh_host={@form.params["ssh_host"]}
-      phx-value-ssh_user={@form.params["ssh_user"]}
-      phx-value-ssh_password={@form.params["ssh_password"]}
       required
       autocomplete="off"
       label="Широта"
@@ -173,14 +141,6 @@
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:longitude]}
       value={@form.params["longitude"]}
-      phx-blur="longitude"
-      phx-value-playlist_id={@form.params["playlist_id"]}
-      phx-value-address={@form.params["address"]}
-      phx-value-latitude={@form.params["latitude"]}
-      phx-value-ssh_port={@form.params["ssh_port"]}
-      phx-value-ssh_host={@form.params["ssh_host"]}
-      phx-value-ssh_user={@form.params["ssh_user"]}
-      phx-value-ssh_password={@form.params["ssh_password"]}
       required
       autocomplete="off"
       label="Долгота"
@@ -190,14 +150,6 @@
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:ssh_port]}
       value={@form.params["ssh_port"]}
-      phx-blur="ssh_port"
-      phx-value-playlist_id={@form.params["playlist_id"]}
-      phx-value-address={@form.params["address"]}
-      phx-value-latitude={@form.params["latitude"]}
-      phx-value-longitude={@form.params["longitude"]}
-      phx-value-ssh_host={@form.params["ssh_host"]}
-      phx-value-ssh_user={@form.params["ssh_user"]}
-      phx-value-ssh_password={@form.params["ssh_password"]}
       required
       autocomplete="off"
       placeholder="Порт для подключения по SSH"
@@ -207,14 +159,6 @@
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:ssh_host]}
       value={@form.params["ssh_host"]}
-      phx-blur="ssh_host"
-      phx-value-playlist_id={@form.params["playlist_id"]}
-      phx-value-address={@form.params["address"]}
-      phx-value-latitude={@form.params["latitude"]}
-      phx-value-longitude={@form.params["longitude"]}
-      phx-value-ssh_port={@form.params["ssh_port"]}
-      phx-value-ssh_user={@form.params["ssh_user"]}
-      phx-value-ssh_password={@form.params["ssh_password"]}
       required
       autocomplete="off"
       placeholder="Хост для подключения по SSH"
@@ -225,14 +169,6 @@
       field={@form[:ssh_user]}
       value={@form.params["ssh_user"]}
       required
-      phx-blur="ssh_user"
-      phx-value-playlist_id={@form.params["playlist_id"]}
-      phx-value-address={@form.params["address"]}
-      phx-value-latitude={@form.params["latitude"]}
-      phx-value-longitude={@form.params["longitude"]}
-      phx-value-ssh_port={@form.params["ssh_port"]}
-      phx-value-ssh_host={@form.params["ssh_host"]}
-      phx-value-ssh_password={@form.params["ssh_password"]}
       autocomplete="off"
       placeholder="Пользователь для подключения по SSH"
       label="Пользователь SSH"
@@ -242,14 +178,6 @@
       field={@form[:ssh_password]}
       value={@form.params["ssh_password"]}
       required
-      phx-blur="ssh_password"
-      phx-value-playlist_id={@form.params["playlist_id"]}
-      phx-value-address={@form.params["address"]}
-      phx-value-latitude={@form.params["latitude"]}
-      phx-value-longitude={@form.params["longitude"]}
-      phx-value-ssh_port={@form.params["ssh_port"]}
-      phx-value-ssh_host={@form.params["ssh_host"]}
-      phx-value-ssh_user={@form.params["ssh_user"]}
       autocomplete="off"
       placeholder="Пароль для подключения по SSH"
       label="Пароль SSH"
