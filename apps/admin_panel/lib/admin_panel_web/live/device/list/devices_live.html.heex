@@ -53,6 +53,7 @@
       for={@form} 
       phx-submit="filter"
       phx-change="change_filtration_form"
+      class="mt-12"
     > 
       <div class="mt-4 text-zinc-950">Фильтрация</div>
       <div class="grid gap-3 grid-cols-3 mt-3 border border-slate p-5 rounded-md">
@@ -63,30 +64,30 @@
           <div class="flex items-center justify-between">
             <span class="me-2">с</span>
             <AdminPanelWeb.Components.Presentation.Inputs.Date.c
-              field={@form[:created_f]}
-              value={@form.params["created_f"]}
+              field={@form[:filter_by_created_f]}
+              value={@form.params["filter_by_created_f"]}
               autocomplete="off"
             />
             <span class="ms-2 me-2">по</span>
             <AdminPanelWeb.Components.Presentation.Inputs.Date.c
-              field={@form[:created_t]}
-              value={@form.params["created_t"]}
+              field={@form[:filter_by_created_t]}
+              value={@form.params["filter_by_created_t"]}
               autocomplete="off"
             />
           </div>
         </div>
         <div>
           <AdminPanelWeb.Components.Presentation.Inputs.Text.c
-            field={@form[:address]}
-            value={@form.params["address"]}
+            field={@form[:filter_by_address]}
+            value={@form.params["filter_by_address"]}
             autocomplete="off"
             label="По адресу"
           />
         </div>
         <div>
           <AdminPanelWeb.Components.Presentation.Inputs.Text.c
-            field={@form[:ssh_host]}
-            value={@form.params["ssh_host"]}
+            field={@form[:filter_by_ssh_host]}
+            value={@form.params["filter_by_ssh_host"]}
             autocomplete="off"
             label="По хосту"
           />
@@ -101,19 +102,19 @@
             phx-value-playlist_id="true"
           >
             <option 
-              selected={@form["filter_by_is_active"] == ""}
+              selected={@form.params["filter_by_is_active"] == ""}
               value=""
             >
               Не выбрано
             </option>
             <option 
-              selected={@form["filter_by_is_active"] == "true"} 
+              selected={@form.params["filter_by_is_active"] == "true"} 
               value="true"
             >
               Показать активные
             </option>
             <option 
-              selected={@form["filter_by_is_active"] == "false"} 
+              selected={@form.params["filter_by_is_active"] == "false"} 
               value="false"
             >
               Показать не активные
@@ -132,9 +133,24 @@
             name="sort_by_created"
             phx-value-playlist_id="true"
           >
-            <option selected value="">Не выбрано</option>
-            <option value="DESC">Сначала старые</option>
-            <option value="ASC">Сначала новые</option>
+            <option 
+              selected={@form.params["sort_by_created"] == ""} 
+              value=""
+            >
+              Не выбрано
+            </option>
+            <option 
+              selected={@form.params["sort_by_created"] == "DESC"}
+              value="DESC"
+            >
+              Сначала старые
+            </option>
+            <option 
+              selected={@form.params["sort_by_created"] == "ASC"}
+              value="ASC"
+            >
+              Сначала новые
+            </option>
           </select>
         </div>
         <div>
@@ -146,9 +162,24 @@
             name="sort_by_is_active"
             phx-value-playlist_id="true"
           >
-            <option selected value="">Не выбрано</option>
-            <option value="DESC">Сначала активные</option>
-            <option value="ASC">Сначала не активные</option>
+            <option 
+              value=""
+              selected={@form.params["sort_by_is_active"] == ""}
+            >
+              Не выбрано
+            </option>
+            <option 
+              value="DESC"
+              selected={@form.params["sort_by_is_active"] == "DESC"}
+            >
+              Сначала активные
+            </option>
+            <option 
+              value="ASC"
+              selected={@form.params["sort_by_is_active"] == "ASC"}
+            >
+              Сначала не активные
+            </option>
           </select>
         </div>
       </div>
@@ -162,6 +193,44 @@
         value={@csrf_token}
         required
       />
+      <button 
+        class="mt-7 text-center text-white bg-slate-500 rounded-md p-2 focus:ring-4 focus:outline-none focus:ring-slate-300 hover:bg-slate-800"
+        type="submit"
+      >
+        Применить
+      </button>
+      <button 
+        class="mt-7 text-center text-white bg-amber-500 rounded-md p-2 focus:ring-4 focus:outline-none focus:ring-amber-300 hover:bg-amber-800"
+      >
+        Убрать все фильтры
+      </button>
     </.form>
   <% end %>
+  <table class="table-auto mt-12 w-full text-left">
+    <thead>
+      <tr>
+        <th scope="col" class="px-6 py-3">Хост</th>
+        <th scope="col" class="px-6 py-3">Адрес</th>
+        <th scope="col" class="px-6 py-3">Создано</th>
+        <th scope="col" class="px-6 py-3">Редактировано</th>
+        <th scope="col" class="px-6 py-3">Активность</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for device <- @devices do %>
+        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+          <td class="px-6 py-4"><%= device.ssh_host %></td>
+          <td class="px-6 py-4"><%= device.address %></td>
+          <td class="px-6 py-4"><%= device.created %></td>
+          <td class="px-6 py-4"><%= device.updated %></td>
+          <%= if device.is_active do %>
+            <td class="px-6 py-4 bg-emerald-600 text-white">В сети</td>
+          <% end %>
+          <%= if !device.is_active do %>
+            <td class="px-6 py-4 bg-red-600">Не в сети</td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>

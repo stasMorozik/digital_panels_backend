@@ -15,6 +15,8 @@ defmodule AdminPanelWeb.DevicesLive do
 
     socket = assign(socket, :success, nil)
 
+    socket = assign(socket, :devices, [])
+
     socket = assign(socket, :access_token, access_token)
 
     socket = assign(socket, :csrf_token, csrf_token)
@@ -28,7 +30,9 @@ defmodule AdminPanelWeb.DevicesLive do
       "filter_by_created_t": nil,
       "filter_by_is_active": nil,
       "sort_by_is_active": nil,
-      "sort_by_created": nil
+      "sort_by_created": nil,
+      "page": 1,
+      "limit": 10
     }})
 
     socket = assign(socket, :form, to_form(%{
@@ -38,18 +42,49 @@ defmodule AdminPanelWeb.DevicesLive do
       "filter_by_created_t": "",
       "filter_by_is_active": "",
       "sort_by_is_active": "",
-      "sort_by_created": ""
+      "sort_by_created": "",
+      "page": 1,
+      "limit": 10
     }))
 
+    timer = Process.send_after(self(), :get_list, 500)
+
     {:ok, socket}
+  end
+
+  def handle_info(:get_list, socket) do
+    case Core.Device.UseCases.GettingList.get(
+      Core.User.UseCases.Authorization,
+      PostgresqlAdapters.User.GettingById,
+      PostgresqlAdapters.Device.GettingList,
+      %{
+        token: socket.assigns.access_token,
+        pagination: %{
+          page: 1,
+          limit: 10
+        },
+        filter: %{},
+        sort: %{}
+      }
+    ) do
+      {:ok, devices} -> 
+        socket = assign(socket, :devices, devices)
+        
+        {:noreply, socket}
+
+      {:error, message} -> 
+        socket = assign(socket, :alert, message)
+
+        socket = assign(socket, :success, false)
+
+        {:noreply, socket}
+    end
   end
 
   def handle_event("open_filter", form, socket) do
     socket = assign(socket, :is_showed_filter_form, form["is_open"] == "true")
 
     [{_, "", old_form}] = :ets.lookup(:filter_devices_forms, form["csrf_token"])
-
-    IO.inspect(old_form)
 
     socket = assign(socket, :form, to_form(old_form))
 
@@ -62,5 +97,44 @@ defmodule AdminPanelWeb.DevicesLive do
     :ets.insert(:filter_devices_forms, {form["csrf_token"], "", new_form})
 
     {:noreply, socket}
+  end
+
+  def handle_event("filter", form, socket) do
+    case Core.Device.UseCases.GettingList.get(
+      Core.User.UseCases.Authorization,
+      PostgresqlAdapters.User.GettingById,
+      PostgresqlAdapters.Device.GettingList,
+      %{
+        token: socket.assigns.access_token,
+        pagination: %{
+          page: 1,
+          limit: 10
+        },
+        filter: %{
+          address: form["filter_by_address"]
+        },
+        sort: %{}
+      }
+    ) do
+      {:ok, devices} -> 
+        [{_, "", old_form}] = :ets.lookup(:filter_devices_forms, form["csrf_token"])
+
+        socket = assign(socket, :form, to_form(old_form))
+
+        socket = assign(socket, :devices, devices)
+        
+        {:noreply, socket}
+
+      {:error, message} -> 
+        [{_, "", old_form}] = :ets.lookup(:filter_devices_forms, form["csrf_token"])
+        
+        socket = assign(socket, :alert, message)
+
+        socket = assign(socket, :success, false)
+
+        socket = assign(socket, :form, to_form(old_form))
+
+        {:noreply, socket}
+    end
   end
 end

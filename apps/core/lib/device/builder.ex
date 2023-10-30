@@ -43,7 +43,7 @@ defmodule Core.Device.Builder do
       id: UUID.uuid4(),
       created: Date.utc_today,
       updated: Date.utc_today,
-      is_active: true
+      is_active: false
     })
   end
 
