@@ -36,6 +36,12 @@ defmodule AdminPanelConsumer do
     {:noreply, chan}
   end
 
+  def handle_info({
+    :basic_deliver, payload, %{delivery_tag: tag, redelivered: redelivered}
+  }, chan) do
+    {:noreply, chan}
+  end
+
   defp setup_queue(chan) do
     {:ok, _} = Queue.declare(chan, @queue_error, durable: true)
     {:ok, _} = Queue.declare(
