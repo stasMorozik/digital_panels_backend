@@ -206,7 +206,7 @@
       </button>
     </.form>
   <% end %>
-  <table class="table-auto mt-12 w-full text-left">
+  <table class="table-auto mt-12 w-full text-left text-sm">
     <thead>
       <tr>
         <th scope="col" class="px-6 py-3">Хост</th>
@@ -224,10 +224,14 @@
           <td class="px-6 py-4"><%= device.created %></td>
           <td class="px-6 py-4"><%= device.updated %></td>
           <%= if device.is_active do %>
-            <td class="px-6 py-4 bg-emerald-600 text-white">В сети</td>
+            <td class="px-6 py-4">
+              <div class="bg-emerald-600 text-white p-2">В сети</div>
+            </td>
           <% end %>
           <%= if !device.is_active do %>
-            <td class="px-6 py-4 bg-red-600">Не в сети</td>
+            <td class="px-6 py-4">
+              <div class="bg-red-600 text-white p-2">Не в сети</div>
+            </td>
           <% end %>
         </tr>
       <% end %>

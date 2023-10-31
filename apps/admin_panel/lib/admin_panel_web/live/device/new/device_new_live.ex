@@ -62,33 +62,31 @@ defmodule AdminPanelWeb.DeviceNewLive do
   end
 
   def handle_event("get_playlists", form, socket) do
-    with access_token = Map.get(form, "access_token", ""),
-         csrf_token = Map.get(form, "csrf_token", ""),
-         args = Map.put(%{}, :token, access_token),
-         {:ok, playlists} <- GettingListPlaylistUseCase.get(
-            Authorization, 
-            GettingUser,
-            GettingListPlaylistPostgresAdapter,
-            args
-         ) do
+    args = %{
+      token: socket.assigns.access_token
+    }
 
-      [{_, "", old_form}] = :ets.lookup(:device_new_forms, csrf_token)
+    fun_success = fn (playlists) -> 
+      [{_, "", old_form}] = :ets.lookup(:device_new_forms, form["csrf_token"])
 
       socket = assign(socket, :form, to_form(old_form))
-      
+
       socket = assign(socket, :playlists, playlists)
 
       socket = assign(socket, :is_open_drop_down, true)
 
       {:noreply, socket}
-    else 
-      {:error, message} -> 
-        socket = assign(socket, :success, false)
-
-        socket = assign(socket, :alert, message)
-
-        {:noreply, socket}
     end
+
+    fun_error = fn (message) ->
+      socket = assign(socket, :success, false)
+
+      socket = assign(socket, :alert, message)
+
+      {:noreply, socket}
+    end
+    
+    get_playlists(args, fun_success, fun_error)
   end
 
   def handle_event("change_creating_form", form, socket) do
@@ -100,75 +98,65 @@ defmodule AdminPanelWeb.DeviceNewLive do
   end
 
   def handle_event("change_searching_playlists_form", form, socket) do
-    with access_token = Map.get(form, "access_token", ""),
-         csrf_token = Map.get(form, "csrf_token", ""),
-         searching_value = Map.get(form, "searching_value", ""),
+    with searching_value = Map.get(form, "searching_value", ""),
          searching_value <- String.trim(searching_value),
          true <- searching_value == "",
-         args = Map.put(%{}, :token, access_token),
-         {:ok, playlists} <- GettingListPlaylistUseCase.get(
-            Authorization, 
-            GettingUser,
-            GettingListPlaylistPostgresAdapter,
-            args
-         ) do
+         args = %{
+          token: socket.assigns.access_token
+         },
+         fun_success <- fn (playlists) -> 
+            [{_, "", old_form}] = :ets.lookup(:device_new_forms, form["csrf_token"])
 
-      [{_, "", old_form}] = :ets.lookup(:device_new_forms, csrf_token)
+            socket = assign(socket, :form, to_form(old_form))
 
-      socket = assign(socket, :form, to_form(old_form))
-        
-      socket = assign(socket, :playlists, playlists)
+            socket = assign(socket, :playlists, playlists)
 
-      {:noreply, socket}
+            {:noreply, socket}
+         end,
+         fun_error = fn (message) ->
+            socket = assign(socket, :success, false)
+
+            socket = assign(socket, :alert, message)
+
+            {:noreply, socket}
+         end do
+      get_playlists(args, fun_success, fun_error)
     else
-      false -> 
-        {:noreply, socket}
-      
-      {:error, message} -> 
-        socket = assign(socket, :success, false)
-
-        socket = assign(socket, :alert, message)
-
-        {:noreply, socket}
+      false -> {:noreply, socket}
     end
   end
 
   def handle_event("search_playlists", form, socket) do
-    with access_token = Map.get(form, "access_token", ""),
-         searching_value = Map.get(form, "searching_value", ""),
-         csrf_token = Map.get(form, "csrf_token", ""),
-         args = Map.put(%{}, :token, access_token),
-         args = Map.put(args, :filter, %{
-            name: searching_value
-         }),
-         args = Map.put(args, :pagi, %{
-            page: 1,
-            limit: 100
-         }),
-         {:ok, playlists} <- GettingListPlaylistUseCase.get(
-            Authorization, 
-            GettingUser,
-            GettingListPlaylistPostgresAdapter,
-            args
-         ) do
+    filter = %{
+      name: form["searching_value"]
+    }
+    
+    args = %{
+      token: socket.assigns.access_token,
+      filter: filter
+    }
 
-      [{_, "", old_form}] = :ets.lookup(:device_new_forms, csrf_token)
+    fun_success = fn (playlists) -> 
+      [{_, "", old_form}] = :ets.lookup(:device_new_forms, form["csrf_token"])
 
       socket = assign(socket, :form, to_form(old_form))
 
-      socket = assign(socket, :form_searching, to_form(form))
-
       socket = assign(socket, :playlists, playlists)
 
+      socket = assign(socket, :form_searching, to_form(form))
+
       {:noreply, socket}
-    else 
-      {:error, message} -> 
-        socket = assign(socket, :success, false)
-
-        socket = assign(socket, :alert, message)
-
-        {:noreply, socket}
     end
+
+    fun_error = fn (message) ->
+      socket = assign(socket, :success, false)
+
+      socket = assign(socket, :alert, message)
+
+      {:noreply, socket}
+    end
+    
+    get_playlists(args, fun_success, fun_error)
   end
 
   def handle_event("close_alert", form, socket) do
@@ -213,6 +201,21 @@ defmodule AdminPanelWeb.DeviceNewLive do
     }))
 
     {:noreply, socket}
+  end
+  
+  defp get_playlists(args, fun_success, fun_error) do
+    case GettingListPlaylistUseCase.get(
+      Authorization, 
+      GettingUser,
+      GettingListPlaylistPostgresAdapter,
+      args
+    ) do
+      {:ok, playlists} -> 
+        fun_success.(playlists)
+
+      {:error, message} -> 
+        fun_error.(message)
+    end
   end
 
   def handle_event("create_device", form, socket) do
