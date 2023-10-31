@@ -27,24 +27,14 @@ defmodule AdminPanelWeb.DevicesLive do
 
     socket = assign(socket, :is_showed_filter_form, false)
 
-    :ets.insert(:filter_devices_forms, {csrf_token, "", %{
-      "filter_by_address": nil,
-      "filter_by_ssh_host": nil,
-      "filter_by_created_f": nil,
-      "filter_by_created_t": nil,
-      "filter_by_is_active": nil,
-      "sort_by_is_active": nil,
-      "sort_by_created": nil
-    }})
-
     socket = assign(socket, :form, to_form(%{
-      "filter_by_address": "",
-      "filter_by_ssh_host": "",
-      "filter_by_created_f": "",
-      "filter_by_created_t": "",
-      "filter_by_is_active": "",
-      "sort_by_is_active": "",
-      "sort_by_created": ""
+      filter_by_address: "",
+      filter_by_ssh_host: "",
+      filter_by_created_f: "",
+      filter_by_created_t: "",
+      filter_by_is_active: "",
+      sort_by_is_active: "",
+      sort_by_created: ""
     }))
 
     timer = Process.send_after(self(), :get_list, 500)
@@ -69,9 +59,12 @@ defmodule AdminPanelWeb.DevicesLive do
 
     filter = %{}
 
-    sort =%{}
+    sort = %{}
     
-    pagi = %{page: 1, limit: 10}
+    pagi = %{
+      page: 1, 
+      limit: 10
+    }
 
     args = %{
       token: socket.assigns.access_token,
@@ -86,55 +79,95 @@ defmodule AdminPanelWeb.DevicesLive do
   def handle_event("open_filter", form, socket) do
     socket = assign(socket, :is_showed_filter_form, form["is_open"] == "true")
 
-    [{_, "", old_form}] = :ets.lookup(:filter_devices_forms, form["csrf_token"])
+    socket = assign(socket, :form, socket.assigns.form)
 
-    socket = assign(socket, :form, to_form(old_form))
+    {:noreply, socket}
+  end
+
+  def handle_event("close_alert", form, socket) do
+    socket = assign(socket, :alert, nil)
+
+    socket = assign(socket, :success, nil)
+
+    socket = assign(socket, :form, socket.assigns.form)
 
     {:noreply, socket}
   end
 
   def handle_event("change_filtration_form", form, socket) do
-    new_form = Map.drop(form, ["_target", "access_token", "csrf_token"])
+    new_form = to_form(%{
+      filter_by_address: form["filter_by_address"],
+      filter_by_ssh_host: form["filter_by_ssh_host"],
+      filter_by_created_f: form["filter_by_created_f"],
+      filter_by_created_t: form["filter_by_created_t"],
+      filter_by_is_active: form["filter_by_is_active"],
+      sort_by_is_active: form["sort_by_is_active"],
+      sort_by_created: form["sort_by_created"]
+    })
 
-    :ets.insert(:filter_devices_forms, {form["csrf_token"], "", new_form})
+    socket = assign(socket, :form, new_form)
 
     {:noreply, socket}
   end
 
   def handle_event("filter", form, socket) do
     fun_success = fn (devices) ->
-      [{_, "", old_form}] = :ets.lookup(:filter_devices_forms, form["csrf_token"])
-
-      socket = assign(socket, :form, to_form(old_form))
+      
+      socket = assign(socket, :form, socket.assigns.form)
 
       socket = assign(socket, :devices, devices)
+
+      socket = assign(socket, :is_showed_filter_form, socket.assigns.is_showed_filter_form)
+
+      socket = assign(socket, :page, 1)
 
       {:noreply, socket}
     end
 
     fun_error = fn (message) ->
-      [{_, "", old_form}] = :ets.lookup(:filter_devices_forms, form["csrf_token"])
-
       socket = assign(socket, :alert, message)
 
       socket = assign(socket, :success, false)
 
-      socket = assign(socket, :form, to_form(old_form))
+      socket = assign(socket, :form, socket.assigns.form)
+
+      socket = assign(socket, :is_showed_filter_form, socket.assigns.is_showed_filter_form)
 
       {:noreply, socket}
     end
+    
+    filter_by_created_f = form["filter_by_created_f"]
+    
+    filter_by_created_f = case Date.from_iso8601(filter_by_created_f) do
+      {:ok, filter_by_created_f} -> filter_by_created_f
+      {:error, _} -> nil
+    end
+
+    filter_by_created_t = form["filter_by_created_t"]
+
+    filter_by_created_t = case Date.from_iso8601(filter_by_created_t) do
+      {:ok, filter_by_created_t} -> filter_by_created_t
+      {:error, _} -> nil
+    end
+
+    filter_by_is_active = get_field_from_form(form, "filter_by_is_active")
+
+    filter_by_is_active = case filter_by_is_active do
+      nil -> nil
+      string_bool -> string_to_bol(string_bool)
+    end
 
     filter = %{
-      address: form["filter_by_address"],
-      ssh_host: form["filter_by_ssh_host"],
-      is_active: form["filter_by_is_active"],
-      created_f: form["filter_by_created_f"],
-      created_t: form["filter_by_created_t"],
+      address: get_field_from_form(form, "filter_by_address"),
+      ssh_host: get_field_from_form(form, "filter_by_ssh_host"),
+      is_active: filter_by_is_active,
+      created_f: filter_by_created_f,
+      created_t: filter_by_created_t,
     }
 
     sort = %{
-      is_active: form["sort_by_is_active"],
-      created: form["sort_by_created"],
+      is_active: get_field_from_form(form, "sort_by_is_active"),
+      created: get_field_from_form(form, "sort_by_created"),
     }
 
     pagi = %{
@@ -153,15 +186,115 @@ defmodule AdminPanelWeb.DevicesLive do
   end
 
   def handle_event("page_next", form, socket) do
-    socket = assign(socket, :is_showed_filter_form, socket.assigns.is_showed_filter_form)
+    change_page("page_next", form, socket)
+  end
 
-    [{_, "", old_form}] = :ets.lookup(:filter_devices_forms, form["csrf_token"])
+  def handle_event("page_prev", form, socket) do
+    case String.to_integer(form["page"]) > 1 do
+      true -> change_page("page_prev", form, socket)
+      false -> {:noreply, socket}
+    end
+  end
+
+  defp change_page(action, form, socket) do
+    fun_success = fn (devices) ->
+      socket = case length(devices) > 0 do
+        true ->
+          socket = case action do
+            "page_next" -> assign(socket, :page, String.to_integer(form["page"]) + 1)
+            "page_prev" -> assign(socket, :page, String.to_integer(form["page"]) - 1)
+          end
+
+          assign(socket, :devices, devices)
+          
+        false -> socket
+      end
+
+      socket = assign(socket, :form, socket.assigns.form)
+
+      socket = assign(socket, :is_showed_filter_form, socket.assigns.is_showed_filter_form)
+
+      {:noreply, socket}
+    end
+
+    fun_error = fn (message) ->
+      socket = assign(socket, :alert, message)
+
+      socket = assign(socket, :success, false)
+
+      socket = assign(socket, :is_showed_filter_form, socket.assigns.is_showed_filter_form)
+
+      socket = assign(socket, :form, socket.assigns.form)
+
+      {:noreply, socket}
+    end
+
+    filter_by_created_f = socket.assigns.form.params.filter_by_created_f
     
-    socket = assign(socket, :page, String.to_integer(form["page"]) + 1)
+    filter_by_created_f = case Date.from_iso8601(filter_by_created_f) do
+      {:ok, filter_by_created_f} -> filter_by_created_f
+      {:error, _} -> nil
+    end
 
-    socket = assign(socket, :form, to_form(old_form))
+    filter_by_created_t = socket.assigns.form.params.filter_by_created_t
 
-    {:noreply, socket}
+    filter_by_created_t = case Date.from_iso8601(filter_by_created_t) do
+      {:ok, filter_by_created_t} -> filter_by_created_t
+      {:error, _} -> nil
+    end
+    
+    filter_by_is_active = get_field_from_form(socket.assigns.form.params, :filter_by_is_active)
+
+    filter_by_is_active = case filter_by_is_active do
+      nil -> nil
+      string_bool -> string_to_bol(string_bool)
+    end
+
+    filter = %{
+      address: get_field_from_form(socket.assigns.form.params, :filter_by_address),
+      ssh_host: get_field_from_form(socket.assigns.form.params, :filter_by_ssh_host),
+      is_active: filter_by_is_active,
+      created_f: filter_by_created_f,
+      created_t: filter_by_created_t,
+    }
+
+    sort = %{
+      is_active: get_field_from_form(socket.assigns.form.params, :sort_by_is_active),
+      created: get_field_from_form(socket.assigns.form.params, :sort_by_created),
+    }
+
+    pagi = %{
+      page: case action do 
+        "page_next" -> String.to_integer(form["page"]) + 1
+        "page_prev" -> String.to_integer(form["page"]) - 1
+      end,
+      limit: 10
+    }
+
+    args = %{
+      token: socket.assigns.access_token,
+      pagi: pagi,
+      filter: filter,
+      sort: sort
+    }
+
+    get_playlist(args, fun_success, fun_error)
+  end
+
+  defp string_to_bol(str) do
+    case str do
+      "true" -> true
+      "false" -> false
+    end
+  end
+
+  defp get_field_from_form(form, field) do
+    value = form[field]
+  
+    case value == "" do
+      true -> nil
+      false -> value
+    end 
   end
 
   defp get_playlist(args, fun_success, fun_error) do

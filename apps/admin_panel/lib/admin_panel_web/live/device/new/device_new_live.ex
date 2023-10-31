@@ -96,7 +96,7 @@ defmodule AdminPanelWeb.DeviceNewLive do
   end
 
   def handle_event("change_searching_playlists_form", form, socket) do
-    with searching_value = Map.get(form, "searching_value", ""),
+    with searching_value = form["searching_value"],
          searching_value <- String.trim(searching_value),
          true <- searching_value == "",
          args = %{
@@ -205,6 +205,10 @@ defmodule AdminPanelWeb.DeviceNewLive do
   end
   
   defp get_playlists(args, fun_success, fun_error) do
+    args = Map.put(args, :sort, %{
+      name: "asc"
+    })
+
     case GettingListPlaylistUseCase.get(
       Authorization, 
       GettingUser,

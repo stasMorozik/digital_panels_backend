@@ -87,17 +87,17 @@
               placeholder="Поиск плэйлиста"
             />
         </.form>
-        <div class="h-full h-3/4 overflow-y-auto">
+        <div class="h-3/4 overflow-y-auto">
           <%= for playlist <- @playlists do %>
-            <button 
-              class="text-white bg-slate-400 rounded-md p-2 focus:ring-4 focus:outline-none focus:ring-slate-200 hover:bg-slate-500 w-1/4 w-full text-left mt-2"
-              phx-click="select_device"
-              phx-value-csrf_token={@csrf_token}
-              phx-value-playlist_name={playlist.name}
-              phx-value-playlist_id={playlist.id}
-            >
-              <%= playlist.name %>
-            </button>
+            <div class="mt-2">
+              <AdminPanelWeb.Components.Presentation.Buttons.ButtonGray.c 
+                phx-click="select_device"
+                phx-value-csrf_token={@csrf_token}
+                phx-value-playlist_name={playlist.name}
+                phx-value-playlist_id={playlist.id}
+                text={playlist.name}
+              />
+            </div>
           <% end %>
         </div>
       </div>
