@@ -34,6 +34,11 @@ config :http_adapters,
   user: "user",
   password: "12345"
 
+config :consumer,
+  user: "user",
+  password: "12345",
+  host: "127.0.0.1"
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed

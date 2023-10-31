@@ -50,6 +50,7 @@ defmodule AdminPanel.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:ex_fontawesome, "~> 0.7.2"},
+      {:amqp, "~> 3.3"},
       {:core, in_umbrella: true},
       {:postgresql_adapters, in_umbrella: true},
       {:smtp_adapters, in_umbrella: true},

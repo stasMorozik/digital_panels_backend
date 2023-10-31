@@ -110,6 +110,68 @@ defmodule AdminPanelWeb.DevicesLive do
     {:noreply, socket}
   end
 
+  def handle_event("cancel_filter", form, socket) do
+    fun_success = fn (devices) ->
+      
+      socket = assign(socket, :form, to_form(%{
+        filter_by_address: "",
+        filter_by_ssh_host: "",
+        filter_by_created_f: "",
+        filter_by_created_t: "",
+        filter_by_is_active: "",
+        sort_by_is_active: "",
+        sort_by_created: ""
+      }))
+
+      socket = assign(socket, :devices, devices)
+
+      socket = assign(socket, :is_showed_filter_form, socket.assigns.is_showed_filter_form)
+
+      socket = assign(socket, :page, 1)
+
+      {:noreply, socket}
+    end
+
+    fun_error = fn (message) ->
+      socket = assign(socket, :alert, message)
+
+      socket = assign(socket, :success, false)
+
+      socket = assign(socket, :form, socket.assigns.form)
+
+      socket = assign(socket, :is_showed_filter_form, socket.assigns.is_showed_filter_form)
+
+      {:noreply, socket}
+    end
+
+    filter = %{
+      address: nil,
+      ssh_host: nil,
+      is_active: nil,
+      created_f: nil,
+      created_t: nil,
+    }
+
+    sort = %{
+      is_active: nil,
+      created: nil,
+    }
+
+    pagi = %{
+      page: 1,
+      limit: 10
+    }
+
+    args = %{
+      token: socket.assigns.access_token,
+      pagi: pagi,
+      filter: filter,
+      sort: sort
+    }
+
+    get_playlist(args, fun_success, fun_error)
+  end
+
   def handle_event("filter", form, socket) do
     fun_success = fn (devices) ->
       
@@ -194,6 +256,10 @@ defmodule AdminPanelWeb.DevicesLive do
       true -> change_page("page_prev", form, socket)
       false -> {:noreply, socket}
     end
+  end
+
+  def terminate(reason, socket) do
+    reason
   end
 
   defp change_page(action, form, socket) do

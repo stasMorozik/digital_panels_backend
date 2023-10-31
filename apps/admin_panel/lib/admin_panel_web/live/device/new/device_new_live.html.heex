@@ -38,7 +38,7 @@
       <label class="mb-3 block text-zinc-950">
         Плэйлист
       </label>
-      <div class="border border-slate rounded-lg p-2 flex justify-between items-center">
+      <div class="border border-gray-300 rounded-lg p-2 flex justify-between items-center">
         <div><%= @selected_playlist %></div>
         <AdminPanelWeb.Components.Presentation.Buttons.ButtonDown.c 
           type="button"
@@ -54,7 +54,7 @@
       <label class="mb-3 block text-zinc-950">
         Плэйлист
       </label>
-      <div class="border border-slate rounded-lg p-2 flex justify-between items-center">
+      <div class="border border-gray-300 rounded-lg p-2 flex justify-between items-center">
         <div><%= @selected_playlist %></div>
         <AdminPanelWeb.Components.Presentation.Buttons.ButtonUp.c 
           phx-click="close_drop_down"
@@ -62,7 +62,7 @@
         />
       </div>
       <div 
-        class="absolute bg-white border border-slate w-full p-2 rounded-lg mt-1 z-20 h-72"
+        class="absolute bg-white border-r border-l border-b border-slate-300 w-full p-2 rounded-bl-lg rounded-br-lg z-20 h-72"
       >
         <.form 
           for={@form_searching} 

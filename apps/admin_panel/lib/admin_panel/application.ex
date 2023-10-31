@@ -18,8 +18,11 @@ defmodule AdminPanel.Application do
       # {AdminPanel.Worker, arg}
     ]
 
+    {:ok, pid} = AdminPanelConsumer.start_link()
+
     :ets.new(:access_tokens, [:set, :public, :named_table])
     :ets.new(:refresh_tokens, [:set, :public, :named_table])
+    :ets.new(:admin_sockets, [:set, :public, :named_table])
     :ets.new(:connections, [:set, :public, :named_table])
 
     {:ok, pid} = Postgrex.start_link(
@@ -36,8 +39,6 @@ defmodule AdminPanel.Application do
     Supervisor.start_link(children, opts)
   end
 
-  # Tell Phoenix to update the endpoint configuration
-  # whenever the application is updated.
   @impl true
   def config_change(changed, _new, removed) do
     AdminPanelWeb.Endpoint.config_change(changed, removed)
