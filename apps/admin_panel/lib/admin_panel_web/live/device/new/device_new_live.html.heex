@@ -81,7 +81,7 @@
             />
             <AdminPanelWeb.Components.Presentation.Inputs.Text.c
               field={@form_searching[:searching_value]}
-              value={@form_searching.params["searching_value"]}
+              value={@form_searching.params.searching_value}
               autofocus
               autocomplete="off"
               placeholder="Поиск плэйлиста"
@@ -116,13 +116,13 @@
     />
     <AdminPanelWeb.Components.Presentation.Inputs.Hidden.c
       field={@form[:playlist_id]}
-      value={@form.params["playlist_id"]}
+      value={@form.params.playlist_id}
       required
     />
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:address]}
-      value={@form.params["address"]}
+      value={@form.params.address}
       required
       autocomplete="off"
       label="Адрес"
@@ -131,7 +131,7 @@
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:latitude]}
-      value={@form.params["latitude"]}
+      value={@form.params.latitude}
       required
       autocomplete="off"
       label="Широта"
@@ -140,7 +140,7 @@
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:longitude]}
-      value={@form.params["longitude"]}
+      value={@form.params.longitude}
       required
       autocomplete="off"
       label="Долгота"
@@ -149,7 +149,7 @@
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:ssh_port]}
-      value={@form.params["ssh_port"]}
+      value={@form.params.ssh_port}
       required
       autocomplete="off"
       placeholder="Порт для подключения по SSH"
@@ -158,7 +158,7 @@
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:ssh_host]}
-      value={@form.params["ssh_host"]}
+      value={@form.params.ssh_host}
       required
       autocomplete="off"
       placeholder="Хост для подключения по SSH"
@@ -167,7 +167,7 @@
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:ssh_user]}
-      value={@form.params["ssh_user"]}
+      value={@form.params.ssh_user}
       required
       autocomplete="off"
       placeholder="Пользователь для подключения по SSH"
@@ -176,7 +176,7 @@
     <br>
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:ssh_password]}
-      value={@form.params["ssh_password"]}
+      value={@form.params.ssh_password}
       required
       autocomplete="off"
       placeholder="Пароль для подключения по SSH"

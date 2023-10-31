@@ -38,7 +38,7 @@
     />
     <AdminPanelWeb.Components.Presentation.Inputs.Text.c
       field={@form[:name]}
-      value={@form.params["name"]}
+      value={@form.params.name}
       required
       autocomplete="off"
       label="Название"
@@ -67,6 +67,7 @@
             </figure>
             <AdminPanelWeb.Components.Presentation.Inputs.Text.c
               field={@form[entry.ref]}
+              value={Map.get(@form.params, String.to_atom(entry.ref))}
               required
               autocomplete="off"
               placeholder="Время показа"

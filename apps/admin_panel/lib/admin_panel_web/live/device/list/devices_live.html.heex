@@ -55,10 +55,10 @@
       phx-change="change_filtration_form"
       class="mt-12"
     > 
-      <div class="mt-4 text-zinc-950">Фильтрация</div>
+      <div class="mt-4 text-slate-800">Фильтрация</div>
       <div class="grid gap-3 grid-cols-3 mt-3 border border-slate p-5 rounded-md">
         <div>
-          <label class="mb-3 block text-zinc-950">
+          <label class="mb-3 block text-slate-800">
             По дате создания
           </label>
           <div class="flex items-center justify-between">
@@ -93,7 +93,7 @@
           />
         </div>
         <div>
-          <label class="mb-3 block text-zinc-950">
+          <label class="mb-3 block text-slate-800">
             По активности
           </label>
           <select 
@@ -122,10 +122,10 @@
           </select>
         </div>
       </div>
-      <div class="mt-4 text-zinc-950">Сортировка</div>
+      <div class="mt-4 text-slate-800">Сортировка</div>
       <div class="grid gap-3 grid-cols-3 mt-3 border border-slate p-5 rounded-md">
         <div>
-          <label class="mb-3 block text-zinc-950">
+          <label class="mb-3 block text-slate-800">
             По дате создания
           </label>
           <select 
@@ -154,7 +154,7 @@
           </select>
         </div>
         <div>
-          <label class="mb-3 block text-zinc-950">
+          <label class="mb-3 block text-slate-800">
             По активности
           </label>
           <select 
@@ -237,4 +237,23 @@
       <% end %>
     </tbody>
   </table>
+  <div class="flex items-center justify-start mt-8">
+    <button
+      phx-click="page_prev" 
+      phx-value-csrf_token={@csrf_token}
+      phx-value-page={@page}
+    >
+      <FontAwesome.LiveView.icon name="caret-left" type="solid" class="h-4 w-4"/>
+    </button>
+    <div class="ms-3 me-3">
+      <%= @page %>
+    </div>
+    <button 
+      phx-click="page_next" 
+      phx-value-csrf_token={@csrf_token}
+      phx-value-page={@page}
+    >
+      <FontAwesome.LiveView.icon name="caret-right" type="solid" class="h-4 w-4"/>
+    </button>
+  </div>
 </div>

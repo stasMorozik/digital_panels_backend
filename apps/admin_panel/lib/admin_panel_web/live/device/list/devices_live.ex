@@ -21,6 +21,10 @@ defmodule AdminPanelWeb.DevicesLive do
 
     socket = assign(socket, :csrf_token, csrf_token)
 
+    socket = assign(socket, :page, 1)
+
+    socket = assign(socket, :limit, 10)
+
     socket = assign(socket, :is_showed_filter_form, false)
 
     :ets.insert(:filter_devices_forms, {csrf_token, "", %{
@@ -30,9 +34,7 @@ defmodule AdminPanelWeb.DevicesLive do
       "filter_by_created_t": nil,
       "filter_by_is_active": nil,
       "sort_by_is_active": nil,
-      "sort_by_created": nil,
-      "page": 1,
-      "limit": 10
+      "sort_by_created": nil
     }})
 
     socket = assign(socket, :form, to_form(%{
@@ -42,9 +44,7 @@ defmodule AdminPanelWeb.DevicesLive do
       "filter_by_created_t": "",
       "filter_by_is_active": "",
       "sort_by_is_active": "",
-      "sort_by_created": "",
-      "page": 1,
-      "limit": 10
+      "sort_by_created": ""
     }))
 
     timer = Process.send_after(self(), :get_list, 500)
@@ -150,6 +150,18 @@ defmodule AdminPanelWeb.DevicesLive do
     }
 
     get_playlist(args, fun_success, fun_error)
+  end
+
+  def handle_event("page_next", form, socket) do
+    socket = assign(socket, :is_showed_filter_form, socket.assigns.is_showed_filter_form)
+
+    [{_, "", old_form}] = :ets.lookup(:filter_devices_forms, form["csrf_token"])
+    
+    socket = assign(socket, :page, String.to_integer(form["page"]) + 1)
+
+    socket = assign(socket, :form, to_form(old_form))
+
+    {:noreply, socket}
   end
 
   defp get_playlist(args, fun_success, fun_error) do

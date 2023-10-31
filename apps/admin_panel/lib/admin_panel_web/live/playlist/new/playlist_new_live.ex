@@ -27,10 +27,6 @@ defmodule AdminPanelWeb.PlaylistNewLive do
       name: ""
     }))
 
-    :ets.insert(:device_new_forms, {csrf_token, "", %{
-      "name": nil
-    }})
-
     socket = socket
       |> assign(:uploaded_files, [])
       |> allow_upload(:image, accept: ~w(.jpg .jpeg .png .gif .avif), max_entries: 100)
@@ -49,11 +45,18 @@ defmodule AdminPanelWeb.PlaylistNewLive do
   def handle_event("change", form, socket) do
     form = Map.drop(form, ["_target"])
 
-    form = to_form(form)
+    list_form = Map.to_list(form)
 
-    :ets.insert(:device_new_forms, {form["csrf_token"], "", form})
-    
-    socket = assign(socket, :form, form)
+    list_form = Enum.map(list_form, fn {key, value} -> {
+      String.to_atom(key),
+      value
+    } end)
+
+    new_form = Enum.reduce(list_form, %{}, fn {key, value}, acc -> Map.put(acc, key, value) end)
+
+    new_form = to_form(new_form)
+
+    socket = assign(socket, :form, to_form(new_form))
 
     {:noreply, socket}
   end
@@ -89,6 +92,7 @@ defmodule AdminPanelWeb.PlaylistNewLive do
     uploaded_files = consume_uploaded_entries(socket, :image, fn %{path: path}, entry ->
       dest = "/tmp/#{entry.client_name}"
       File.cp!(path, dest)
+      
       {:ok, Path.basename(dest)}
     end)
 
@@ -96,10 +100,10 @@ defmodule AdminPanelWeb.PlaylistNewLive do
     socket = update(socket, :uploaded_files, &(&1 ++ uploaded_files))
 
     args = %{
-      name: Map.get(form, "name", ""),
+      name: form["name"],
       contents: contents,
       web_dav_url: Application.fetch_env!(:core, :web_dav_url),
-      token: Map.get(form, "access_token", "")
+      token: form["access_token"]
     }
 
     case Creating.create(

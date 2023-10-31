@@ -16,17 +16,6 @@ defmodule AdminPanelWeb.DeviceNewLive do
 
     [{_, "", access_token}] = :ets.lookup(:access_tokens, csrf_token)
 
-    :ets.insert(:device_new_forms, {csrf_token, "", %{
-      "address": nil,
-      "ssh_port": nil,
-      "ssh_host": nil,
-      "ssh_user": nil,
-      "ssh_password": nil,
-      "longitude": nil,
-      "latitude": nil,
-      "playlist_id": nil
-    }})
-
     socket = assign(socket, :current_page, "devices")
 
     socket = assign(socket, :playlists, [])
@@ -44,18 +33,18 @@ defmodule AdminPanelWeb.DeviceNewLive do
     socket = assign(socket, :selected_playlist, "")
 
     socket = assign(socket, :form, to_form(%{
-      "address": nil,
-      "ssh_port": nil,
-      "ssh_host": nil,
-      "ssh_user": nil,
-      "ssh_password": nil,
-      "longitude": nil,
-      "latitude": nil,
-      "playlist_id": nil
+      address: nil,
+      ssh_port: nil,
+      ssh_host: nil,
+      ssh_user: nil,
+      ssh_password: nil,
+      longitude: nil,
+      latitude: nil,
+      playlist_id: nil
     }))
 
     socket = assign(socket, :form_searching, to_form(%{
-      "searching_value": ""
+      searching_value: ""
     }))
 
     {:ok, socket}
@@ -67,10 +56,8 @@ defmodule AdminPanelWeb.DeviceNewLive do
     }
 
     fun_success = fn (playlists) -> 
-      [{_, "", old_form}] = :ets.lookup(:device_new_forms, form["csrf_token"])
-
-      socket = assign(socket, :form, to_form(old_form))
-
+      socket = assign(socket, :form, socket.assigns.form)
+      
       socket = assign(socket, :playlists, playlists)
 
       socket = assign(socket, :is_open_drop_down, true)
@@ -92,7 +79,18 @@ defmodule AdminPanelWeb.DeviceNewLive do
   def handle_event("change_creating_form", form, socket) do
     new_form = Map.drop(form, ["_target", "access_token", "csrf_token"])
 
-    :ets.insert(:device_new_forms, {form["csrf_token"], "", new_form})
+    new_form = to_form(%{
+      address: new_form["address"],
+      ssh_port: new_form["ssh_port"],
+      ssh_host: new_form["ssh_host"],
+      ssh_user: new_form["ssh_user"],
+      ssh_password: new_form["ssh_password"],
+      longitude: new_form["longitude"],
+      latitude: new_form["latitude"],
+      playlist_id: new_form["playlist_id"]
+    })
+
+    socket = assign(socket, :form, new_form)
 
     {:noreply, socket}
   end
@@ -105,9 +103,7 @@ defmodule AdminPanelWeb.DeviceNewLive do
           token: socket.assigns.access_token
          },
          fun_success <- fn (playlists) -> 
-            [{_, "", old_form}] = :ets.lookup(:device_new_forms, form["csrf_token"])
-
-            socket = assign(socket, :form, to_form(old_form))
+            socket = assign(socket, :form, socket.assigns.form)
 
             socket = assign(socket, :playlists, playlists)
 
@@ -137,13 +133,15 @@ defmodule AdminPanelWeb.DeviceNewLive do
     }
 
     fun_success = fn (playlists) -> 
-      [{_, "", old_form}] = :ets.lookup(:device_new_forms, form["csrf_token"])
-
-      socket = assign(socket, :form, to_form(old_form))
+      socket = assign(socket, :form, socket.assigns.form)
 
       socket = assign(socket, :playlists, playlists)
 
-      socket = assign(socket, :form_searching, to_form(form))
+      new_form = to_form(%{
+        searching_value: form["searching_value"]
+      })
+
+      socket = assign(socket, :form_searching, to_form(new_form))
 
       {:noreply, socket}
     end
@@ -164,40 +162,43 @@ defmodule AdminPanelWeb.DeviceNewLive do
 
     socket = assign(socket, :success, nil)
 
-    [{_, "", old_form}] = :ets.lookup(:device_new_forms, form["csrf_token"])
-
-    socket = assign(socket, :form, to_form(old_form))
+    socket = assign(socket, :form, socket.assigns.form)
 
     {:noreply, socket}
   end
 
   def handle_event("close_drop_down", form, socket) do
-    [{_, "", old_form}] = :ets.lookup(:device_new_forms, form["csrf_token"])
-
-    socket = assign(socket, :form, to_form(old_form))
+    socket = assign(socket, :form, socket.assigns.form)
 
     socket = assign(socket, :is_open_drop_down, false)
 
     socket = assign(socket, :form_searching, to_form(%{
-      "searching_value": ""
+      searching_value: ""
     }))
 
     {:noreply, socket}
   end
 
   def handle_event("select_device", form, socket) do
-    [{_, "", old_form}] = :ets.lookup(:device_new_forms, form["csrf_token"])
-
     socket = assign(socket, :is_open_drop_down, false)
 
     socket = assign(socket, :selected_playlist, form["playlist_name"])
 
-    old_form = Map.put(old_form, "playlist_id", form["playlist_id"])
+    new_form = to_form(%{
+      address: socket.assigns.form.params.address,
+      ssh_port: socket.assigns.form.params.ssh_port,
+      ssh_host: socket.assigns.form.params.ssh_host,
+      ssh_user: socket.assigns.form.params.ssh_user,
+      ssh_password: socket.assigns.form.params.ssh_password,
+      longitude: socket.assigns.form.params.longitude,
+      latitude: socket.assigns.form.params.latitude,
+      playlist_id: form["playlist_id"]
+    })
 
-    socket = assign(socket, :form, to_form(old_form))
+    socket = assign(socket, :form, to_form(new_form))
 
     socket = assign(socket, :form_searching, to_form(%{
-      "searching_value": ""
+      searching_value: ""
     }))
 
     {:noreply, socket}
@@ -219,14 +220,29 @@ defmodule AdminPanelWeb.DeviceNewLive do
   end
 
   def handle_event("create_device", form, socket) do
+    ssh_port = case Integer.parse(Map.get(form, "ssh_port", "")) do
+      {integer, _} -> integer
+      :error -> -1
+    end
+
+    longitude = case Integer.parse(Map.get(form, "longitude", "")) do
+      {integer, _} -> integer
+      :error -> -1
+    end
+
+    latitude = case Integer.parse(Map.get(form, "latitude", "")) do
+      {integer, _} -> integer
+      :error -> -1
+    end
+
     args = %{
-      ssh_port: String.to_integer( Map.get(form, "ssh_port", "") ),
+      ssh_port: ssh_port,
       ssh_host: Map.get(form, "ssh_host", ""),
       ssh_user: Map.get(form, "ssh_user", ""),
       ssh_password: Map.get(form, "ssh_password", ""),
       address: Map.get(form, "address", ""),
-      longitude: String.to_float(Map.get(form, "longitude", "")),
-      latitude: String.to_float(Map.get(form, "latitude", "")),
+      longitude: longitude,
+      latitude: latitude,
       playlist_id: Map.get(form, "playlist_id", ""),
       token: Map.get(form, "access_token", "")
     }
@@ -243,34 +259,21 @@ defmodule AdminPanelWeb.DeviceNewLive do
         socket = assign(socket, :alert, "Устройство успешно добавлено")
         socket = assign(socket, :selected_playlist, "")
         socket = assign(socket, :form, to_form(%{
-          "address": nil,
-          "ssh_port": nil,
-          "ssh_host": nil,
-          "ssh_user": nil,
-          "ssh_password": nil,
-          "longitude": nil,
-          "latitude": nil,
-          "playlist_id": nil
+          address: nil,
+          ssh_port: nil,
+          ssh_host: nil,
+          ssh_user: nil,
+          ssh_password: nil,
+          longitude: nil,
+          latitude: nil,
+          playlist_id: nil
         }))
-
-        :ets.insert(:device_new_forms, {form["csrf_token"], "", %{
-          "address": nil,
-          "ssh_port": nil,
-          "ssh_host": nil,
-          "ssh_user": nil,
-          "ssh_password": nil,
-          "longitude": nil,
-          "latitude": nil,
-          "playlist_id": nil
-        }})
 
         {:noreply, socket}
       {:error, message} -> 
-        [{_, "", old_form}] = :ets.lookup(:device_new_forms, form["csrf_token"])
-
         socket = assign(socket, :success, false)
         socket = assign(socket, :alert, message)
-        socket = assign(socket, :form, to_form(old_form))
+        socket = assign(socket, :form, socket.assigns.form)
 
         {:noreply, socket}
     end
