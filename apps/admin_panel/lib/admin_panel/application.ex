@@ -7,7 +7,10 @@ defmodule AdminPanel.Application do
       AdminPanelWeb.Telemetry,
       {Phoenix.PubSub, name: AdminPanel.PubSub},
       AdminPanelWeb.Endpoint,
-      AdminPanelConsumer,
+      %{
+        id: AdminPanelConsumer,
+        start: {AdminPanelConsumer, :start_link, []}
+      },
       %{
         id: AdminPanelDB,
         start: {AdminPanelDB, :start_link, []}

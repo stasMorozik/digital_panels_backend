@@ -2,7 +2,7 @@ defmodule AdminPanelConsumer do
   use GenServer
   use AMQP
 
-  def start_link(_) do
+  def start_link do
     GenServer.start_link(__MODULE__, [], [])
   end
 
@@ -30,9 +30,7 @@ defmodule AdminPanelConsumer do
     {:ok, chan}
   end
 
-  def handle_info({
-    :basic_consume_ok, %{consumer_tag: consumer_tag}
-  }, chan) do
+  def handle_info({:basic_consume_ok, %{consumer_tag: consumer_tag}}, chan) do
     {:noreply, chan}
   end
 
@@ -53,13 +51,7 @@ defmodule AdminPanelConsumer do
          true <- is_boolean(status),
          {:ok, _} <- UUID.info(id) do
 
-      [{_, "", list}] = :ets.lookup(:admin_sockets, "pids")
-
-      Enum.map(list, fn pid -> 
-        if Process.alive?(pid) == true do
-          send(pid, {:change_activity, %{id: id, is_active: status}})
-        end
-      end)
+      IO.inspect(decode_payload)
 
       {:noreply, chan}
     else
