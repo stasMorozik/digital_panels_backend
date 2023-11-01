@@ -47,8 +47,6 @@ defmodule AdminPanelConsumer do
   }, chan) do
     with {:ok, decode_payload} <- Jason.decode(payload),
          {:ok, id} <- Map.fetch(decode_payload, "id"),
-         {:ok, status} <- Map.fetch(decode_payload, "is_active"),
-         true <- is_boolean(status),
          {:ok, _} <- UUID.info(id) do
 
       IO.inspect(decode_payload)
@@ -57,7 +55,6 @@ defmodule AdminPanelConsumer do
     else
       {:error, _} -> {:noreply, chan}
       :error -> {:noreply, chan}
-      false -> {:noreply, chan}
     end
   end
 
