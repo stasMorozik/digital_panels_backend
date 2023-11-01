@@ -37,9 +37,37 @@ defmodule AdminPanelWeb.DevicesLive do
       sort_by_created: ""
     }))
 
+    [{_, "", list}] = :ets.lookup(:admin_sockets, "pids")
+
+    list = list ++ [self()]
+
+    :ets.insert(:admin_sockets, {"pids", "", list})
+
     timer = Process.send_after(self(), :get_list, 500)
 
     {:ok, socket}
+  end
+
+  def terminate(reason, _socket) do
+    [{_, "", list}] = :ets.lookup(:admin_sockets, "pids")
+
+    :ets.insert(:admin_sockets, {"pids", "", list})
+
+    reason
+  end
+
+  def handle_info({:change_activity, payload}, socket) do
+    devices = Enum.map(socket.assigns.devices, fn (device) ->
+      if device.id == payload.id do
+        Map.put(device, :is_active, payload.is_active)
+      else
+        device
+      end
+    end)
+
+    socket = assign(socket, :devices, devices)
+
+    {:noreply, socket}
   end
 
   def handle_info(:get_list, socket) do
@@ -256,10 +284,6 @@ defmodule AdminPanelWeb.DevicesLive do
       true -> change_page("page_prev", form, socket)
       false -> {:noreply, socket}
     end
-  end
-
-  def terminate(reason, socket) do
-    reason
   end
 
   defp change_page(action, form, socket) do

@@ -51,6 +51,7 @@ defmodule AdminPanel.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:ex_fontawesome, "~> 0.7.2"},
       {:amqp, "~> 3.3"},
+      {:uuid, "~> 1.1"},
       {:core, in_umbrella: true},
       {:postgresql_adapters, in_umbrella: true},
       {:smtp_adapters, in_umbrella: true},
@@ -58,12 +59,6 @@ defmodule AdminPanel.MixProject do
     ]
   end
 
-  # Aliases are shortcuts or tasks specific to the current project.
-  # For example, to install project dependencies and perform other setup tasks, run:
-  #
-  #     $ mix setup
-  #
-  # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
       setup: ["deps.get", "assets.setup", "assets.build"],
