@@ -1,19 +1,19 @@
-defmodule Core.Device.UseCases.Getting do
+defmodule Core.Playlist.UseCases.Getting do
   @moduledoc """
-    Юзекейз получения устройства
+    Юзекейз получения плэйлиста
   """
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
   alias Core.Shared.Types.Exception
 
-  alias Core.Device.Types.Filter
-  alias Core.Device.Types.Sort
+  alias Core.Playlist.Types.Filter
+  alias Core.Playlist.Types.Sort
   
   alias Core.User.UseCases.Authorization
   alias User.Ports.Getter, as: GetterUser
 
-  alias Core.Device.Ports.Getter
+  alias Core.Playlist.Ports.Getter
 
   @spec get(
     Authorization.t(),
@@ -39,9 +39,9 @@ defmodule Core.Device.UseCases.Getting do
          {:ok, device} <- getter.get(Map.get(args, :id, "")) do
       Success.new(device)
     else
-      false -> Error.new("Не валидные аргументы для получения устройства")
+      false -> Error.new("Не валидные аргументы для получения плэйлиста")
       {:error, message} -> {:error, message}
-      :error -> Error.new("Не валидный UUID устройства: #{Map.get(args, :id)}")
+      :error -> Error.new("Не валидный UUID плэйлиста: #{Map.get(args, :id)}")
       {:exception, message} -> {:exception, message}
     end
   end
