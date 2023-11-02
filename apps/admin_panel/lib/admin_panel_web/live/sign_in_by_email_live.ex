@@ -101,8 +101,6 @@ defmodule AdminPanelWeb.SignInByEmailLive do
 
         email = Map.get(form, "email")
 
-        Logger.info("Sent confirmation code to #{email}")
-
         {
           :noreply,
           assign(socket, :state, %{
@@ -113,9 +111,6 @@ defmodule AdminPanelWeb.SignInByEmailLive do
           })
         }
       {:error, message} ->
-
-        Logger.notice("#{message}")
-
         {
           :noreply,
           assign(socket, :state, %{
@@ -139,20 +134,14 @@ defmodule AdminPanelWeb.SignInByEmailLive do
 
         args = %{email: email}
 
-        Logger.info("Success confirmation email by #{email} and #{code}")
-
         case Authentication.auth(GetterCode, GetterUser, args) do
           {:ok, tokens} ->
-
-            Logger.info("Authenticated user by #{email}")
 
             :ets.insert(:access_tokens, {Map.get(form, "csrf_token"), "", tokens.access_token})
             :ets.insert(:refresh_tokens, {Map.get(form, "csrf_token"), "", tokens.refresh_token})
 
             {:noreply, push_redirect(socket, to: "/devices")}
           {:error, message} ->
-
-            Logger.notice("#{message}")
 
             {
               :noreply,
@@ -165,7 +154,6 @@ defmodule AdminPanelWeb.SignInByEmailLive do
             }
         end
       {:error, message} ->
-        Logger.notice("#{message}")
 
         {
           :noreply,
