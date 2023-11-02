@@ -124,43 +124,61 @@ defmodule AdminPanelWeb.SignInByEmailLive do
   end
 
   def handle_event("sign_in", form, socket) do
-    email = Map.get(form, "email")
-    code = Map.get(form, "code")
-
-    args = %{needle: email, code: String.to_integer(code)}
-
-    case Confirming.confirm(UpdatingConfirmed, GetterCode, args) do
-      {:ok, _} ->
-
-        args = %{email: email}
-
-        case Authentication.auth(GetterCode, GetterUser, args) do
-          {:ok, tokens} ->
-
-            :ets.insert(:access_tokens, {Map.get(form, "csrf_token"), "", tokens.access_token})
-            :ets.insert(:refresh_tokens, {Map.get(form, "csrf_token"), "", tokens.refresh_token})
-
-            {:noreply, push_redirect(socket, to: "/devices")}
-          {:error, message} ->
-
-            {
-              :noreply,
-              assign(socket, :state, %{
-                success_sending_confirmation_code: false,
-                success_confirm_confirmation_code: nil,
-                error: message,
-                form: to_form( %{email: "", code: "", csrf_token: Map.get(form, "csrf_token")} )
-              })
-            }
-        end
-      {:error, message} ->
-
+    with email <- Map.get(form, "email", ""),
+         code <- Map.get(form, "code", ""),
+         args <- %{needle: email, code: String.to_integer(code)},
+         {r_confirming, m_confirming} <- Confirming.confirm(UpdatingConfirmed, GetterCode, args),
+         action_confirming <- :confirming,
+         {:ok, _, :confirming} <- {r_confirming, m_confirming, action_confirming}
+         args <- %{email: email},
+         {r_auth, m_auth} <- Authentication.auth(GetterCode, GetterUser, args),
+         action_auth <- :auth,
+         {:ok, m_auth, :auth} <- {r_auth, m_auth, action_auth},
+         true <- :ets.insert(
+          :access_tokens, {Map.get(form, "csrf_token"), "", m_auth.access_token}
+         ),
+         true <- :ets.insert(
+          :refresh_tokens, {Map.get(form, "csrf_token"), "", m_auth.refresh_token}
+         ) do
+      {:noreply, push_redirect(socket, to: "/devices")}
+    else
+      {:error, message, :confirming} -> 
         {
           :noreply,
           assign(socket, :state, %{
             success_sending_confirmation_code: true,
             success_confirm_confirmation_code: false,
             error: message,
+            form: to_form( %{email: "", code: "", csrf_token: Map.get(form, "csrf_token")} )
+          })
+        }
+      {:exception, message, :confirming} -> 
+        {
+          :noreply,
+          assign(socket, :state, %{
+            success_sending_confirmation_code: true,
+            success_confirm_confirmation_code: false,
+            error: "Что то пошло не так",
+            form: to_form( %{email: "", code: "", csrf_token: Map.get(form, "csrf_token")} )
+          })
+        }
+      {:error, message, :auth} -> 
+        {
+          :noreply,
+          assign(socket, :state, %{
+            success_sending_confirmation_code: false,
+            success_confirm_confirmation_code: nil,
+            error: message,
+            form: to_form( %{email: "", code: "", csrf_token: Map.get(form, "csrf_token")} )
+          })
+        }
+      {:exception, message, :auth} ->
+        {
+          :noreply,
+          assign(socket, :state, %{
+            success_sending_confirmation_code: false,
+            success_confirm_confirmation_code: nil,
+            error: "Что то пошло не так",
             form: to_form( %{email: "", code: "", csrf_token: Map.get(form, "csrf_token")} )
           })
         }
