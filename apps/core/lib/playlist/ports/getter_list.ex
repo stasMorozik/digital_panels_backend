@@ -5,6 +5,7 @@ defmodule Core.Playlist.Ports.GetterList do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   alias Core.Playlist.Types.Filter
   alias Core.Playlist.Types.Sort
@@ -12,5 +13,5 @@ defmodule Core.Playlist.Ports.GetterList do
 
   @type t :: __MODULE__
 
-  @callback get(Filter.t(), Sort.t(), Pagination.t()) ::  Success.t() | Error.t()
+  @callback get(Filter.t(), Sort.t(), Pagination.t()) ::  Success.t() | Error.t() | Exception.t()
 end

@@ -9,12 +9,13 @@ defmodule Core.User.UseCases.Authentication do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @spec auth(
     GetterCode.t(),
     GetterUser.t(),
     map()
-  ) :: Success.t() | Error.t()
+  ) :: Success.t() | Error.t() | Exception.t()
   def auth(
     getter_confiramtion_code,
     getter_user,
@@ -36,6 +37,7 @@ defmodule Core.User.UseCases.Authentication do
     else
       false -> Error.new("Не валидные аргументы для аутентификаци пользователя")
       {:error, error} -> {:error, error}
+      {:exception, error} -> {:exception, error}
     end
   end
 

@@ -4,6 +4,7 @@ defmodule PostgresqlAdapters.User.Getting do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @behaviour Getter
 
@@ -28,11 +29,11 @@ defmodule PostgresqlAdapters.User.Getting do
           })
         else
           false -> Error.new("Пользователь не найден")
-          {:error, _} -> Error.new("Ошибка запроса к базе данных")
+          {:error, e} -> Exception.new(e.message)
         end
 
-      [] -> Error.new("Database connection error")
-      _ -> Error.new("Database connection error")
+      [] -> Exception.new("Database connection error")
+      _ -> Exception.new("Database connection error")
     end
   end
 

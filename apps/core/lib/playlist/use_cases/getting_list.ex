@@ -10,6 +10,7 @@ defmodule Core.Playlist.UseCases.GettingList do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   alias Core.Playlist.Types.Filter
   alias Core.Playlist.Types.Sort
@@ -21,7 +22,7 @@ defmodule Core.Playlist.UseCases.GettingList do
     GetterUser.t(),
     GetterList.t(),
     map()
-  ) :: Success.t() | Error.t()
+  ) :: Success.t() | Error.t() | Exception.t()
   def get(
     authorization_use_case,
     getter_user,
@@ -71,6 +72,7 @@ defmodule Core.Playlist.UseCases.GettingList do
     else
       false -> Error.new("Не валидные аргументы для получения списка плэйлстов")
       {:error, message} -> {:error, message}
+      {:exception, message} -> {:exception, message}
     end
   end
 

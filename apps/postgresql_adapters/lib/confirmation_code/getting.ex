@@ -4,6 +4,7 @@ defmodule PostgresqlAdapters.ConfirmationCode.Getting do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @behaviour Getter
 
@@ -25,12 +26,12 @@ defmodule PostgresqlAdapters.ConfirmationCode.Getting do
             confirmed: confirmed
           })
         else
-          {:error, _} -> Error.new("Ошибка запроса к базе данных")
+          {:error, e} -> Exception.new(e.message)
           false -> Error.new("Код подтверждения не найден")
         end
 
-      [] -> Error.new("Database connection error")
-      _ -> Error.new("Database connection error")
+      [] -> Exception.new("Database connection error")
+      _ -> Exception.new("Database connection error")
     end
   end
 

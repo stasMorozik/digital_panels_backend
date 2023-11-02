@@ -5,8 +5,9 @@ defmodule Core.Playlist.Ports.Getter do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @type t :: __MODULE__
 
-  @callback get(binary()) ::  Success.t() | Error.t()
+  @callback get(binary()) ::  Success.t() | Error.t() | Exception.t()
 end

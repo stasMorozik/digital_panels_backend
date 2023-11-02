@@ -10,12 +10,13 @@ defmodule Core.ConfirmationCode.UseCases.Creating do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @spec create(
     Transformer.t(),
     Notifier.t(),
     binary()
-  ) :: Success.t() | Error.t()
+  ) :: Success.t() | Error.t() | Exception.t()
   def create(
     transformer_code_store,
     notifier,
@@ -36,6 +37,7 @@ defmodule Core.ConfirmationCode.UseCases.Creating do
     else
       {:error, error} -> {:error, error}
       false -> Error.new("Не валидные аргументы для создания кода подтверждения")
+      {:exception, error} -> {:exception, error}
     end
   end
 

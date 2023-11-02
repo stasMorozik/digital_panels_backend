@@ -5,6 +5,7 @@ defmodule PostgresqlAdapters.Device.GettingList do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
   
   alias Core.Device.Types.Filter
   alias Core.Device.Types.Sort
@@ -77,8 +78,8 @@ defmodule PostgresqlAdapters.Device.GettingList do
                |> query(connection)
                |> mapper()
 
-      [] -> Error.new("Database connection error")
-      _ -> Error.new("Database connection error")
+      [] -> Exception.new("Database connection error")
+      _ -> Exception.new("Database connection error")
     end
   end
 
@@ -259,7 +260,7 @@ defmodule PostgresqlAdapters.Device.GettingList do
          rows <- data.rows do
       {:ok, rows}
     else
-      {:error, _} -> Error.new("Ошибка запроса к базе данных")
+      {:error, e} -> Exception.new(e.message)
     end
   end
 
@@ -280,5 +281,9 @@ defmodule PostgresqlAdapters.Device.GettingList do
 
   defp mapper({:error, message}) do
     {:error, message}
+  end
+
+  defp mapper({:exception, message}) do
+    {:exception, message}
   end
 end

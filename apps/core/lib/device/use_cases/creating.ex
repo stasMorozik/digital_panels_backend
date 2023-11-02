@@ -13,6 +13,7 @@ defmodule Core.Device.UseCases.Creating do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @spec create(
     Authorization.t(),
@@ -20,7 +21,7 @@ defmodule Core.Device.UseCases.Creating do
     GetterPlaylist.t(),
     Transformer.t(),
     map()
-  ) :: Success.t() | Error.t()
+  ) :: Success.t() | Error.t() | Exception.t()
   def create(
     authorization_use_case,
     getter_user,
@@ -54,6 +55,7 @@ defmodule Core.Device.UseCases.Creating do
         false -> Error.new("Не валидные аргументы для создания устройства")
         {:error, message} -> {:error, message}
         :error -> Error.new("Не валидный UUID плэйлиста: #{Map.get(args, :playlist_id)}")
+        {:exception, message} -> {:exception, message}
       end
   end
 

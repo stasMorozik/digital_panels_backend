@@ -7,6 +7,7 @@ defmodule PostgresqlAdapters.Playlist.Getting do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @behaviour Getter
 
@@ -17,7 +18,7 @@ defmodule PostgresqlAdapters.Playlist.Getting do
 
         with query <- "SELECT * FROM playlists WHERE id = $1",
              {:ok, q} <- Postgrex.prepare(connection, "", query),
-             {:ok, _, result} <- Postgrex.execute(connection, q, [UUID.string_to_binary!(id)]),
+             {:ok, _, result} <- Postgrex.execute(connection, q, [id]),
              true <- result.num_rows > 0,
              [ [id, name, json, created, updated] ] <- result.rows,
              playlist_entity <- mapper([id, name, json, created, updated]) do
@@ -25,11 +26,11 @@ defmodule PostgresqlAdapters.Playlist.Getting do
           Success.new(playlist_entity)
         else
           false -> Error.new("Плэйлист не найден")
-          {:error, _} -> Error.new("Ошибка запроса к базе данных")
+          {:error, e} -> Exception.new(e.message)
         end
 
-      [] -> Error.new("Database connection error")
-      _ -> Error.new("Database connection error")
+      [] -> Exception.new("Database connection error")
+      _ -> Exception.new("Database connection error")
     end
   end
 

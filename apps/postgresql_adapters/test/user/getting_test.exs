@@ -3,9 +3,11 @@ defmodule User.GettingTest do
 
   alias PostgresqlAdapters.User.Inserting
   alias PostgresqlAdapters.User.Getting
+  alias PostgresqlAdapters.User.GettingById
   alias Core.User.Builder
 
   doctest PostgresqlAdapters.User.Getting
+  doctest PostgresqlAdapters.User.GettingById
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -30,7 +32,7 @@ defmodule User.GettingTest do
     :ok
   end
 
-  test "Get" do
+  test "Get by email" do
     {:ok, user_entity} = Builder.build(%{email: "test@gmail.com", name: "Пётр", surname: "Павел"})
 
     Inserting.transform(user_entity)
@@ -40,8 +42,28 @@ defmodule User.GettingTest do
     assert result == :ok
   end
 
+  test "Get by id" do
+    {:ok, user_entity} = Builder.build(%{email: "test12@gmail.com", name: "Пётр", surname: "Павел"})
+
+    Inserting.transform(user_entity)
+
+    {result, _} = GettingById.get(UUID.string_to_binary!(user_entity.id))
+
+    assert result == :ok
+  end
+
   test "User not found" do
     {result, _} = Getting.get("test111@gmail.com")
+
+    assert result == :error
+  end
+
+  test "Exception" do
+    {:ok, user_entity} = Builder.build(%{email: "test123@gmail.com", name: "Пётр", surname: "Павел"})
+
+    Inserting.transform(user_entity)
+
+    {result, _} = GettingById.get(<<104, 101, 197, 130, 197, 130, 60, 158, 104, 101, 197, 130, 197, 130, 46, 90>>)
 
     assert result == :error
   end

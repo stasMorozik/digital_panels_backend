@@ -4,6 +4,7 @@ defmodule PostgresqlAdapters.ConfirmationCode.UpdatingConfirmed do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @behaviour Transformer
 
@@ -22,11 +23,11 @@ defmodule PostgresqlAdapters.ConfirmationCode.UpdatingConfirmed do
              {:ok, _, _} <- Postgrex.execute(connection, q, [needle]) do
           Success.new(true)
         else
-          {:error, _} -> Error.new("Ошибка запроса к базе данных")
+          {:error, e} -> Exception.new(e.message)
         end
         
-      [] -> Error.new("Database connection error")
-      _ -> Error.new("Database connection error")
+      [] -> Exception.new("Database connection error")
+      _ -> Exception.new("Database connection error")
     end
   end
 

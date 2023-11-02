@@ -11,13 +11,14 @@ defmodule Core.User.UseCases.Registration do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @spec reg(
     Transformer.t(),
     Getter.t(),
     Notifier.t(),
     map()
-  ) :: Success.t() | Error.t()
+  ) :: Success.t() | Error.t() | Exception.t()
   def reg(
     transformer_users_store,
     getter_confiramtion_code,
@@ -44,6 +45,7 @@ defmodule Core.User.UseCases.Registration do
       Success.new(true)
     else
       {:error, error} -> {:error, error}
+      {:exception, error} -> {:exception, error}
       false -> Error.new("Не валидные аргументы для регистрации пользователя")
     end
   end

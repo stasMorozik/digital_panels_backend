@@ -83,4 +83,91 @@ defmodule Device.InsertingTest do
 
     assert result == :error
   end
+
+  test "Already exists" do
+    {:ok, user_entity} = UserBuilder.build(%{
+      email: "test666@gmail.com", 
+      name: "Пётр", 
+      surname: "Павел"
+    })
+
+    {:ok, device_entity} = DeviceBuilder.build(%{
+      ssh_port: 22,
+      ssh_host: "192.168.1.98",
+      ssh_user: "test",
+      ssh_password: "12345",
+      address: "NY Long street 1234",
+      longitude: 91.223,
+      latitude: -67.99
+    })
+
+    {_, playlist_entity} = PlaylistBuilder.build(%{
+      name: "test",
+      contents: [
+        %{
+          file: %{
+            path: "/tmp/not_emty.txt"
+          },
+          display_duration: 15
+        }
+      ],
+      web_dav_url: "http://localhost"
+    })
+
+    {_, _} = UserInserting.transform(user_entity)
+
+    {_, _} = PlaylistInserting.transform(playlist_entity, user_entity)
+
+    {_, _} = DeviceInserting.transform(device_entity, user_entity, playlist_entity)
+
+    {result, _} = DeviceInserting.transform(device_entity, user_entity, playlist_entity)
+    
+    assert result == :error
+  end
+
+  test "Exception" do
+    {:ok, user_entity} = UserBuilder.build(%{
+      email: "test77@gmail.com", 
+      name: "Пётр", 
+      surname: "Павел"
+    })
+
+    ssh_host_0 = "192.168.1.98_192.168.1.98_192.168.1.98_192.168.1.98"
+    ssh_host_1 = "192.168.1.98_192.168.1.98_192.168.1.98_192.168.1.98"
+
+    device_entity = %Core.Device.Entity{
+      created: ~D[2024-01-01],
+      id: "cef89cb9-3d5a-4f2c-97b9-d047347f2e54",
+      is_active: false,
+      updated: ~D[2024-01-01],
+      ssh_port: 22,
+      ssh_host: ssh_host_0 <> ssh_host_1,
+      ssh_user: "test",
+      ssh_password: "12345",
+      address: "NY Long street 1234",
+      longitude: 91.223,
+      latitude: -67.99
+    }
+
+    {_, playlist_entity} = PlaylistBuilder.build(%{
+      name: "test",
+      contents: [
+        %{
+          file: %{
+            path: "/tmp/not_emty.txt"
+          },
+          display_duration: 15
+        }
+      ],
+      web_dav_url: "http://localhost"
+    })
+
+    {_, _} = UserInserting.transform(user_entity)
+
+    {_, _} = PlaylistInserting.transform(playlist_entity, user_entity)
+
+    {result, _} = DeviceInserting.transform(device_entity, user_entity, playlist_entity)
+    
+    assert result == :exception
+  end
 end

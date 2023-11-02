@@ -12,6 +12,7 @@ defmodule Core.Playlist.UseCases.Creating do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @spec create(
     Authorization.t(),
@@ -19,7 +20,7 @@ defmodule Core.Playlist.UseCases.Creating do
     FileTransformer.t(),
     PlaylistTransformer.t(),
     map()
-  ) :: Success.t() | Error.t()
+  ) :: Success.t() | Error.t() | Exception.t()
   def create(
     authorization_use_case,
     getter_user,
@@ -49,6 +50,7 @@ defmodule Core.Playlist.UseCases.Creating do
       else
         false -> Error.new("Не валидные аргументы для создания плэйлиста")
         {:error, message} -> {:error, message}
+        {:exception, message} -> {:exception, message}
       end
   end
 

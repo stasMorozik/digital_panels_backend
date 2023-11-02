@@ -3,6 +3,7 @@ defmodule User.InsertingTest do
 
   alias PostgresqlAdapters.User.Inserting
   alias Core.User.Builder
+  alias Core.User.Entity
 
   doctest PostgresqlAdapters.User.Inserting
 
@@ -41,5 +42,30 @@ defmodule User.InsertingTest do
     {result, _} = Inserting.transform(%{})
 
     assert result == :error
+  end
+
+  test "Already exists" do
+    {:ok, user_entity} = Builder.build(%{email: "test11@gmail.com", name: "Пётр", surname: "Павел"})
+
+    {_, _} = Inserting.transform(user_entity)
+
+    {result, _} = Inserting.transform(user_entity)
+
+    assert result == :error
+  end
+
+  test "Exception: " do
+    user_entity = %Entity{
+      id: "cef89cb9-3d5a-4f2c-97b9-d047347f2e53",
+      email: "some_long_email_aadress_some_long_email_aadress_some_long_email_aadress_some_long_email_aadress",
+      name: "name",
+      surname: "surname",
+      created: ~D[2024-01-01],
+      updated: ~D[2024-01-01]
+    }
+
+    {result, _} = Inserting.transform(user_entity)
+
+    assert result == :exception
   end
 end

@@ -6,6 +6,7 @@ defmodule PostgresqlAdapters.Device.Inserting do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @behaviour Transformer
 
@@ -100,17 +101,27 @@ defmodule PostgresqlAdapters.Device.Inserting do
                 UUID.string_to_binary!(id),
              ],
              fun <- fn(conn) ->
-                Postgrex.execute(conn, q_0, d_0)
-                Postgrex.execute(conn, q_1, d_1)
-                Postgrex.execute(conn, q_2, d_2)
+                r_0 = Postgrex.execute(conn, q_0, d_0)
+                r_1 = Postgrex.execute(conn, q_1, d_1)
+                r_2 = Postgrex.execute(conn, q_2, d_2)
+
+                case {r_0, r_1, r_2} do
+                  {{:ok, _, _}, {:ok, _, _}, {:ok, _, _}} -> {:ok, true}
+                  {{:error, e}, {:ok, _, _}, {:ok, _, _}} -> DBConnection.rollback(conn, e)
+                  {{:ok, _, _}, {:error, e}, {:ok, _, _}} -> DBConnection.rollback(conn, e)
+                  {{:ok, _, _}, {:ok, _, _}, {:error, e}} -> DBConnection.rollback(conn, e)
+                  {{:ok, _, _}, {:error, e}, {:error, _}} -> DBConnection.rollback(conn, e)
+                  {{:error, e}, _, _} -> DBConnection.rollback(conn, e)
+                end
              end,
              {:ok, _} <- Postgrex.transaction(connection, fun) do
           Success.new(true)
-        else 
-          {:error, _} -> Error.new("Ошибка запроса к базе данных")
+        else
+          {:error, %Postgrex.Error{postgres: %{pg_code: "23505"}}} -> Error.new("Устройство уже существует")
+          {:error, e} -> Exception.new(e.message)
         end
-      [] -> Error.new("Database connection error")
-      _ -> Error.new("Database connection error")
+      [] -> Exception.new("Database connection error")
+      _ -> Exception.new("Database connection error")
     end
   end
 

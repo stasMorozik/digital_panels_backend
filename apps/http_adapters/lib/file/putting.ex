@@ -8,12 +8,13 @@ defmodule HttpAdapters.File.Putting do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @behaviour Transformer
 
   @impl Transformer
   def transform(%FileEntity{
-    id: id,
+    id: _,
     size: _,
     url: url,
     path: path,
@@ -34,11 +35,11 @@ defmodule HttpAdapters.File.Putting do
       }} when code >= 200 and code <= 299 ->
         Success.new(true)
       {:ok, %HTTPoison.Response{
-        status_code: _
-      }} ->
-        Error.new("Не удалось записать файл на сервер")
-      {:error, _} -> 
-        Error.new("Не удалось записать файл на сервер")
+        status_code: code
+      }} when code >= 400 and code <= 599 ->
+        Exception.new("Не удалось записать файл на сервер, статус овтета - #{code}")
+      {:error, e} -> 
+        Exception.new(e.reason)
     end
   end
 

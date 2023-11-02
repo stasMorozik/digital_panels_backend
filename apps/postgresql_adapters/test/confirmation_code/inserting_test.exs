@@ -38,4 +38,17 @@ defmodule ConfirmationCode.InsertingTest do
 
     assert result == :error
   end
+
+  test "Exception" do
+    code_entity = %Core.ConfirmationCode.Entity{
+      needle: "some_long_email_aadress_some_long_email_aadress_some_long_email_aadress_some_long_email_aadress", 
+      created: 12345678, 
+      code: 2345, 
+      confirmed: false
+    }
+
+    {result, _} = Inserting.transform(code_entity)
+
+    assert result == :exception
+  end
 end

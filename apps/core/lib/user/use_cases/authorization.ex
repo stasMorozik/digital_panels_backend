@@ -10,11 +10,12 @@ defmodule Core.User.UseCases.Authorization do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @spec auth(
     Getter.t(),
     map()
-  ) :: Success.t() | Error.t()
+  ) :: Success.t() | Error.t() | Exception.t()
   def auth(
     getter_user,
     args

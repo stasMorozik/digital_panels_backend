@@ -9,12 +9,13 @@ defmodule Core.ConfirmationCode.UseCases.Confirming do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @spec confirm(
     Transformer.t(),
     Getter.t(),
     map()
-  ) :: Success.t() | Error.t()
+  ) :: Success.t() | Error.t() | Exception.t()
   def confirm(
     transformer,
     getter,
@@ -29,6 +30,7 @@ defmodule Core.ConfirmationCode.UseCases.Confirming do
     else
       {:error, error} -> {:error, error}
       false -> Error.new("Не валидные данные для подтверждения кода")
+      {:exception, error} -> {:exception, error}
     end
   end
 

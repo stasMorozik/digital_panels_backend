@@ -10,6 +10,7 @@ defmodule Core.Device.UseCases.GettingList do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   alias Core.Device.Types.Filter
   alias Core.Device.Types.Sort
@@ -21,7 +22,7 @@ defmodule Core.Device.UseCases.GettingList do
     GetterUser.t(),
     GetterList.t(),
     map()
-  ) :: Success.t() | Error.t()
+  ) :: Success.t() | Error.t() | Exception.t()
   def get(
     authorization_use_case,
     getter_user,
@@ -75,6 +76,7 @@ defmodule Core.Device.UseCases.GettingList do
     else
       false -> Error.new("Не валидные аргументы для получения списка устройств")
       {:error, message} -> {:error, message}
+      {:exception, message} -> {:exception, message}
     end
   end
 

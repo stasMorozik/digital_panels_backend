@@ -63,7 +63,7 @@ defmodule Playlist.GettingTest do
 
     {_, _} = PlaylistInserting.transform(playlist_entity, user_entity)
 
-    {result, _} = Getting.get(playlist_entity.id)
+    {result, _} = Getting.get(UUID.string_to_binary!(playlist_entity.id))
 
     assert result == :ok
   end

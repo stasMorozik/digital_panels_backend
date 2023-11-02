@@ -9,6 +9,7 @@ defmodule Core.Device.Ports.Transformer do
   
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @type t :: __MODULE__
 
@@ -16,5 +17,5 @@ defmodule Core.Device.Ports.Transformer do
     DeviceEntity.t(), 
     UserEntity.t(), 
     PlaylistEntity.t()
-  ) ::  Success.t() | Error.t()
+  ) ::  Success.t() | Error.t() | Exception.t()
 end

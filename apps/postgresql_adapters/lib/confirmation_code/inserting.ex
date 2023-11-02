@@ -4,6 +4,7 @@ defmodule PostgresqlAdapters.ConfirmationCode.Inserting do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  alias Core.Shared.Types.Exception
 
   @behaviour Transformer
 
@@ -23,17 +24,24 @@ defmodule PostgresqlAdapters.ConfirmationCode.Inserting do
              {:ok, q_2} <- Postgrex.prepare(connection, "", query_2),
              data <- [needle, code, confirmed, created],
              fun <- fn(conn) ->
-                Postgrex.execute(conn, q_1, [])
-                Postgrex.execute(conn, q_2, data)
+                r_0 = Postgrex.execute(conn, q_1, [])
+                r_1 = Postgrex.execute(conn, q_2, data)
+
+                case {r_0, r_1} do
+                  {{:ok, _, _}, {:ok, _, _}} -> {:ok, true}
+                  {{:error, e}, {:ok, _, _}} -> DBConnection.rollback(conn, e)
+                  {{:ok, _, _}, {:error, e}} -> DBConnection.rollback(conn, e)
+                  {{:error, e}, {:error, _}} -> DBConnection.rollback(conn, e)
+                end
              end,
              {:ok, _} <- Postgrex.transaction(connection, fun) do
           Success.new(true)
         else
-          {:error, _} -> Error.new("Ошибка запроса к базе данных")
+          {:error, e} -> Exception.new(e.message)
         end
 
-      [] -> Error.new("Database connection error")
-      _ -> Error.new("Database connection error")
+      [] -> Exception.new("Database connection error")
+      _ -> Exception.new("Database connection error")
     end
   end
 
