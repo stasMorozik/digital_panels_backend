@@ -25,16 +25,15 @@ defmodule Playlist.UseCases.CreatingTest do
 
     {:atomic, :ok} = :mnesia.create_table(
       :users,
-      [attributes: [:id, :email, :name, :surname, :created, :updated]]
+      [attributes: [:name, :id, :email, :surname, :created, :updated]]
     )
 
     {:atomic, :ok} = :mnesia.create_table(
       :playlists,
-      [attributes: [:id, :user_id, :name, :created, :updated]]
+      [attributes: [:created, :user_id, :name, :id, :updated]]
     )
 
-    {:atomic, :ok} = :mnesia.add_table_index(:users, :email)
-    {:atomic, :ok} = :mnesia.add_table_index(:playlists, :name)
+    {:atomic, :ok} = :mnesia.add_table_index(:users, :id)
 
     :ok
   end
@@ -48,11 +47,11 @@ defmodule Playlist.UseCases.CreatingTest do
 
     FakeAdapters.User.Inserting.transform(user_entity)
 
-    access_token = Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.email})
+    access_token = Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.id})
 
     {result, _} = Creating.create(
       Authorization,
-      FakeAdapters.User.Getter,
+      FakeAdapters.User.GetterById,
       FakeAdapters.File.Inserting,
       FakeAdapters.Playlist.Inserting,
       %{
@@ -76,7 +75,7 @@ defmodule Playlist.UseCases.CreatingTest do
   test "Invalid token" do
     {result, _} = Creating.create(
       Authorization,
-      FakeAdapters.User.Getter,
+      FakeAdapters.User.GetterById,
       FakeAdapters.File.Inserting,
       FakeAdapters.Playlist.Inserting,
       %{

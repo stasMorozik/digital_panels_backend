@@ -23,9 +23,10 @@ defmodule User.UseCases.AuthorizationTest do
 
     {:atomic, :ok} = :mnesia.create_table(
       :users,
-      [attributes: [:id, :email, :name, :surname, :created, :updated]]
+      [attributes: [:name, :id, :email, :surname, :created, :updated]]
     )
 
+    {:atomic, :ok} = :mnesia.add_table_index(:users, :id)
     {:atomic, :ok} = :mnesia.add_table_index(:users, :email)
 
     :ok
@@ -36,10 +37,10 @@ defmodule User.UseCases.AuthorizationTest do
 
     FakeAdapters.User.Inserting.transform(user_entity)
 
-    access_token = Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.email})
+    access_token = Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.id})
 
-    {result, _} = Authorization.auth(FakeAdapters.User.Getter, %{token: access_token})
-
+    {result, _} = Authorization.auth(FakeAdapters.User.GetterById, %{token: access_token})
+    
     assert result == :ok
   end
 
@@ -48,7 +49,7 @@ defmodule User.UseCases.AuthorizationTest do
 
     FakeAdapters.User.Inserting.transform(user_entity)
 
-    {result, _} = Authorization.auth(FakeAdapters.User.Getter, %{token: ""})
+    {result, _} = Authorization.auth(FakeAdapters.User.GetterById, %{token: ""})
 
     assert result == :error
   end
@@ -58,7 +59,7 @@ defmodule User.UseCases.AuthorizationTest do
 
     FakeAdapters.User.Inserting.transform(user_entity)
 
-    {result, _} = Authorization.auth(FakeAdapters.User.Getter, %{token: nil})
+    {result, _} = Authorization.auth(FakeAdapters.User.GetterById, %{token: nil})
 
     assert result == :error
   end

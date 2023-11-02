@@ -9,13 +9,15 @@ defmodule FakeAdapters.User.GetterById do
 
   @impl Getter
   def get(id) when is_binary(id) do
-    case :mnesia.transaction(fn -> :mnesia.index_read(:users, id, :id) end) do
+    case :mnesia.transaction(fn -> :mnesia.index_read(
+      :users, UUID.binary_to_string!(id), :id
+    ) end) do
       {:atomic, list_users} ->
         if length(list_users) > 0 do
 
           [user | _] = list_users
 
-          {:users, id, email, name, surname, created, updated} = user
+          {:users, name, id, email, surname, created, updated} = user
 
           Success.new(%Entity{
             id: id,

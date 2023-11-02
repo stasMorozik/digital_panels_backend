@@ -15,7 +15,7 @@ defmodule FakeAdapters.Playlist.Getter do
 
           [playlist | _] = list_playlists
 
-          {:playlists, id, _, name, created, updated} = playlist
+          {:playlists, created, _, name, id, updated} = playlist
 
           Success.new(%Entity{
             id: id,

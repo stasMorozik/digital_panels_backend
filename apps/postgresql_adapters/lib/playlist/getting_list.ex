@@ -85,7 +85,7 @@ defmodule PostgresqlAdapters.Playlist.GettingList do
     case Map.get(filter, :user_id) do
       nil -> {query_string, data_list}
       user_id -> 
-        data_list = data_list ++ [UUID.string_to_binary!(user_id)]
+        data_list = data_list ++ [user_id]
 
         query_string = query_string <> "WHERE rl_u_p.user_id = $#{length(data_list)}"
         

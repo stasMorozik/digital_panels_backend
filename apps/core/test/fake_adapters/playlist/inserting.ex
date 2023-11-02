@@ -25,12 +25,8 @@ defmodule FakeAdapters.Playlist.Inserting do
   }) do
     case :mnesia.transaction(
       fn -> :mnesia.write({
-        :playlists,
-          id,
-          user_id,
-          name,
-          created,
-          updated
+        :playlists, 
+        created, user_id, name, id, updated
       }) end
     ) do
       {:atomic, :ok} -> Success.new(true)

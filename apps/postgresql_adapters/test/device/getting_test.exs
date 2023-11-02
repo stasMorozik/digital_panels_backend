@@ -1,4 +1,4 @@
-defmodule Device.GettingListTest do
+defmodule Device.GettingTest do
   use ExUnit.Case
   
   alias PostgresqlAdapters.User.Inserting, as: UserInserting
@@ -9,13 +9,13 @@ defmodule Device.GettingListTest do
   alias Core.Playlist.Builder, as: PlaylistBuilder
   alias Core.Device.Builder, as: DeviceBuilder
 
-  alias PostgresqlAdapters.Device.GettingList
+  alias PostgresqlAdapters.Device.Getting
 
   alias Core.Device.Types.Filter
   alias Core.Device.Types.Sort
   alias Core.Shared.Types.Pagination
 
-  doctest GettingList
+  doctest Getting
 
   setup_all do
     File.touch("/tmp/not_emty.txt", 1544519753)
@@ -81,16 +81,24 @@ defmodule Device.GettingListTest do
 
     {_, _} = DeviceInserting.transform(device_entity, user_entity, playlist_entity)
 
-    {result, _} = GettingList.get(%Filter{
-      user_id: UUID.string_to_binary!(user_entity.id),
-      ssh_host: "192.168.1.98"
-    }, %Sort{
-      is_active: "ASC"
-    }, %Pagination{
-      page: 1,
-      limit: 10
-    })
+    {result, _} = Getting.get(UUID.string_to_binary!(device_entity.id))
     
     assert result == :ok
+  end
+
+  test "Not found" do
+    {_, device_entity} = DeviceBuilder.build(%{
+      ssh_port: 22,
+      ssh_host: "192.168.1.98",
+      ssh_user: "test",
+      ssh_password: "12345",
+      address: "NY Long street 1234",
+      longitude: 91.223,
+      latitude: -67.99
+    })
+
+    {result, _} = Getting.get(UUID.string_to_binary!(device_entity.id))
+    
+    assert result == :error
   end
 end

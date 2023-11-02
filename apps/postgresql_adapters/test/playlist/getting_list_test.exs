@@ -68,7 +68,7 @@ defmodule Playlist.GettingListTest do
     {_, _} = PlaylistInserting.transform(playlist_entity, user_entity)
 
     {result, _} = GettingList.get(%Filter{
-      user_id: user_entity.id,
+      user_id: UUID.string_to_binary!(user_entity.id),
       name: nil,
       created_f: nil,
       created_t: nil,

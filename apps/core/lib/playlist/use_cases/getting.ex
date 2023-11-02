@@ -31,12 +31,12 @@ defmodule Core.Playlist.UseCases.Getting do
     {result, _} = UUID.info(Map.get(args, :id))
 
     with true <- Kernel.function_exported?(authorization_use_case, :auth, 2),
-         true <- Kernel.function_exported?(getter, :get, 3),
+         true <- Kernel.function_exported?(getter, :get, 1),
          :ok <- result,
          {:ok, user} <- authorization_use_case.auth(
             getter_user, %{token: Map.get(args, :token, "")}
          ),
-         {:ok, device} <- getter.get(Map.get(args, :id, "")) do
+         {:ok, device} <- getter.get(args.id) do
       Success.new(device)
     else
       false -> Error.new("Не валидные аргументы для получения плэйлиста")
@@ -44,5 +44,9 @@ defmodule Core.Playlist.UseCases.Getting do
       :error -> Error.new("Не валидный UUID плэйлиста: #{Map.get(args, :id)}")
       {:exception, message} -> {:exception, message}
     end
+  end
+
+  def get(_, _, _, _) do
+    Error.new("Не валидные аргументы для получения плэйлста")
   end
 end

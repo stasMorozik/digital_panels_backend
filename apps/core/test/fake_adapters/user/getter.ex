@@ -15,7 +15,7 @@ defmodule FakeAdapters.User.Getter do
 
           [user | _] = list_users
 
-          {:users, id, email, name, surname, created, updated} = user
+          {:users, name, id, email, surname, created, updated} = user
 
           Success.new(%Entity{
             id: id,

@@ -17,7 +17,7 @@ defmodule FakeAdapters.User.Inserting do
     updated: updated
   }) do
     case :mnesia.transaction(
-      fn -> :mnesia.write({:users, id, email, name, surname, created, updated}) end
+      fn -> :mnesia.write({:users, name, id, email, surname, created, updated}) end
     ) do
       {:atomic, :ok} -> Success.new(true)
       {:aborted, _} -> Error.new("Пользователь уже существует")

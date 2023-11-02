@@ -29,7 +29,9 @@ defmodule Core.User.UseCases.Authorization do
 
         case result do
           :error -> Error.new("Не валидный токен")
-          :ok -> getter_user.get(Map.get(maybe_claims, "id"))
+          :ok -> getter_user.get(UUID.string_to_binary!(
+            Map.get(maybe_claims, "id")
+          ))
         end
 
       else

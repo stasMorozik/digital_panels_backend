@@ -25,7 +25,7 @@ defmodule User.UseCases.AuthenticationTest do
 
     {:atomic, :ok} = :mnesia.create_table(
       :users,
-      [attributes: [:id, :email, :name, :surname, :created, :updated]]
+      [attributes: [:name, :id, :email, :surname, :created, :updated]]
     )
 
     {:atomic, :ok} = :mnesia.add_table_index(:users, :email)
@@ -66,7 +66,7 @@ defmodule User.UseCases.AuthenticationTest do
       FakeAdapters.User.Getter,
       args
     )
-
+    
     assert result == :ok
   end
 end

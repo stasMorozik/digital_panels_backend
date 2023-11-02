@@ -25,16 +25,16 @@ defmodule Playlist.UseCases.GettingListTest do
 
     {:atomic, :ok} = :mnesia.create_table(
       :users,
-      [attributes: [:id, :email, :name, :surname, :created, :updated]]
+      [attributes: [:name, :id, :email, :surname, :created, :updated]]
     )
 
     {:atomic, :ok} = :mnesia.create_table(
       :playlists,
-      [attributes: [:id, :user_id, :name, :created, :updated]]
+      [attributes: [:created, :user_id, :name, :id, :updated]]
     )
 
-    {:atomic, :ok} = :mnesia.add_table_index(:users, :email)
     {:atomic, :ok} = :mnesia.add_table_index(:playlists, :name)
+    {:atomic, :ok} = :mnesia.add_table_index(:users, :id)
 
     :ok
   end
@@ -76,11 +76,11 @@ defmodule Playlist.UseCases.GettingListTest do
     FakeAdapters.Playlist.Inserting.transform(playlist_entity_0, user_entity)
     FakeAdapters.Playlist.Inserting.transform(playlist_entity_1, user_entity)
 
-    access_token = Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.email})
+    access_token = Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.id})
 
     {result, _} = GettingList.get(
       Authorization,
-      FakeAdapters.User.Getter,
+      FakeAdapters.User.GetterById,
       FakeAdapters.Playlist.GetterList,
       %{
         token: access_token,
@@ -92,7 +92,7 @@ defmodule Playlist.UseCases.GettingListTest do
           name: "test_0"
         },
         sort: %{
-          name: "test"
+          name: "asc"
         }
       }
     )
@@ -103,7 +103,7 @@ defmodule Playlist.UseCases.GettingListTest do
   test "Invalid token" do
     {result, _} = GettingList.get(
       Authorization,
-      FakeAdapters.User.Getter,
+      FakeAdapters.User.GetterById,
       FakeAdapters.Playlist.GetterList,
       %{
         token: "invalid token",
@@ -115,7 +115,7 @@ defmodule Playlist.UseCases.GettingListTest do
           name: "test_0"
         },
         sort: %{
-          name: "test"
+          name: "asc"
         }
       }
     )

@@ -55,7 +55,7 @@ defmodule Core.Playlist.UseCases.GettingList do
          ),
          {:ok, pagi} <- Pagination.valid(pagi),
          filter <- %Filter{
-            user_id: user.id, 
+            user_id: UUID.string_to_binary!(user.id), 
             name: Map.get(filter, :name), 
             created_f: Map.get(filter, :created_f),
             created_t: Map.get(filter, :created_t),

@@ -57,7 +57,7 @@ defmodule Core.Device.UseCases.GettingList do
          ),
          {:ok, pagi} <- Pagination.valid(pagi),
          filter <- %Filter{
-            user_id: user.id, 
+            user_id: UUID.string_to_binary!(user.id), 
             is_active: Map.get(filter, :is_active), 
             address: Map.get(filter, :address),
             ssh_host: Map.get(filter, :ssh_host),

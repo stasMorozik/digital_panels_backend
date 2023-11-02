@@ -67,4 +67,23 @@ defmodule Playlist.GettingTest do
 
     assert result == :ok
   end
+
+  test "Not found" do
+    {_, playlist_entity} = PlaylistBuilder.build(%{
+      name: "test",
+      contents: [
+        %{
+          file: %{
+            path: "/tmp/not_emty.txt"
+          },
+          display_duration: 15
+        }
+      ],
+      web_dav_url: "http://localhost"
+    })
+
+    {result, _} = Getting.get(UUID.string_to_binary!(playlist_entity.id))
+
+    assert result == :error
+  end
 end

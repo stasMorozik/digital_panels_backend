@@ -39,7 +39,7 @@ defmodule FakeAdapters.Device.GetterList do
 
           {
             :devices, 
-            id,
+            uuid,
             _,
             _,
             ssh_port,
@@ -54,7 +54,7 @@ defmodule FakeAdapters.Device.GetterList do
           } = device
 
           Success.new([%Entity{
-            id: id,
+            id: uuid,
             ssh_port: ssh_port,
             ssh_host: ssh_host,
             ssh_user: ssh_user,
