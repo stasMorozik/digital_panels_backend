@@ -125,7 +125,7 @@ defmodule Core.Device.Builder do
   end
 
   defp address({:ok, _}, _) do
-    Error.new("Не валидные данные для построения устройства")
+    Error.new("Не валидный адрес")
   end
 
   defp address({:error, message}, _) when is_binary(message) do

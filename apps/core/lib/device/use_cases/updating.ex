@@ -3,6 +3,8 @@ defmodule Core.Device.UseCases.Updating do
     Юзекейз редактирования устройства
   """
 
+  alias Core.Device.Methods.Edit
+
 	alias Core.Device.Builder
   alias Core.Device.Ports.Transformer
 	alias Core.Device.Ports.Getter
@@ -42,13 +44,16 @@ defmodule Core.Device.UseCases.Updating do
 		with true <- Kernel.function_exported?(authorization_use_case, :auth, 2),
          true <- Kernel.function_exported?(getter, :get, 1),
 				 true <- Kernel.function_exported?(getter_playlist, :get, 1),
+         true <- Kernel.function_exported?(transformer, :transform, 3),
          :ok <- result_0,
          :ok <- result_1,
          {:ok, user} <- authorization_use_case.auth(
             getter_user, %{token: Map.get(args, :token, "")}
          ),
          {:ok, device} <- getter.get(args.id),
-         {:ok, playlist} <- getter_playlist.get(args.playlist_id) do
+         {:ok, playlist} <- getter_playlist.get(args.playlist_id),
+         {:ok, edited_device} <- Edit.edit(device, args),
+         {:ok, _} <- transformer.transform(edited_device, user, playlist) do
       Success.new(true)
     else
       false -> Error.new("Не валидные аргументы для получения устройства")

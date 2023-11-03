@@ -126,19 +126,20 @@ defmodule AdminPanelWeb.SignInByEmailLive do
   def handle_event("sign_in", form, socket) do
     with email <- Map.get(form, "email", ""),
          code <- Map.get(form, "code", ""),
+         csrf_token <- Map.get(form, "csrf_token", ""),
          args <- %{needle: email, code: String.to_integer(code)},
          {r_confirming, m_confirming} <- Confirming.confirm(UpdatingConfirmed, GetterCode, args),
          action_confirming <- :confirming,
-         {:ok, _, :confirming} <- {r_confirming, m_confirming, action_confirming}
+         {:ok, _, :confirming} <- {r_confirming, m_confirming, action_confirming},
          args <- %{email: email},
          {r_auth, m_auth} <- Authentication.auth(GetterCode, GetterUser, args),
          action_auth <- :auth,
          {:ok, m_auth, :auth} <- {r_auth, m_auth, action_auth},
          true <- :ets.insert(
-          :access_tokens, {Map.get(form, "csrf_token"), "", m_auth.access_token}
+          :access_tokens, {csrf_token, "", m_auth.access_token}
          ),
          true <- :ets.insert(
-          :refresh_tokens, {Map.get(form, "csrf_token"), "", m_auth.refresh_token}
+          :refresh_tokens, {csrf_token, "", m_auth.refresh_token}
          ) do
       {:noreply, push_redirect(socket, to: "/devices")}
     else

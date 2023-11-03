@@ -21,10 +21,10 @@ config :admin_panel, AdminPanelWeb.Endpoint,
 
 
 config :core,
-  web_dav_url: "http://192.168.0.161:8100/upload"
+  web_dav_url: "http://192.168.0.106:8100/upload"
 
 config :postgresql_adapters,
-  hostname: "192.168.0.161",
+  hostname: "192.168.0.106",
   username: "db_user",
   password: "12345",
   database: "system_content_manager",
