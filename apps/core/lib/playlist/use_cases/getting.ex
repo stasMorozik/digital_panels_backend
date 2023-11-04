@@ -36,8 +36,8 @@ defmodule Core.Playlist.UseCases.Getting do
          {:ok, user} <- authorization_use_case.auth(
             getter_user, %{token: Map.get(args, :token, "")}
          ),
-         {:ok, device} <- getter.get(UUID.string_to_binary!(args.id)) do
-      Success.new(device)
+         {:ok, playlist} <- getter.get(UUID.string_to_binary!(args.id)) do
+      Success.new(playlist)
     else
       false -> Error.new("Не валидные аргументы для получения плэйлиста")
       {:error, message} -> {:error, message}
