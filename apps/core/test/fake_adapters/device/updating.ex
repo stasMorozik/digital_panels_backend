@@ -1,4 +1,4 @@
-defmodule FakeAdapters.Device.Inserting do
+defmodule FakeAdapters.Device.Updating do
   alias Core.Device.Ports.Transformer
 
   alias Core.Device.Entity, as: DeviceEntity
@@ -40,17 +40,17 @@ defmodule FakeAdapters.Device.Inserting do
     case :mnesia.transaction(
       fn -> :mnesia.write({
         :devices,
-        ssh_port,
-        id,
-        ssh_host,
-        ssh_user,
-        ssh_password,
-        address,
-        longitude,
-        latitude,
-        is_active,
-        created,
-        updated
+          ssh_port,
+          id,
+          ssh_host,
+          ssh_user,
+          ssh_password,
+          address,
+          longitude,
+          latitude,
+          is_active,
+          created,
+          updated
       }) end
     ) do
       {:atomic, :ok} -> Success.new(true)
@@ -58,7 +58,7 @@ defmodule FakeAdapters.Device.Inserting do
     end
   end
 
-  def transform(_, _, _) do
+  def transform(_, _) do
     Error.new("Не возможно занести запись в хранилище данных")
   end
 end

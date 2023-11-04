@@ -33,7 +33,7 @@ defmodule Core.Device.Methods.Edit do
     address: new_address,
     longitude: new_longitude,
     latitude: new_latitude,
-    is_active: new_is_active,
+    is_active: new_is_active
   }) do
     entity = %Entity{
       id: id,

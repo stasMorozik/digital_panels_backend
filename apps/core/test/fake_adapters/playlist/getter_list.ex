@@ -44,7 +44,7 @@ defmodule FakeAdapters.Playlist.GetterList do
           }])
 
         else
-          Error.new("Плэйлисты не найдены")
+          Success.new([])
         end
       {:aborted, _} ->  Error.new("Плэйлисты не найдены")
     end

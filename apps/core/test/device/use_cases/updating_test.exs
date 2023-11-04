@@ -1,12 +1,13 @@
-defmodule Device.UseCases.CreatingTest do
+defmodule Device.UseCases.UpdatingTest do
   use ExUnit.Case
 
   alias Core.User.UseCases.Authorization
 
   alias Core.Playlist.Builder, as: PlaylistBuilder
+  alias Core.Device.Builder, as: DeviceBuilder
   alias Core.User.Builder, as: UserBuilder
 
-  alias Core.Device.UseCases.Creating
+  alias Core.Device.UseCases.Updating
 
   setup_all do
     File.touch("/tmp/not_emty.txt", 1544519753)
@@ -52,15 +53,26 @@ defmodule Device.UseCases.CreatingTest do
 
     {:atomic, :ok} = :mnesia.add_table_index(:users, :id)
     {:atomic, :ok} = :mnesia.add_table_index(:playlists, :id)
+    {:atomic, :ok} = :mnesia.add_table_index(:devices, :id)
 
     :ok
   end
 
-  test "Create" do
+  test "Update" do
     {_, user_entity} = UserBuilder.build(%{
       email: "test3@gmail.com", 
       name: "Пётр", 
       surname: "Павел"
+    })
+
+    {_, device_entity_0} = DeviceBuilder.build(%{
+      ssh_port: 22,
+      ssh_host: "192.168.1.98",
+      ssh_user: "test",
+      ssh_password: "12345",
+      address: "NY Long street 1234",
+      longitude: 91.223,
+      latitude: -67.99
     })
 
     {_, playlist_entity} = PlaylistBuilder.build(%{
@@ -78,49 +90,31 @@ defmodule Device.UseCases.CreatingTest do
 
     FakeAdapters.User.Inserting.transform(user_entity)
     FakeAdapters.Playlist.Inserting.transform(playlist_entity, user_entity)
-
+    FakeAdapters.Device.Inserting.transform(device_entity_0, user_entity, playlist_entity)
+    
     access_token = Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.id})
 
-    {result, _} = Creating.create(
+    {result, _} = Updating.update(
       Authorization,
       FakeAdapters.User.GetterById,
+      FakeAdapters.Device.Getter,
       FakeAdapters.Playlist.Getter,
-      FakeAdapters.Device.Inserting,
+      FakeAdapters.Device.Updating,
       %{
+        id: device_entity_0.id,
         token: access_token,
-        ssh_port: 22,
-        ssh_host: "192.168.1.22",
-        ssh_user: "test",
-        ssh_password: "12345",
-        address: "NY Long street 123",
-        longitude: 91.223,
-        latitude: -67.99,
-        playlist_id: playlist_entity.id
+        ssh_port: nil,
+        ssh_host: "192.168.1.23",
+        ssh_user: nil,
+        ssh_password: nil,
+        address: nil,
+        longitude: nil,
+        latitude: nil,
+        playlist_id: playlist_entity.id,
+        is_active: nil
       }
     )
     
     assert result == :ok
-  end
-
-  test "Invalid token" do
-    {result, _} = Creating.create(
-      Authorization,
-      FakeAdapters.User.GetterById,
-      FakeAdapters.Playlist.Getter,
-      FakeAdapters.Device.Inserting,
-      %{
-        token: "invalid token",
-        ssh_port: 22,
-        ssh_host: "192.168.1.22",
-        ssh_user: "test",
-        ssh_password: "12345",
-        address: "NY Long street 123",
-        longitude: 91.223,
-        latitude: -67.99,
-        playlist_id: "some id"
-      }
-    )
-
-    assert result == :error
   end
 end

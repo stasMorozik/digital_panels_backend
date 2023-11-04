@@ -37,16 +37,15 @@ defmodule Devices.UseCases.GettingListTest do
     {:atomic, :ok} = :mnesia.create_table(
       :devices,
       [attributes: [
-        :id,
-        :user_id,
-        :playlist_id,
         :ssh_port,
+        :id,
         :ssh_host,
         :ssh_user,
         :ssh_password,
         :address,
         :longitude,
         :latitude,
+        :is_active,
         :created,
         :updated
       ]]

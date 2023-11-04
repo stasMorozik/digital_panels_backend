@@ -39,7 +39,9 @@ defmodule Core.Device.UseCases.Creating do
            true <- Kernel.function_exported?(getter_playlist, :get, 1),
            {:ok, user} <- authorization_use_case.auth(getter_user, args),
            :ok <- result,
-           {:ok, playlist} <- getter_playlist.get(args.playlist_id),
+           {:ok, playlist} <- getter_playlist.get(
+            UUID.string_to_binary!(args.playlist_id)
+           ),
            {:ok, device} <- Builder.build(%{
               ssh_port: Map.get(args, :ssh_port, ""),
               ssh_host: Map.get(args, :ssh_host, ""),

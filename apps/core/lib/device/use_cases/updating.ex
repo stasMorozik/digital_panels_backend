@@ -50,9 +50,23 @@ defmodule Core.Device.UseCases.Updating do
          {:ok, user} <- authorization_use_case.auth(
             getter_user, %{token: Map.get(args, :token, "")}
          ),
-         {:ok, device} <- getter.get(args.id),
-         {:ok, playlist} <- getter_playlist.get(args.playlist_id),
-         {:ok, edited_device} <- Edit.edit(device, args),
+         {:ok, device} <- getter.get(UUID.string_to_binary!(
+            args.id
+         )),
+         {:ok, playlist} <- getter_playlist.get(UUID.string_to_binary!(
+            args.playlist_id
+         )),
+         default_args <- %{
+            ssh_port: Map.get(args, :ssh_port),
+            ssh_host: Map.get(args, :ssh_host),
+            ssh_user: Map.get(args, :ssh_user),
+            ssh_password: Map.get(args, :ssh_password),
+            address: Map.get(args, :address),
+            longitude: Map.get(args, :longitude),
+            latitude: Map.get(args, :latitude),
+            is_active: Map.get(args, :is_active),
+         },
+         {:ok, edited_device} <- Edit.edit(device, default_args),
          {:ok, _} <- transformer.transform(edited_device, user, playlist) do
       Success.new(true)
     else

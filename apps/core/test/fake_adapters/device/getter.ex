@@ -1,40 +1,20 @@
-defmodule FakeAdapters.Device.GetterList do
-  alias Core.Device.Ports.GetterList
+defmodule FakeAdapters.Device.Getter do
+  alias Core.Device.Ports.Getter
   alias Core.Device.Entity
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
 
-  alias Core.Device.Types.Filter
-  alias Core.Device.Types.Sort
-  alias Core.Shared.Types.Pagination
+  @behaviour Getter
 
-  @behaviour GetterList
-
-  @impl GetterList
-  def get(%Filter{
-    user_id: _,
-    is_active: _, 
-    address: _, 
-    ssh_host: ssh_host, 
-    created_f: _,
-    created_t: _,
-    updated_f: _,
-    updated_t: _,
-  }, %Sort{
-    is_active: _,
-    created: _,
-    updated: _
-  }, %Pagination{
-    page: _,
-    limit: _
-  }) do
-    case :mnesia.transaction(fn -> 
+  @impl Getter
+  def get(id) when is_binary(id) do
+    case :mnesia.transaction(fn ->
       :mnesia.match_object({
         :devices,
         :_,
+        UUID.binary_to_string!(id),
         :_,
-        ssh_host,
         :_,
         :_,
         :_,
@@ -60,11 +40,12 @@ defmodule FakeAdapters.Device.GetterList do
             address,
             longitude,
             latitude,
+            is_active,
             created,
             updated
           } = device
 
-          Success.new([%Entity{
+          Success.new(%Entity{
             id: id,
             ssh_port: ssh_port,
             ssh_host: ssh_host,
@@ -73,18 +54,19 @@ defmodule FakeAdapters.Device.GetterList do
             address: address,
             longitude: longitude,
             latitude: latitude,
+            is_active: is_active,
             created: created,
             updated: updated
-          }])
+          })
 
         else
-          Success.new([])
+          Error.new("Устройство не найдено")
         end
-      {:aborted, _} ->  Error.new("Устройства не найдены")
+      {:aborted, _} ->  Error.new("Устройство не найдено")
     end
   end
 
-  def get(_, _, _) do
+  def get(_) do
     Error.new("Не валидный id")
   end
 end
