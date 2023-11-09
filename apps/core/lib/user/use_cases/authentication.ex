@@ -27,10 +27,9 @@ defmodule Core.User.UseCases.Authentication do
          true <- Kernel.function_exported?(getter_user, :get, 1),
          {:ok, code_entity} <- getter_confiramtion_code.get(Map.get(args, :email)),
          {:ok, _} <- CheckerHasConfirmation.has(code_entity),
-         {:ok, user_entity} <- getter_user.get(Map.get(args, :email)) do
-
-      refresh_token = Core.RefreshToken.Entity.generate_and_sign!(%{id: user_entity.id})
-      access_token = Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.id})
+         {:ok, user_entity} <- getter_user.get(Map.get(args, :email)),
+         refresh_token <- Core.RefreshToken.Entity.generate_and_sign!(%{id: user_entity.id}),
+         access_token <- Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.id}) do
 
       Success.new(%{access_token: access_token, refresh_token: refresh_token})
 
