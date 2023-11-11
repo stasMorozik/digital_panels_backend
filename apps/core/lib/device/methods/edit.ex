@@ -13,19 +13,7 @@ defmodule Core.Device.Methods.Edit do
   alias Core.Shared.Types.Error
 
   @spec edit(Entity.t(), map()) :: Success.t() | Error.t()
-  def edit(%Entity{
-    id: id,
-    ssh_port: ssh_port,
-    ssh_host: ssh_host,
-    ssh_user: ssh_user,
-    ssh_password: ssh_password,
-    address: address,
-    longitude: longitude,
-    latitude: latitude,
-    is_active: is_active,
-    created: created,
-    updated: updated
-  },%{
+  def edit(%Entity{} = entity, %{
     ssh_port: new_ssh_port,
     ssh_host: new_ssh_host,
     ssh_user: new_ssh_user,
@@ -35,19 +23,6 @@ defmodule Core.Device.Methods.Edit do
     latitude: new_latitude,
     is_active: new_is_active
   }) do
-    entity = %Entity{
-      id: id,
-      ssh_port: ssh_port,
-      ssh_host: ssh_host,
-      ssh_user: ssh_user,
-      ssh_password: ssh_password,
-      address: address,
-      longitude: longitude,
-      latitude: latitude,
-      is_active: is_active,
-      created: created,
-      updated: updated
-    }
 
     map = %{
       ssh_port: new_ssh_port,

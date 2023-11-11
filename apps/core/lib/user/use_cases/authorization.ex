@@ -25,7 +25,7 @@ defmodule Core.User.UseCases.Authorization do
            token <- Map.get(args, :token, ""),
            false <- token == nil,
            {result, claims} = Core.AccessToken.Entity.verify_and_validate(token),
-           :ok <- resultt do
+           :ok <- result do
 
         getter_user.get(UUID.string_to_binary!(Map.get(claims, "id")))
 

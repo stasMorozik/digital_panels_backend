@@ -6,10 +6,13 @@ defmodule Core.ConfirmationCode.Validators.Code do
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
 
+  @min 1000
+  @max 9999
+
   @spec valid(integer()) :: Success.t() | Error.t()
   def valid(code) when is_integer(code) do
-    with true <- code >= 1000,
-         true <- code <= 9999 do
+    with true <- code >= @min,
+         true <- code <= @max do
       Success.new(true)
     else
       false -> Error.new("Не валидный код")

@@ -16,8 +16,13 @@ defmodule Core.RefreshToken.UseCases.Refreshing do
       :error -> Error.new("Не валидный токен")
       :ok ->
 
-        refresh_token = Core.RefreshToken.Entity.generate_and_sign!(%{id: Map.get(maybe_claims, "id", "")})
-        access_token = Core.AccessToken.Entity.generate_and_sign!(%{id: Map.get(maybe_claims, "id", "")})
+        refresh_token = Core.RefreshToken.Entity.generate_and_sign!(%{
+          id: Map.get(maybe_claims, "id", "")
+        })
+        
+        access_token = Core.AccessToken.Entity.generate_and_sign!(%{
+          id: Map.get(maybe_claims, "id", "")
+        })
 
         Success.new(%{access_token: access_token, refresh_token: refresh_token})
     end

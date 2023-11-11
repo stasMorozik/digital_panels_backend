@@ -35,32 +35,25 @@ defmodule Core.File.Builder do
     })
   end
 
-  defp size({:ok, entity}, path) when is_struct(entity) do
+  defp size({:ok, entity}, path) do
     case Size.valid(path) do
       {:ok, size} -> Success.new(Map.put(entity, :size, size))
       {:error, messgae} -> {:error, messgae}
     end
   end
 
-  defp size({:error, message}, _) when is_binary(message) do
+  defp size({:error, message}, _) do
     Error.new(message)
   end
 
-  defp url({:ok, entity}, path, web_dav_url) 
-   when is_struct(entity) 
-   and is_binary(web_dav_url) 
-   and is_binary(path) do
+  defp url({:ok, entity}, path, web_dav_url) do
     basename = Path.basename(path)
     url = "#{web_dav_url}/#{entity.id}/#{basename}" 
 
     Success.new(Map.put(entity, :url, url))
   end
 
-  defp url({:ok, entity}, _, _) when is_struct(entity) do
-    Error.new("Не валидный url")
-  end
-
-  defp url({:error, message}, _, _) when is_binary(message) do
+  defp url({:error, message}, _, _) do
     Error.new(message)
   end
 end

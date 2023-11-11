@@ -6,10 +6,13 @@ defmodule Core.Device.Validators.Longitude do
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
 
+  @min -180
+  @max 180
+
   @spec valid(float()) :: Success.t() | Error.t()
   def valid(longitude) when is_float(longitude) do
-    with true <- longitude >= -180,
-         true <- longitude <= 180 do
+    with true <- longitude >= @min,
+         true <- longitude <= @max do
       Success.new(true)
     else
       false -> Error.new("Не валидная долгота")

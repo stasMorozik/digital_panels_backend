@@ -6,11 +6,15 @@ defmodule Core.Device.Validators.SshData do
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
 
+  @format ~r/^[a-zA-Z0-9\.\_\-]+$/
+  @min_length 3
+  @max_length 15
+
   @spec valid(binary()) :: Success.t() | Error.t()
   def valid(data) when is_binary(data) do
-    with true <- String.match?(data, ~r/^[a-zA-Z0-9\.\_\-]+$/),
-         true <- String.length(data) >= 3,
-         true <- String.length(data) <= 15 do
+    with true <- String.match?(data, @format),
+         true <- String.length(data) >= @min_length,
+         true <- String.length(data) <= @max_length do
       Success.new(true)
     else
       false -> Error.new("Не валидные данные ssh соеденения")

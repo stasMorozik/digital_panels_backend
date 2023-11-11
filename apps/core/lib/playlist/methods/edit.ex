@@ -9,25 +9,11 @@ defmodule Core.Playlist.Methods.Edit do
   alias Core.Shared.Types.Error
 
   @spec edit(Entity.t(), map()) :: Success.t() | Error.t()
-  def edit(%Entity{
-    id: id,
-    name: name,
-    contents: contents,
-    created: created,
-    updated: updated
-  }, %{
+  def edit(%Entity{} = entity, %{
     name: new_name,
     contents: new_contents,
     web_dav_url: web_dav_url
   }) when is_binary(new_name) do
-    
-    entity = %Entity{
-      id: id,
-      name: name,
-      contents: contents,
-      created: created,
-      updated: updated
-    }
 
     map = %{
       name: new_name,

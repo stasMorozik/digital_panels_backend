@@ -38,26 +38,26 @@ defmodule Core.Content.Builder do
   end
 
   # Функция построения продолжительности
-  defp display_duration({ :ok, entity }, new_display_duration) when is_struct(entity) do
+  defp display_duration({ :ok, entity }, new_display_duration) do
     case DisplayDuration.valid(new_display_duration) do
       {:ok, _} -> Success.new(Map.put(entity, :display_duration, new_display_duration))
       {:error, message} -> {:error, message}
     end
   end
 
-  defp display_duration({:error, message}, _) when is_binary(message) do
+  defp display_duration({:error, message}, _) do
     Error.new(message)
   end
 
   # Функция построения файла
-  defp file({ :ok, entity }, new_file) when is_struct(entity) do
+  defp file({ :ok, entity }, new_file) do
     case BuilderFile.build(new_file) do
       {:ok, file_entity} -> Success.new(Map.put(entity, :file, file_entity))
       {:error, message} -> {:error, message}
     end
   end
 
-  defp file({:error, message}, _) when is_binary(message) do
+  defp file({:error, message}, _) do
     Error.new(message)
   end
 end

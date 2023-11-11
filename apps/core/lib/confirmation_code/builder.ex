@@ -32,7 +32,7 @@ defmodule Core.ConfirmationCode.Builder do
   end
 
   # Функция построения того что нужно подтвердить(телефон, почта)
-  defp needle({ :ok, entity}, validator, new_needle) when is_struct(entity) do
+  defp needle({ :ok, entity}, validator, new_needle) do
     with true <- Kernel.function_exported?(validator, :valid, 1),
          {:ok, _} <- validator.valid(new_needle) do
       Success.new(Map.put(entity, :needle, new_needle))
@@ -42,7 +42,7 @@ defmodule Core.ConfirmationCode.Builder do
     end
   end
 
-  defp needle({:error, message}, _, _) when is_binary(message) do
+  defp needle({:error, message}, _, _) do
     {:error, message}
   end
 end

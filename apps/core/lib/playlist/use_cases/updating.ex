@@ -1,4 +1,4 @@
-defmodule Core.Playlist.UseCases.Creating do
+defmodule Core.Playlist.UseCases.Updating do
   @moduledoc """
     Юзекейз редактирования плэйлиста
   """
@@ -46,10 +46,10 @@ defmodule Core.Playlist.UseCases.Creating do
            true <- Kernel.function_exported?(getter_playlist, :transform, 1),
            :ok <- result,
            {:ok, user} <- authorization_use_case.auth(getter_user, args),
-           {:ok, playlist} <- getter.get(UUID.string_to_binary!(args.id)),
+           {:ok, playlist} <- getter_playlist.get(UUID.string_to_binary!(args.id)),
            default_args <- %{
               name: Map.get(args, :name),
-              contents: Map.get(args, :contents)
+              contents: Map.get(args, :contents),
               web_dav_url: Map.get(args, :web_dav_url, "")
            },
            {:ok, edited_playlist} <- Edit.edit(playlist, default_args),

@@ -3,8 +3,7 @@ defmodule HttpAdapters.File.Putting do
 
   alias Core.File.Ports.Transformer
   
-  alias Core.File.Entity, as: FileEntity
-  alias Core.User.Entity, as: UserEntity
+  alias Core.File.Entity
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
@@ -13,21 +12,14 @@ defmodule HttpAdapters.File.Putting do
   @behaviour Transformer
 
   @impl Transformer
-  def transform(%FileEntity{
-    id: _,
-    size: _,
-    url: url,
-    path: path,
-    created: _,
-    updated: _
-  }, _) do
+  def transform(%Entity{} = entity, _) do
     user = Application.fetch_env!(:http_adapters, :user)
     password = Application.fetch_env!(:http_adapters, :password)
     header_content = "Basic " <> Base.encode64("#{user}:#{password}")
 
     case HTTPoison.put(
-      url,
-      {:file, path},
+      entity.url,
+      {:file, entity.path},
       [{"Authorization", header_content}]
     ) do
       {:ok, %HTTPoison.Response{

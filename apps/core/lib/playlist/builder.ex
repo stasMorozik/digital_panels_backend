@@ -38,9 +38,7 @@ defmodule Core.Playlist.Builder do
   # Функция построения контента
   defp contents({ :ok, entity }, contents, web_dav_url) 
     when is_list(contents) 
-    and length(contents) > 0 
-    and is_struct(entity) 
-    and is_binary(web_dav_url) do
+    and length(contents) > 0 do
 
     with cnts <- handle_contents(contents, web_dav_url),
          nil <- Enum.find(cnts, fn tuple -> elem(tuple, 0) == :error end),
@@ -53,8 +51,7 @@ defmodule Core.Playlist.Builder do
 
   defp contents({ :ok, entity }, contents, _) 
     when is_list(contents) 
-    and length(contents) == 0 
-    and is_struct(entity) do
+    and length(contents) == 0 do
     Error.new("Пустой список контента")
   end
 
@@ -62,7 +59,7 @@ defmodule Core.Playlist.Builder do
     Error.new("Не валидные данные для построения плэйлиста")
   end
 
-  defp contents({:error, message}, _, _) when is_binary(message) do
+  defp contents({:error, message}, _, _) do
     Error.new(message)
   end
 

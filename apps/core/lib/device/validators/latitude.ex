@@ -6,10 +6,13 @@ defmodule Core.Device.Validators.Latitude do
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
 
+  @min -90
+  @max 90
+
   @spec valid(float()) :: Success.t() | Error.t()
   def valid(latitude) when is_float(latitude) do
-    with true <- latitude >= -90,
-         true <- latitude <= 90 do
+    with true <- latitude >= @min,
+         true <- latitude <= @max do
       Success.new(true)
     else
       false -> Error.new("Не валидная широта")

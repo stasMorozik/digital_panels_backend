@@ -29,7 +29,7 @@ defmodule Core.User.Builder do
   end
 
   # Функция построения электронной почты пользователя
-  defp email({ :ok, entity }, new_email) when is_struct(entity) do
+  defp email({ :ok, entity }, new_email) do
     case Email.valid(new_email) do
       {:ok, _} -> Success.new(Map.put(entity, :email, new_email))
       {:error, error} -> {:error, error}
@@ -41,26 +41,26 @@ defmodule Core.User.Builder do
   end
 
   # Функция построения имени пользователя
-  defp name({ :ok, entity }, new_name) when is_struct(entity) do
+  defp name({ :ok, entity }, new_name) do
     case Name.valid(new_name) do
       {:ok, _} -> Success.new(Map.put(entity, :name, new_name))
       {:error, error} -> {:error, error}
     end
   end
 
-  defp name({:error, message}, _) when is_binary(message) do
+  defp name({:error, message}, _) do
     {:error, message}
   end
 
   #  Функция построения фамилии пользователя
-  defp surname({ :ok, entity }, new_surname) when is_struct(entity) do
+  defp surname({ :ok, entity }, new_surname) do
     case Name.valid(new_surname) do
       {:ok, _} -> Success.new(Map.put(entity, :surname, new_surname))
       {:error, _} -> Error.new("Не валидная фамилия пользователя")
     end
   end
 
-  defp surname({:error, message}, _) when is_binary(message) do
+  defp surname({:error, message}, _) do
     {:error, message}
   end
 end

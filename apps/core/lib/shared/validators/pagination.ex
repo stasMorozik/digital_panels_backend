@@ -12,8 +12,6 @@ defmodule Core.Shared.Validators.Pagination do
   def valid(data) when is_map(data) do
     with page <- Map.get(data, :page),
          limit <- Map.get(data, :limit),
-         true <- page != nil,
-         true <- limit != nil,
          true <- is_integer(page),
          true <- is_integer(limit),
          true <- page > 0,

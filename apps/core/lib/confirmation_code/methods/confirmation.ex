@@ -11,7 +11,7 @@ defmodule Core.ConfirmationCode.Methods.Confirmation do
   alias Core.Shared.Types.Error
 
   @spec confirm(Entity.t(), integer()) :: Success.t() | Error.t()
-  def confirm(entity, some_code) when is_integer(some_code) and is_struct(entity) do
+  def confirm(%Entity{} = entity, some_code) when is_integer(some_code) do
     with {:ok, _} <- Verifier.verify(entity, some_code) do
       Success.new(Map.put(entity, :confirmed, true))
     else

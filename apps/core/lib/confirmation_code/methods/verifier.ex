@@ -11,16 +11,16 @@ defmodule Core.ConfirmationCode.Methods.Verifier do
   alias Core.Shared.Types.Error
 
   @spec verify(Entity.t(), integer()) :: Success.t() | Error.t()
-  def verify(%Entity{created: created, confirmed: _, code: code, needle: _}, some_code) when is_integer(some_code) do
+  def verify(%Entity{} = entity, some_code) when is_integer(some_code) do
     {:ok, cur_utc_date} = DateTime.now("Etc/UTC")
 
     cur_unix_time = DateTime.to_unix(cur_utc_date)
 
-    if cur_unix_time > created do
+    if cur_unix_time > entity.created do
       Error.new("Истекло время жизни у кода подтверждения")
     else
       with {:ok, _} <- Code.valid(some_code),
-           true <- code == some_code do
+           true <- entity.code == some_code do
         Success.new(true)
       else
         {:error, error} -> {:error, error}
