@@ -6,10 +6,10 @@ defmodule Core.File.Validators.File do
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
 
-  @extensions = %{
-    ".jpg":  true
+  @extensions %{
+    ".jpg":  true,
     ".jpeg": true,
-    ".png":  true
+    ".png":  true,
     ".gif":  true,
     ".avif": true
   }
@@ -20,7 +20,7 @@ defmodule Core.File.Validators.File do
          size <- file_stat.size,
          true <- size > 0,
          extname <- Path.extname(path),
-         true <- Map.get(@extensions, extname) do
+         true <- Map.get( @extensions, String.to_atom(extname) ) do
       {:ok, file_stat}
     else
       nil -> Error.new("Не валидное расширение файла")

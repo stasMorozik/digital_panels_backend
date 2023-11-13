@@ -55,15 +55,15 @@ defmodule Core.Playlist.UseCases.GettingList do
          filter <- %Filter{
             user_id: UUID.string_to_binary!(user.id), 
             name: Map.get(filter, :name), 
-            created_f: filter.created_f,
-            created_t: filter.created_t,
-            updated_f: filter.updated_f,
-            updated_t: filter.updated_t,
+            created_f: Map.get(filter, :created_f),
+            created_t: Map.get(filter, :created_t),
+            updated_f: Map.get(filter, :updated_f),
+            updated_t: Map.get(filter, :updated_t),
          },
          sort <- %Sort{
-            name: sort.name, 
-            created: sort.name, 
-            updated: sort.updated
+            name: Map.get(sort, :name), 
+            created: Map.get(sort, :created), 
+            updated: Map.get(sort, :updated)
          },
          {:ok, list} <- getter_list.get(filter, sort, pagi) do
       Success.new(list)

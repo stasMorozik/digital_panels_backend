@@ -56,18 +56,18 @@ defmodule Core.Device.UseCases.GettingList do
          {:ok, pagi} <- Pagination.valid(pagi),
          filter <- %Filter{
             user_id: UUID.string_to_binary!(user.id), 
-            is_active: filter.is_active, 
-            address: filter.address,
-            ssh_host: filter.ssh_host,
-            created_f: filter.created_f,
-            created_t: filter.created_t,,
-            updated_f: filter.updated_f,
-            updated_t: filter.updated_t
+            is_active: Map.get(filter, :is_active), 
+            address: Map.get(filter, :address),
+            ssh_host: Map.get(filter, :ssh_host),
+            created_f: Map.get(filter, :created_f),
+            created_t: Map.get(filter, :created_t),
+            updated_f: Map.get(filter, :updated_f),
+            updated_t: Map.get(filter, :updated_t)
          },
          sort <- %Sort{
-            is_active: sort.is_active, 
-            created: sort.created, 
-            updated: sort.updated
+            is_active: Map.get(sort, :is_active), 
+            created: Map.get(sort, :created), 
+            updated: Map.get(sort, :updated)
          },
          {:ok, list} <- getter_list.get(filter, sort, pagi) do
       Success.new(list)

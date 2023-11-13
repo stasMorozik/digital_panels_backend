@@ -17,7 +17,7 @@ defmodule Core.File.Builder do
     web_dav_url: web_dav_url
   }) do
     entity(path)
-      |> size(path)
+      |> file(path)
       |> url(path, web_dav_url)
   end
 
