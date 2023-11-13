@@ -9,7 +9,7 @@ defmodule Core.File.Builder do
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
 
-  alias Core.File.Validators.Size
+  alias Core.File.Validators.File
 
   @spec build(map()) :: Success.t() | Error.t()
   def build(%{
@@ -35,14 +35,14 @@ defmodule Core.File.Builder do
     })
   end
 
-  defp size({:ok, entity}, path) do
-    case Size.valid(path) do
-      {:ok, size} -> Success.new(Map.put(entity, :size, size))
+  defp file({:ok, entity}, path) do
+    case File.valid(path) do
+      {:ok, stat} -> Success.new(Map.put(entity, :size, stat.size))
       {:error, messgae} -> {:error, messgae}
     end
   end
 
-  defp size({:error, message}, _) do
+  defp file({:error, message}, _) do
     Error.new(message)
   end
 
