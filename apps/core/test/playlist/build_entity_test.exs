@@ -6,10 +6,10 @@ defmodule Playlist.BuildEntityTest do
   doctest Core.Playlist.Builder
   
   setup_all do
-    File.touch("/tmp/not_emty.txt", 1544519753)
-    File.touch("/tmp/empty.txt", 1544519753)
+    File.touch("/tmp/not_emty.png", 1544519753)
+    File.touch("/tmp/empty.png", 1544519753)
     
-    File.write("/tmp/not_emty.txt", "content")
+    File.write("/tmp/not_emty.png", "content")
     
     :ok
   end
@@ -20,7 +20,7 @@ defmodule Playlist.BuildEntityTest do
       contents: [
         %{
           file: %{
-            path: "/tmp/not_emty.txt"
+            path: "/tmp/not_emty.png"
           },
           display_duration: 15
         }
@@ -38,7 +38,7 @@ defmodule Playlist.BuildEntityTest do
         contents: [
           %{
             file: %{
-              path: "/tmp/empty.txt"
+              path: "/tmp/empty.png"
             },
             display_duration: 15
           }
@@ -67,7 +67,7 @@ defmodule Playlist.BuildEntityTest do
       contents: [
         %{
           file: %{
-            path: "/tmp/not_emty.txt"
+            path: "/tmp/not_emty.png"
           },
           display_duration: 15
         }

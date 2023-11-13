@@ -9,9 +9,9 @@ defmodule Playlist.UseCases.GettingListTest do
   alias Core.Playlist.UseCases.GettingList
 
   setup_all do
-    File.touch("/tmp/not_emty.txt", 1544519753)
+    File.touch("/tmp/not_emty.png", 1544519753)
     
-    File.write("/tmp/not_emty.txt", "content")
+    File.write("/tmp/not_emty.png", "content")
 
     :mnesia.create_schema([node()])
 
@@ -51,7 +51,7 @@ defmodule Playlist.UseCases.GettingListTest do
       contents: [
         %{
           file: %{
-            path: "/tmp/not_emty.txt"
+            path: "/tmp/not_emty.png"
           },
           display_duration: 15
         }
@@ -64,7 +64,7 @@ defmodule Playlist.UseCases.GettingListTest do
       contents: [
         %{
           file: %{
-            path: "/tmp/not_emty.txt"
+            path: "/tmp/not_emty.png"
           },
           display_duration: 15
         }

@@ -6,10 +6,10 @@ defmodule Content.BuildEntityTest do
   doctest Core.Content.Builder
   
   setup_all do
-    File.touch("/tmp/not_emty.txt", 1544519753)
-    File.touch("/tmp/empty.txt", 1544519753)
+    File.touch("/tmp/not_emty.png", 1544519753)
+    File.touch("/tmp/empty.png", 1544519753)
     
-    File.write("/tmp/not_emty.txt", "content")
+    File.write("/tmp/not_emty.png", "content")
     
     :ok
   end
@@ -18,7 +18,7 @@ defmodule Content.BuildEntityTest do
     {result, _} =
       Builder.build(%{
         file: %{
-          path: "/tmp/not_emty.txt"
+          path: "/tmp/not_emty.png"
         },
         web_dav_url: "http://localhost",
         display_duration: 15
@@ -31,7 +31,7 @@ defmodule Content.BuildEntityTest do
     {result, _} =
       Builder.build(%{
         file: %{
-          path: "/tmp/emty.txt"
+          path: "/tmp/emty.png"
         },
         web_dav_url: "http://localhost",
         display_duration: 15
@@ -44,7 +44,7 @@ defmodule Content.BuildEntityTest do
     {result, _} =
       Builder.build(%{
         file: %{
-          path: "/tmp/not_emty.txt"
+          path: "/tmp/not_emty.png"
         },
         web_dav_url: "http://localhost",
         display_duration: 0
