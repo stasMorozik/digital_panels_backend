@@ -28,10 +28,7 @@ defmodule Core.User.UseCases.Registration do
     and is_atom(getter_confiramtion_code)
     and is_atom(notifier)
     and is_map(args) do
-    with true <- Kernel.function_exported?(transformer_users_store, :transform, 1),
-         true <- Kernel.function_exported?(getter_confiramtion_code, :get, 1),
-         true <- Kernel.function_exported?(notifier, :notify, 1),
-         {:ok, code_entity} <- getter_confiramtion_code.get(Map.get(args, :email)),
+    with {:ok, code_entity} <- getter_confiramtion_code.get(Map.get(args, :email)),
          {:ok, _} <- CheckerHasConfirmation.has(code_entity),
          {:ok, user_entity} <- Builder.build(args),
          {:ok, _} <- transformer_users_store.transform(user_entity),
@@ -46,7 +43,6 @@ defmodule Core.User.UseCases.Registration do
     else
       {:error, error} -> {:error, error}
       {:exception, error} -> {:exception, error}
-      false -> Error.new("Не валидные аргументы для регистрации пользователя")
     end
   end
 

@@ -40,11 +40,7 @@ defmodule Core.Playlist.UseCases.Updating do
 
       {result, _} = UUID.info(Map.get(args, :id))
 
-      with true <- Kernel.function_exported?(authorization_use_case, :auth, 2),
-           true <- Kernel.function_exported?(playlist_transformer, :transform, 2),
-           true <- Kernel.function_exported?(file_transformer, :transform, 2),
-           true <- Kernel.function_exported?(getter_playlist, :transform, 1),
-           :ok <- result,
+      with :ok <- result,
            {:ok, user} <- authorization_use_case.auth(getter_user, args),
            {:ok, playlist} <- getter_playlist.get(UUID.string_to_binary!(args.id)),
            default_args <- %{
@@ -61,8 +57,7 @@ defmodule Core.Playlist.UseCases.Updating do
            {:ok, _} <- playlist_transformer.transform(playlist, user) do
         Success.new(true)
       else
-        false -> Error.new("Не валидные аргументы для создания плэйлиста")
-        :error -> Error.new("Не валидный UUID плэйлиста: #{Map.get(args, :id)}")
+        :error -> Error.new("Не валидный UUID плэйлиста")
         {:error, message} -> {:error, message}
         {:exception, message} -> {:exception, message}
       end

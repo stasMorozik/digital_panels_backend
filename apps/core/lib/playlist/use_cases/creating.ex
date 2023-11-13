@@ -31,10 +31,7 @@ defmodule Core.Playlist.UseCases.Creating do
     and is_atom(file_transformer)
     and is_atom(playlist_transformer)
     and is_map(args) do
-      with true <- Kernel.function_exported?(authorization_use_case, :auth, 2),
-           true <- Kernel.function_exported?(playlist_transformer, :transform, 2),
-           true <- Kernel.function_exported?(file_transformer, :transform, 2),
-           {:ok, user} <- authorization_use_case.auth(getter_user, args),
+      with {:ok, user} <- authorization_use_case.auth(getter_user, args),
            {:ok, playlist} <- Builder.build(%{
               name: Map.get(args, :name, ""),
               contents: Map.get(args, :contents, []),
@@ -48,7 +45,6 @@ defmodule Core.Playlist.UseCases.Creating do
            {:ok, _} <- playlist_transformer.transform(playlist, user) do
         Success.new(true)
       else
-        false -> Error.new("Не валидные аргументы для создания плэйлиста")
         {:error, message} -> {:error, message}
         {:exception, message} -> {:exception, message}
       end

@@ -21,15 +21,12 @@ defmodule Core.ConfirmationCode.UseCases.Confirming do
     getter,
     args
   ) when is_atom(transformer) and is_atom(getter) and is_map(args) do
-    with true <- Kernel.function_exported?(transformer, :transform, 1),
-         true <- Kernel.function_exported?(getter, :get, 1),
-         {:ok, code_entity} <- getter.get(Map.get(args, :needle)),
+    with {:ok, code_entity} <- getter.get(Map.get(args, :needle)),
          {:ok, code_entity} <- Confirmation.confirm(code_entity, Map.get(args, :code)),
          {:ok, _} <- transformer.transform(code_entity) do
       Success.new(true)
     else
       {:error, error} -> {:error, error}
-      false -> Error.new("Не валидные данные для подтверждения кода")
       {:exception, error} -> {:exception, error}
     end
   end

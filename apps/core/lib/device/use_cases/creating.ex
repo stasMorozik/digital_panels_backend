@@ -34,10 +34,7 @@ defmodule Core.Device.UseCases.Creating do
 
       {result, _} = UUID.info(Map.get(args, :playlist_id))
 
-      with true <- Kernel.function_exported?(authorization_use_case, :auth, 2),
-           true <- Kernel.function_exported?(transformer, :transform, 3),
-           true <- Kernel.function_exported?(getter_playlist, :get, 1),
-           {:ok, user} <- authorization_use_case.auth(getter_user, args),
+      with {:ok, user} <- authorization_use_case.auth(getter_user, args),
            :ok <- result,
            {:ok, playlist} <- getter_playlist.get(
             UUID.string_to_binary!(args.playlist_id)
@@ -54,9 +51,8 @@ defmodule Core.Device.UseCases.Creating do
            {:ok, _} <- transformer.transform(device, user, playlist) do
         Success.new(true)
       else
-        false -> Error.new("Не валидные аргументы для создания устройства")
+        :error -> Error.new("Не валидный UUID плэйлиста")
         {:error, message} -> {:error, message}
-        :error -> Error.new("Не валидный UUID плэйлиста: #{Map.get(args, :playlist_id)}")
         {:exception, message} -> {:exception, message}
       end
   end

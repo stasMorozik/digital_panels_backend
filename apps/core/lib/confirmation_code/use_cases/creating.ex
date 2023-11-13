@@ -22,9 +22,7 @@ defmodule Core.ConfirmationCode.UseCases.Creating do
     notifier,
     email
   ) when is_atom(transformer_code_store) and is_atom(notifier) do
-    with true <- Kernel.function_exported?(transformer_code_store, :transform, 1),
-         true <- Kernel.function_exported?(notifier, :notify, 1),
-         {:ok, entity} <- Builder.build(email, Email),
+    with {:ok, entity} <- Builder.build(email, Email),
          {:ok, _} <- transformer_code_store.transform(entity),
          {:ok, _}
             <- notifier.notify(%{
@@ -36,7 +34,6 @@ defmodule Core.ConfirmationCode.UseCases.Creating do
       Success.new(true)
     else
       {:error, error} -> {:error, error}
-      false -> Error.new("Не валидные аргументы для создания кода подтверждения")
       {:exception, error} -> {:exception, error}
     end
   end

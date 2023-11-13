@@ -21,8 +21,7 @@ defmodule Core.User.UseCases.Authorization do
     args
   ) when is_atom(getter_user)
     and is_map(args) do
-      with true <- Kernel.function_exported?(getter_user, :get, 1),
-           token <- Map.get(args, :token, ""),
+      with token <- Map.get(args, :token, ""),
            false <- token == nil,
            {result, claims} = Core.AccessToken.Entity.verify_and_validate(token),
            :ok <- result do
@@ -30,7 +29,6 @@ defmodule Core.User.UseCases.Authorization do
         getter_user.get(UUID.string_to_binary!(Map.get(claims, "id")))
 
       else
-        false -> Error.new("Не валидные аргументы для авторизации пользователя")
         true -> Error.new("Не валидный токен")
         :error -> Error.new("Не валидный токен")
       end

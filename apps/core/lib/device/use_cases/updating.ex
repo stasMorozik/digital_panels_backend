@@ -41,11 +41,7 @@ defmodule Core.Device.UseCases.Updating do
 
 		{result_1, _} = UUID.info(Map.get(args, :id))
 
-		with true <- Kernel.function_exported?(authorization_use_case, :auth, 2),
-         true <- Kernel.function_exported?(getter, :get, 1),
-				 true <- Kernel.function_exported?(getter_playlist, :get, 1),
-         true <- Kernel.function_exported?(transformer, :transform, 3),
-         :ok <- result_0,
+		with :ok <- result_0,
          :ok <- result_1,
          {:ok, user} <- authorization_use_case.auth(
             getter_user, %{token: Map.get(args, :token, "")}
@@ -70,13 +66,8 @@ defmodule Core.Device.UseCases.Updating do
          {:ok, _} <- transformer.transform(edited_device, user, playlist) do
       Success.new(true)
     else
-      false -> Error.new("Не валидные аргументы для получения устройства")
+      :error -> Error.new("Не валидный UUID устройства/плэйлиста")
       {:error, message} -> {:error, message}
-      :error ->
-        Error.new(
-          "Не валидный UUID устройства/плэйлиста: " <> 
-          "#{Map.get(args, :id)}/#{Map.get(args, :playlist_id)}"
-        )
       {:exception, message} -> {:exception, message}
     end
 	end

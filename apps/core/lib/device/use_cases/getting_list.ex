@@ -29,9 +29,7 @@ defmodule Core.Device.UseCases.GettingList do
     getter_list,
     args
   ) when is_atom(authorization_use_case) and is_atom(getter_list) and is_map(args) do
-    with true <- Kernel.function_exported?(authorization_use_case, :auth, 2),
-         true <- Kernel.function_exported?(getter_list, :get, 3),
-         default_filter <- %{
+    with default_filter <- %{
           is_active: nil, 
           address: nil,
           ssh_host: nil, 
@@ -74,7 +72,6 @@ defmodule Core.Device.UseCases.GettingList do
          {:ok, list} <- getter_list.get(filter, sort, pagi) do
       Success.new(list)
     else
-      false -> Error.new("Не валидные аргументы для получения списка устройств")
       {:error, message} -> {:error, message}
       {:exception, message} -> {:exception, message}
     end
