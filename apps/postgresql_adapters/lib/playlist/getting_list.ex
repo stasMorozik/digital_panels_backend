@@ -107,12 +107,6 @@ defmodule PostgresqlAdapters.Playlist.GettingList do
     with order <- Map.get(sort, :name),
          false <- order == nil do
 
-      order = if order == "asc" || order == "desc" do
-        String.upcase(order)
-      else
-        "ASC"
-      end
-
       query_string = query_string <> " ORDER BY pl.name #{order}"
 
       {query_string, data_list}
@@ -124,12 +118,6 @@ defmodule PostgresqlAdapters.Playlist.GettingList do
   defp order_by_created({query_string, data_list}, sort) do
     with order <- Map.get(sort, :created),
          false <- order == nil do
-
-      order = if order == "asc" || order == "desc" do
-        String.upcase(order)
-      else
-        "ASC"
-      end
 
       query_string = query_string <> " ORDER BY pl.created #{order}"
 

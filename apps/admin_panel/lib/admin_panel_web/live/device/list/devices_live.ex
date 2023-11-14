@@ -225,20 +225,6 @@ defmodule AdminPanelWeb.DevicesLive do
 
       {:noreply, socket}
     end
-    
-    filter_by_created_f = form["filter_by_created_f"]
-    
-    filter_by_created_f = case Date.from_iso8601(filter_by_created_f) do
-      {:ok, filter_by_created_f} -> filter_by_created_f
-      {:error, _} -> nil
-    end
-
-    filter_by_created_t = form["filter_by_created_t"]
-
-    filter_by_created_t = case Date.from_iso8601(filter_by_created_t) do
-      {:ok, filter_by_created_t} -> filter_by_created_t
-      {:error, _} -> nil
-    end
 
     filter_by_is_active = get_field_from_form(form, "filter_by_is_active")
 
@@ -251,8 +237,8 @@ defmodule AdminPanelWeb.DevicesLive do
       address: get_field_from_form(form, "filter_by_address"),
       ssh_host: get_field_from_form(form, "filter_by_ssh_host"),
       is_active: filter_by_is_active,
-      created_f: filter_by_created_f,
-      created_t: filter_by_created_t,
+      created_f: get_field_from_form(form, "filter_by_created_f"),
+      created_t: get_field_from_form(form, "filter_by_created_t"),
     }
 
     sort = %{

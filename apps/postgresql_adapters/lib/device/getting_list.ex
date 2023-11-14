@@ -135,12 +135,6 @@ defmodule PostgresqlAdapters.Device.GettingList do
     with order <- Map.get(sort, :is_active),
          false <- order == nil do
 
-      order = if order == "asc" || order == "desc" do
-        String.upcase(order)
-      else
-        "ASC"
-      end
-
       query_string = query_string <> " ORDER BY d.is_active #{order}"
 
       {query_string, data_list}
@@ -152,12 +146,6 @@ defmodule PostgresqlAdapters.Device.GettingList do
   defp order_by_created({query_string, data_list}, sort) do
     with order <- Map.get(sort, :created),
          false <- order == nil do
-
-      order = if order == "asc" || order == "desc" do
-        String.upcase(order)
-      else
-        "ASC"
-      end
 
       query_string = query_string <> " ORDER BY d.created #{order}"
 
