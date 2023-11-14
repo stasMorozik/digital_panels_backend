@@ -15,7 +15,7 @@ defmodule Core.Device.UseCases.GettingList do
   alias Core.Device.Types.Filter
   alias Core.Device.Types.Sort
 
-  alias Core.Shared.Validators.Pagination
+  alias Core.Shared.Types.Builders.Pagi
 
   @spec get(
     Authorization.t(),
@@ -51,7 +51,7 @@ defmodule Core.Device.UseCases.GettingList do
          {:ok, user} <- authorization_use_case.auth(
             getter_user, %{token: Map.get(args, :token, "")}
          ),
-         {:ok, pagi} <- Pagination.valid(pagi),
+         {:ok, pagi} <- Pagi.build(pagi),
          filter <- %Filter{
             user_id: UUID.string_to_binary!(user.id), 
             is_active: Map.get(filter, :is_active), 

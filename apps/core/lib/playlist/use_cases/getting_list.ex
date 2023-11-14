@@ -15,7 +15,7 @@ defmodule Core.Playlist.UseCases.GettingList do
   alias Core.Playlist.Types.Filter
   alias Core.Playlist.Types.Sort
 
-  alias Core.Shared.Validators.Pagination
+  alias Core.Shared.Types.Builders.Pagi
 
   @spec get(
     Authorization.t(),
@@ -49,7 +49,7 @@ defmodule Core.Playlist.UseCases.GettingList do
          {:ok, user} <- authorization_use_case.auth(
             getter_user, %{token: Map.get(args, :token, "")}
          ),
-         {:ok, pagi} <- Pagination.valid(pagi),
+         {:ok, pagi} <- Pagi.build(pagi),
          filter <- %Filter{
             user_id: UUID.string_to_binary!(user.id), 
             name: Map.get(filter, :name), 

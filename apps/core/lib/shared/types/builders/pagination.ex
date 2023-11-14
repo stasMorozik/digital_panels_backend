@@ -1,4 +1,4 @@
-defmodule Core.Shared.Validators.Pagination do
+defmodule Core.Shared.Types.Builders.Pagi do
   @moduledoc """
     Валидирует данные для пагинации
   """
@@ -8,8 +8,8 @@ defmodule Core.Shared.Validators.Pagination do
 
   alias Core.Shared.Types.Pagination
 
-  @spec valid(map()) :: Success.t() | Error.t()
-  def valid(data) when is_map(data) do
+  @spec build(map()) :: Success.t() | Error.t()
+  def build(data) when is_map(data) do
     with page <- Map.get(data, :page),
          limit <- Map.get(data, :limit),
          true <- is_integer(page),
@@ -26,7 +26,7 @@ defmodule Core.Shared.Validators.Pagination do
     end
   end
 
-  def valid(_) do
+  def build(_) do
     Error.new("Не валидные данные для пагинации")
   end
 end
