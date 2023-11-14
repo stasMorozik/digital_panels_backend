@@ -39,15 +39,7 @@ defmodule Core.Device.UseCases.Creating do
            {:ok, playlist} <- getter_playlist.get(
             UUID.string_to_binary!(args.playlist_id)
            ),
-           {:ok, device} <- Builder.build(%{
-              ssh_port: Map.get(args, :ssh_port, ""),
-              ssh_host: Map.get(args, :ssh_host, ""),
-              ssh_user: Map.get(args, :ssh_user, ""),
-              ssh_password: Map.get(args, :ssh_password, ""),
-              address: Map.get(args, :address, ""),
-              longitude: Map.get(args, :longitude, ""),
-              latitude: Map.get(args, :latitude, "")
-           }),
+           {:ok, device} <- Builder.build(args),
            {:ok, _} <- transformer.transform(device, user, playlist) do
         Success.new(true)
       else

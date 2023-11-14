@@ -12,8 +12,6 @@ defmodule Core.Device.Types.Filter do
     ssh_host:  binary()  | none(),
     created_f: binary()  | none(),
     created_t: binary()  | none(),
-    updated_f: binary()  | none(),
-    updated_t: binary()  | none()
   }
 
   defstruct user_id: nil,
@@ -21,7 +19,5 @@ defmodule Core.Device.Types.Filter do
             address: nil, 
             ssh_host: nil, 
             created_f: nil,
-            created_t: nil,
-            updated_f: nil,
-            updated_t: nil
+            created_t: nil
 end

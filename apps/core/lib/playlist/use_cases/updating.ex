@@ -43,17 +43,11 @@ defmodule Core.Playlist.UseCases.Updating do
       with :ok <- result,
            {:ok, user} <- authorization_use_case.auth(getter_user, args),
            {:ok, playlist} <- getter_playlist.get(UUID.string_to_binary!(args.id)),
-           default_args <- %{
-              name: Map.get(args, :name),
-              contents: Map.get(args, :contents),
-              web_dav_url: Map.get(args, :web_dav_url, "")
-           },
-           {:ok, edited_playlist} <- Edit.edit(playlist, default_args),
-           {:ok, _} <- transform_file_storage(
-              file_transformer, 
-              edited_playlist.contents, 
-              user
-           ),
+           {:ok, playlist} <- Edit.edit(playlist, args),
+           fun <- fn (content) -> file_transformer.transform(content.file, user) end,
+           list_results <- Enum.map(playlist.contents, fun),
+           fun <- fn (tuple) -> elem(tuple, 0) == :error end,
+           nil <- Enum.find(list_results, fun),
            {:ok, _} <- playlist_transformer.transform(playlist, user) do
         Success.new(true)
       else
@@ -65,16 +59,5 @@ defmodule Core.Playlist.UseCases.Updating do
 
   def create(_, _, _, _, _, _) do
     Error.new("Не валидные аргументы для создания плэйлиста")
-  end
-
-  defp transform_file_storage(file_transformer, contents, user) do
-    list_results = Enum.map(contents, fn c -> file_transformer.transform(c.file, user) end)
-
-    maybe_error = Enum.find(list_results, fn tuple -> elem(tuple, 0) == :error end)
-
-    case maybe_error do
-      nil -> Success.new(true)
-      error -> error
-    end
   end
 end

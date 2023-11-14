@@ -40,13 +40,17 @@ defmodule Core.Playlist.Builder do
     when is_list(contents) 
     and length(contents) > 0 do
 
-    with cnts <- handle_contents(contents, web_dav_url),
+    with fun <- fn (content) -> BuilderContent.build(
+          Map.put(content, :web_dav_url, web_dav_url)
+         ) end,
+         cnts <- Enum.map(contents, fun),
          nil <- Enum.find(cnts, fn tuple -> elem(tuple, 0) == :error end),
          cnts <- Enum.map(cnts, fn tuple -> elem(tuple, 1) end) do
       Success.new(Map.put(entity, :contents, cnts))
     else
       {:error, message} -> {:error, message}
     end
+    
   end
 
   defp contents({ :ok, entity }, contents, _) 
@@ -61,12 +65,5 @@ defmodule Core.Playlist.Builder do
 
   defp contents({:error, message}, _, _) do
     Error.new(message)
-  end
-
-  defp handle_contents(contents, web_dav_url) do
-    Enum.map(
-      contents, 
-      fn content -> BuilderContent.build(Map.put(content, :web_dav_url, web_dav_url)) end
-    )
   end
 end
