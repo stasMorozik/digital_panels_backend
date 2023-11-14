@@ -82,6 +82,6 @@ defmodule FakeAdapters.Device.GetterList do
   end
 
   def get(_, _, _) do
-    Error.new("Не валидный id")
+    Error.new("Не валидные данне для получения списка")
   end
 end

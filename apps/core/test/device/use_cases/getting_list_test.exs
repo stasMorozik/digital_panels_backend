@@ -110,17 +110,20 @@ defmodule Devices.UseCases.GettingListTest do
       FakeAdapters.Device.GetterList,
       %{
         token: access_token,
-        pagination: %{
+        pagi: %{
           page: 1,
           limit: 10
         },
         filter: %{
-          ssh_host: "192.168.1.98"
+          ssh_host: "192.168.1.98",
+          is_active: nil, 
+          address:   nil,
+          created_f: nil,
+          created_t: nil
         },
         sort: %{
-          name: "test",
-          created: "test",
-          updated: "test"
+          is_active: nil,
+          created: nil
         }
       }
     )
@@ -178,17 +181,20 @@ defmodule Devices.UseCases.GettingListTest do
       FakeAdapters.Device.GetterList,
       %{
         token: "Invalid token",
-        pagination: %{
+        pagi: %{
           page: 1,
           limit: 10
         },
         filter: %{
-          ssh_host: "192.168.1.98"
+          ssh_host: "192.168.1.98",
+          is_active: nil, 
+          address:   nil,
+          created_f: nil,
+          created_t: nil
         },
         sort: %{
-          name: "test",
-          created: "test",
-          updated: "test"
+          is_active: nil,
+          created: nil
         }
       }
     )

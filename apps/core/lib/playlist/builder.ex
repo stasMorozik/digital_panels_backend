@@ -36,7 +36,7 @@ defmodule Core.Playlist.Builder do
   end
 
   # Функция построения контента
-  defp contents({ :ok, entity }, cnts, web_dav_url) when is_list(cnts) and length(contents) > 0 do
+  defp contents({ :ok, entity }, cnts, web_dav_url) when is_list(cnts) and length(cnts) > 0 do
     with fun <- fn (content) -> BuilderContent.build(
           Map.put(content, :web_dav_url, web_dav_url)
          ) end,

@@ -5,6 +5,7 @@ defmodule Core.Device.Types.Builders.Filter do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
+  
   alias Core.Device.Types.Filter
 
   alias Core.Shared.Validators.Date
