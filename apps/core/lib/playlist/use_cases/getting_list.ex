@@ -32,9 +32,7 @@ defmodule Core.Playlist.UseCases.GettingList do
     with default_filter <- %{
           name: nil, 
           created_f: nil, 
-          created_t: nil, 
-          updated_f: nil, 
-          updated_t: nil
+          created_t: nil
          },
          filter <- Map.get(args, :filter, default_filter),
          default_sort <- %{
@@ -56,14 +54,11 @@ defmodule Core.Playlist.UseCases.GettingList do
             user_id: UUID.string_to_binary!(user.id), 
             name: Map.get(filter, :name), 
             created_f: Map.get(filter, :created_f),
-            created_t: Map.get(filter, :created_t),
-            updated_f: Map.get(filter, :updated_f),
-            updated_t: Map.get(filter, :updated_t),
+            created_t: Map.get(filter, :created_t)
          },
          sort <- %Sort{
             name: Map.get(sort, :name), 
-            created: Map.get(sort, :created), 
-            updated: Map.get(sort, :updated)
+            created: Map.get(sort, :created)
          },
          {:ok, list} <- getter_list.get(filter, sort, pagi) do
       Success.new(list)

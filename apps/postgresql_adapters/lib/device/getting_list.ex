@@ -20,13 +20,10 @@ defmodule PostgresqlAdapters.Device.GettingList do
     address: filter_by_address, 
     ssh_host: filter_by_ssh_host, 
     created_f: filter_by_created_f,
-    created_t: filter_by_created_t,
-    updated_f: filter_by_updated_f,
-    updated_t: filter_by_updated_t,
+    created_t: filter_by_created_t
   }, %Sort{
     is_active: sort_by_is_active,
-    created: sort_by_created,
-    updated: sort_by_updated
+    created: sort_by_created
   }, %Pagination{
     page: page,
     limit: limit
@@ -40,15 +37,12 @@ defmodule PostgresqlAdapters.Device.GettingList do
           address: filter_by_address, 
           ssh_host: filter_by_ssh_host, 
           created_f: filter_by_created_f,
-          created_t: filter_by_created_t,
-          updated_f: filter_by_updated_f,
-          updated_t: filter_by_updated_t,
+          created_t: filter_by_created_t
         }
 
         sort = %Sort{
           is_active: sort_by_is_active,
-          created: sort_by_created,
-          updated: sort_by_updated
+          created: sort_by_created
         }
 
         pagi = %Pagination{
@@ -69,11 +63,8 @@ defmodule PostgresqlAdapters.Device.GettingList do
                |> and_where_is_active(filter)
                |> and_where_created_f(filter)
                |> and_where_created_t(filter)
-               |> and_where_updated_f(filter)
-               |> and_where_updated_t(filter)
                |> order_by_is_active(sort)
                |> order_by_created(sort)
-               |> order_by_updated(sort)
                |> limit_offset(pagi)
                |> query(connection)
                |> mapper()
@@ -159,30 +150,6 @@ defmodule PostgresqlAdapters.Device.GettingList do
     end
   end
 
-  defp and_where_updated_f({query_string, data_list}, filter) do
-    case Map.get(filter, :updated_f) do
-      nil -> {query_string, data_list}
-      updated_f -> 
-        data_list = data_list ++ [updated_f]
-
-        query_string = query_string <> " AND d.updated >= $#{length(data_list)}"
-
-        {query_string, data_list}
-    end
-  end
-
-  defp and_where_updated_t({query_string, data_list}, filter) do
-    case Map.get(filter, :updated_t) do
-      nil -> {query_string, data_list}
-      updated_t -> 
-        data_list = data_list ++ [updated_t]
-
-        query_string = query_string <> " AND d.updated <= $#{length(data_list)}"
-
-        {query_string, data_list}
-    end
-  end
-
   defp order_by_is_active({query_string, data_list}, sort) do
     with order <- Map.get(sort, :is_active),
          false <- order == nil do
@@ -212,24 +179,6 @@ defmodule PostgresqlAdapters.Device.GettingList do
       end
 
       query_string = query_string <> " ORDER BY d.created #{order}"
-
-      {query_string, data_list}
-    else
-      true -> {query_string, data_list}
-    end
-  end
-
-  defp order_by_updated({query_string, data_list}, sort) do
-    with order <- Map.get(sort, :updated),
-         false <- order == nil do
-
-      order = if order == "asc" || order == "desc" do
-        String.upcase(order)
-      else
-        "ASC"
-      end
-
-      query_string = query_string <> " ORDER BY d.updated #{order}"
 
       {query_string, data_list}
     else

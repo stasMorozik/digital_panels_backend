@@ -34,9 +34,7 @@ defmodule Core.Device.UseCases.GettingList do
           address: nil,
           ssh_host: nil, 
           created_f: nil,
-          created_t: nil,
-          updated_f: nil,
-          updated_t: nil
+          created_t: nil
          },
          filter <- Map.get(args, :filter, default_filter),
          default_sort <- %{
@@ -60,14 +58,11 @@ defmodule Core.Device.UseCases.GettingList do
             address: Map.get(filter, :address),
             ssh_host: Map.get(filter, :ssh_host),
             created_f: Map.get(filter, :created_f),
-            created_t: Map.get(filter, :created_t),
-            updated_f: Map.get(filter, :updated_f),
-            updated_t: Map.get(filter, :updated_t)
+            created_t: Map.get(filter, :created_t)
          },
          sort <- %Sort{
             is_active: Map.get(sort, :is_active), 
-            created: Map.get(sort, :created), 
-            updated: Map.get(sort, :updated)
+            created: Map.get(sort, :created)
          },
          {:ok, list} <- getter_list.get(filter, sort, pagi) do
       Success.new(list)

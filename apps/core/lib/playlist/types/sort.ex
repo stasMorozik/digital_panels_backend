@@ -7,9 +7,8 @@ defmodule Core.Playlist.Types.Sort do
 
   @type t :: %Sort{
     name: binary()    | none(),
-    created: binary() | none(),
-    updated: binary() | none()
+    created: binary() | none()
   }
 
-  defstruct name: nil, created: nil, updated: nil
+  defstruct name: nil, created: nil
 end
