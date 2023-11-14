@@ -21,35 +21,16 @@ defmodule PostgresqlAdapters.Device.GettingList do
     ssh_host: filter_by_ssh_host, 
     created_f: filter_by_created_f,
     created_t: filter_by_created_t
-  }, %Sort{
+  } = filter, %Sort{
     is_active: sort_by_is_active,
     created: sort_by_created
-  }, %Pagination{
+  } = sort, %Pagination{
     page: page,
     limit: limit
-  }) do
+  } = pagi) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
         
-        filter = %Filter{
-          user_id: filter_by_user_id,
-          is_active: filter_by_is_active, 
-          address: filter_by_address, 
-          ssh_host: filter_by_ssh_host, 
-          created_f: filter_by_created_f,
-          created_t: filter_by_created_t
-        }
-
-        sort = %Sort{
-          is_active: sort_by_is_active,
-          created: sort_by_created
-        }
-
-        pagi = %Pagination{
-          page: page,
-          limit: limit
-        }
-
         {"
           SELECT 
             d.id, d.address, d.ssh_host, d.is_active, d.created, d.updated

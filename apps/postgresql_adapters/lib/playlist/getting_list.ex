@@ -19,33 +19,16 @@ defmodule PostgresqlAdapters.Playlist.GettingList do
     name: filter_by_name,
     created_f: filter_by_created_f,
     created_t: filter_by_created_t
-  }, %Sort{
+  } = filter, %Sort{
     name: sort_by_name,
     created: sort_by_created
-  }, %Pagination{
+  } = sort, %Pagination{
     page: page,
     limit: limit
-  }) do
+  } = pagi) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
         
-        filter = %Filter{
-          user_id: filter_by_user_id,
-          name: filter_by_name,
-          created_f: filter_by_created_f,
-          created_t: filter_by_created_t
-        }
-
-        sort = %Sort{
-          name: sort_by_name,
-          created: sort_by_created
-        }
-
-        pagi = %Pagination{
-          page: page,
-          limit: limit
-        }
-
         {"
           SELECT 
             pl.id, pl.name, pl.created, pl.updated

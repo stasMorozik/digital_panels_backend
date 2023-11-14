@@ -13,13 +13,7 @@ defmodule Core.Playlist.Methods.Edit do
     name: new_name,
     contents: new_contents,
     web_dav_url: web_dav_url
-  }) when is_binary(new_name) do
-
-    map = %{
-      name: new_name,
-      contents: new_contents,
-      web_dav_url: web_dav_url
-    }
+  } = map) when is_binary(new_name) do
   
   end
 

@@ -23,18 +23,7 @@ defmodule Core.Device.Methods.Edit do
     longitude: new_longitude,
     latitude: new_latitude,
     is_active: new_is_active
-  }) do
-
-    map = %{
-      ssh_port: new_ssh_port,
-      ssh_host: new_ssh_host,
-      ssh_user: new_ssh_user,
-      ssh_password: new_ssh_password,
-      address: new_address,
-      longitude: new_longitude,
-      latitude: new_latitude,
-      is_active: new_is_active,
-    }
+  } = map) do
 
     updated(entity)
       |> is_nil(map, :ssh_port)
