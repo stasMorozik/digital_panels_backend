@@ -9,6 +9,7 @@ defmodule Core.Device.Builder do
   alias Core.Device.Validators.Longitude
   alias Core.Device.Validators.SshData
   alias Core.Device.Validators.SshPort
+  alias Core.Device.Validators.Address
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
@@ -120,12 +121,11 @@ defmodule Core.Device.Builder do
   end
 
   # Функция построения адреса
-  defp address({ :ok, entity }, new_address) when is_binary(new_address) do
-    Success.new(Map.put(entity, :address, new_address))
-  end
-
-  defp address({:ok, _}, _) do
-    Error.new("Не валидный адрес")
+  defp address({ :ok, entity }, new_address) do
+    case Address.valid(new_address) do
+      {:ok, _} -> Success.new(Map.put(entity, :address, new_address))
+      {:error, error} -> {:error, error}
+    end
   end
 
   defp address({:error, message}, _) do

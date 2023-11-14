@@ -12,7 +12,7 @@ defmodule Device.BuildEntityTest do
         ssh_host: "192.168.1.98",
         ssh_user: "test",
         ssh_password: "12345",
-        address: "NY Long street 1234",
+        address: "Москва Ветка метро Замоскворецкая",
         longitude: 91.223,
         latitude: -67.99
       })
@@ -27,7 +27,7 @@ defmodule Device.BuildEntityTest do
         ssh_host: "192.168.1.98",
         ssh_user: "test",
         ssh_password: "12345",
-        address: "NY Long street 1234",
+        address: "Москва Ветка метро Замоскворецкая",
         longitude: -91.223,
         latitude: 67.99
       })
@@ -42,7 +42,7 @@ defmodule Device.BuildEntityTest do
         ssh_host: "192.168.1.98",
         ssh_user: "test",
         ssh_password: "12345",
-        address: "NY Long street 1234",
+        address: "Москва Ветка метро Замоскворецкая",
         longitude: 91.223,
         latitude: -67.99
       })
@@ -57,7 +57,7 @@ defmodule Device.BuildEntityTest do
         ssh_host: "!test",
         ssh_user: "test",
         ssh_password: "12345",
-        address: "NY Long street 1234",
+        address: "Москва Ветка метро Замоскворецкая",
         longitude: 91.223,
         latitude: -67.99
       })
@@ -72,7 +72,7 @@ defmodule Device.BuildEntityTest do
         ssh_host: "192.168.1.98",
         ssh_user: "test!@",
         ssh_password: "12345",
-        address: "NY Long street 1234",
+        address: "Москва Ветка метро Замоскворецкая",
         longitude: 91.223,
         latitude: -67.99
       })
@@ -87,7 +87,7 @@ defmodule Device.BuildEntityTest do
         ssh_host: "192.168.1.98",
         ssh_user: "test",
         ssh_password: "@#12345",
-        address: "NY Long street 1234",
+        address: "Москва Ветка метро Замоскворецкая",
         longitude: 91.223,
         latitude: -67.99
       })
@@ -117,7 +117,7 @@ defmodule Device.BuildEntityTest do
         ssh_host: "192.168.1.98",
         ssh_user: "test",
         ssh_password: "12345",
-        address: "NY Long street 1234",
+        address: "Москва Ветка метро Замоскворецкая",
         longitude: -191.223,
         latitude: -67.99
       })
@@ -132,7 +132,7 @@ defmodule Device.BuildEntityTest do
         ssh_host: "192.168.1.98",
         ssh_user: "test",
         ssh_password: "12345",
-        address: "NY Long street 1234",
+        address: "Москва Ветка метро Замоскворецкая",
         longitude: 91.223,
         latitude: 97.99
       })

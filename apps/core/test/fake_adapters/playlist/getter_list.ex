@@ -16,13 +16,10 @@ defmodule FakeAdapters.Playlist.GetterList do
     user_id: _,
     name: name,
     created_f: _,
-    created_t: _,
-    updated_f: _,
-    updated_t: _
+    created_t: _
   }, %Sort{
     name: _,
-    created: _,
-    updated: _
+    created: _
   }, %Pagination{
     page: _,
     limit: _

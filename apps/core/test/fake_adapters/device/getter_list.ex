@@ -18,13 +18,10 @@ defmodule FakeAdapters.Device.GetterList do
     address: _, 
     ssh_host: ssh_host, 
     created_f: _,
-    created_t: _,
-    updated_f: _,
-    updated_t: _,
+    created_t: _
   }, %Sort{
     is_active: _,
-    created: _,
-    updated: _
+    created: _
   }, %Pagination{
     page: _,
     limit: _

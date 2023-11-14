@@ -8,8 +8,12 @@ defmodule Core.Device.Types.Builders.Filter do
 
   @spec build(map()) :: Success.t() | Error.t()
   def build(%{
-    
-  }) when is_map(map) do
+    is_active: is_active, 
+    address:   address,
+    ssh_host:  ssh_host, 
+    created_f: created_f,
+    created_t: created_t
+  }) do
     
   end
 

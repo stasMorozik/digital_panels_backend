@@ -92,7 +92,7 @@ defmodule Device.UseCases.CreatingTest do
         ssh_host: "192.168.1.22",
         ssh_user: "test",
         ssh_password: "12345",
-        address: "NY Long street 123",
+        address: "Москва Ветка метро Замоскворецкая",
         longitude: 91.223,
         latitude: -67.99,
         playlist_id: playlist_entity.id
@@ -114,7 +114,7 @@ defmodule Device.UseCases.CreatingTest do
         ssh_host: "192.168.1.22",
         ssh_user: "test",
         ssh_password: "12345",
-        address: "NY Long street 123",
+        address: "Москва Ветка метро Замоскворецкая",
         longitude: 91.223,
         latitude: -67.99,
         playlist_id: "some id"

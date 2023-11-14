@@ -8,10 +8,7 @@ defmodule Core.Shared.Validators.Boolean do
 
   @spec valid(boolean()) :: Success.t() | Error.t()
   def valid(bool) when is_boolean(bool) do
-    case Date.from_iso8601(str_date) do
-      {:error, _} -> Error.new("Не валидное булево значение")
-      {:ok, bool} -> Success.new(bool)
-    end
+    Success.new(bool)
   end
 
   def valid(_) do
