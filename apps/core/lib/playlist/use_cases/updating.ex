@@ -3,7 +3,6 @@ defmodule Core.Playlist.UseCases.Updating do
     Юзекейз редактирования плэйлиста
   """
   
-  alias Core.Playlist.Builder
   alias Core.Playlist.Ports.Transformer, as: PlaylistTransformer
   alias Core.File.Ports.Transformer, as: FileTransformer
   alias Core.Playlist.Ports.Getter, as: GetterPlaylist

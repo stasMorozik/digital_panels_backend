@@ -10,6 +10,8 @@ defmodule Core.Device.Methods.Edit do
   alias Core.Device.Validators.SshPort
   alias Core.Device.Validators.Address
 
+  alias Core.Shared.Validators.Boolean
+
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
 
@@ -176,12 +178,11 @@ defmodule Core.Device.Methods.Edit do
   end
 
   # Функция построения активности
-  defp is_active({:ok, entity}, new_is_active) when is_boolean(new_is_active) do
-    Success.new(Map.put(entity, :is_active, new_is_active))
-  end
-
-  defp is_active({:ok, entity}, _) do
-    Error.new("Не валидная активность")
+  defp is_active({:ok, entity}, new_is_active) do
+    case Boolean.valid(new_is_active) do
+      {:ok, _} -> Success.new(Map.put(entity, :is_active, new_is_active))
+      {:error, message} -> {:error, message}
+    end
   end
 
   defp is_active({:nil, entity}, _) do

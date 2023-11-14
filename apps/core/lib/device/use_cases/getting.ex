@@ -6,9 +6,6 @@ defmodule Core.Device.UseCases.Getting do
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
   alias Core.Shared.Types.Exception
-
-  alias Core.Device.Types.Filter
-  alias Core.Device.Types.Sort
   
   alias Core.User.UseCases.Authorization
   alias User.Ports.Getter, as: GetterUser
@@ -31,7 +28,7 @@ defmodule Core.Device.UseCases.Getting do
     {result, _} = UUID.info(Map.get(args, :id))
 
     with :ok <- result,
-         {:ok, user} <- authorization_use_case.auth(
+         {:ok, _} <- authorization_use_case.auth(
             getter_user, %{token: Map.get(args, :token, "")}
          ),
          {:ok, device} <- getter.get(UUID.string_to_binary!(args.id)) do

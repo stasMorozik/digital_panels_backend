@@ -36,14 +36,11 @@ defmodule Core.Playlist.Builder do
   end
 
   # Функция построения контента
-  defp contents({ :ok, entity }, contents, web_dav_url) 
-    when is_list(contents) 
-    and length(contents) > 0 do
-
+  defp contents({ :ok, entity }, cnts, web_dav_url) when is_list(cnts) and length(contents) > 0 do
     with fun <- fn (content) -> BuilderContent.build(
           Map.put(content, :web_dav_url, web_dav_url)
          ) end,
-         cnts <- Enum.map(contents, fun),
+         cnts <- Enum.map(cnts, fun),
          nil <- Enum.find(cnts, fn tuple -> elem(tuple, 0) == :error end),
          cnts <- Enum.map(cnts, fn tuple -> elem(tuple, 1) end) do
       Success.new(Map.put(entity, :contents, cnts))
@@ -53,9 +50,7 @@ defmodule Core.Playlist.Builder do
     
   end
 
-  defp contents({ :ok, entity }, contents, _) 
-    when is_list(contents) 
-    and length(contents) == 0 do
+  defp contents({ :ok, _ }, contents, _) when is_list(contents) and length(contents) == 0 do
     Error.new("Пустой список контента")
   end
 

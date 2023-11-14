@@ -4,10 +4,8 @@ defmodule Core.Device.UseCases.Updating do
   """
 
   alias Core.Device.Methods.Edit
-
-	alias Core.Device.Builder
   alias Core.Device.Ports.Transformer
-	alias Core.Device.Ports.Getter
+  alias Core.Device.Ports.Getter
 
   alias Core.User.UseCases.Authorization
   alias User.Ports.Getter, as: GetterUser
@@ -18,7 +16,7 @@ defmodule Core.Device.UseCases.Updating do
   alias Core.Shared.Types.Error
   alias Core.Shared.Types.Exception
 
-	@spec update(
+  @spec update(
     Authorization.t(),
     GetterUser.t(),
     Getter.t(),
@@ -29,7 +27,7 @@ defmodule Core.Device.UseCases.Updating do
   def update(
     authorization_use_case,
     getter_user,
-		getter,
+    getter,
     getter_playlist,
     transformer,
     args
@@ -37,11 +35,11 @@ defmodule Core.Device.UseCases.Updating do
     and is_atom(transformer)
     and is_map(args) do
 
-		{result_0, _} = UUID.info(Map.get(args, :playlist_id))
+    {result_0, _} = UUID.info(Map.get(args, :playlist_id))
 
-		{result_1, _} = UUID.info(Map.get(args, :id))
+    {result_1, _} = UUID.info(Map.get(args, :id))
 
-		with :ok <- result_0,
+    with :ok <- result_0,
          :ok <- result_1,
          {:ok, user} <- authorization_use_case.auth(
             getter_user, %{token: Map.get(args, :token, "")}
@@ -60,9 +58,9 @@ defmodule Core.Device.UseCases.Updating do
       {:error, message} -> {:error, message}
       {:exception, message} -> {:exception, message}
     end
-	end
+  end
 
-	def update(_, _, _, _, _, _) do
+  def update(_, _, _, _, _, _) do
     Error.new("Не валидные аргументы для редактирования устройства")
   end
 end
