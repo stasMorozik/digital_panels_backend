@@ -12,9 +12,9 @@ defmodule Core.Device.Validators.SshData do
 
   @spec valid(binary()) :: Success.t() | Error.t()
   def valid(data) when is_binary(data) do
-    with true <- String.match?(data, @format),
-         true <- String.length(data) >= @min_length,
-         true <- String.length(data) <= @max_length do
+    with true <- String.length(data) >= @min_length,
+         true <- String.length(data) <= @max_length,
+         true <- String.match?(data, @format) do
       Success.new(true)
     else
       false -> Error.new("Не валидные данные ssh соеденения")

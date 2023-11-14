@@ -84,15 +84,18 @@ defmodule Playlist.UseCases.GettingListTest do
       FakeAdapters.Playlist.GetterList,
       %{
         token: access_token,
-        pagination: %{
+        pagi: %{
           page: 1,
           limit: 10
         },
         filter: %{
+          created_f: nil,
+          created_t: nil,
           name: "test_0"
         },
         sort: %{
-          name: "asc"
+          name: "asc",
+          created: nil
         }
       }
     )
@@ -107,15 +110,18 @@ defmodule Playlist.UseCases.GettingListTest do
       FakeAdapters.Playlist.GetterList,
       %{
         token: "invalid token",
-        pagination: %{
+        pagi: %{
           page: 1,
           limit: 10
         },
         filter: %{
+          created_f: nil,
+          created_t: nil,
           name: "test_0"
         },
         sort: %{
-          name: "asc"
+          name: "asc",
+          created: nil
         }
       }
     )

@@ -10,14 +10,16 @@ defmodule Core.Playlist.Builder do
   alias Core.Shared.Types.Error
 
   alias Core.Content.Builder, as: BuilderContent
+  alias Core.Playlist.Validators.Name
 
   @spec build(map()) :: Success.t() | Error.t()
   def build(%{
     name: name,
     contents: contents,
     web_dav_url: web_dav_url
-  }) when is_binary(name) do
-    entity(name)
+  }) do
+    entity()
+      |> name(name)
       |> contents(contents, web_dav_url)
   end
 
@@ -26,13 +28,25 @@ defmodule Core.Playlist.Builder do
   end
 
    # Функция построения базового плэйлиста
-  defp entity(name) do
+  defp entity do
     Success.new(%Entity{
-      name: name,
+      name: nil,
       id: UUID.uuid4(),
       created: Date.utc_today,
       updated: Date.utc_today
     })
+  end
+
+  # Функция построения названия
+  defp name({ :ok, entity }, new_name) do
+    case Name.valid(new_name) do
+      {:ok, _} -> Success.new(Map.put(entity, :name, new_name))
+      {:error, error} -> {:error, error}
+    end
+  end
+
+  defp name({:error, message}, _) do
+    Error.new(message)
   end
 
   # Функция построения контента

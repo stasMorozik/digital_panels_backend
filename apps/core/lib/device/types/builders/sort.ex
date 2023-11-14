@@ -9,6 +9,7 @@ defmodule Core.Device.Types.Builders.Sort do
   alias Core.Shared.Validators.Sort, as: ValidatorSort
   alias Core.Device.Types.Sort, as: TypeSort
 
+  @spec build(map()) :: Success.t() | Error.t()
   def build(%{
     is_active: is_active,
     created:   created
