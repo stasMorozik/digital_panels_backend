@@ -10,7 +10,7 @@ defmodule Core.Shared.Validators.Sort do
   def valid(order) when is_binary(order) do
     case String.upcase(order) do
       "ASC" -> Success.new(true)
-			"DESC" -> Success.new(true)
+      "DESC" -> Success.new(true)
       _ -> Error.new("Не валидный параметр сортировки")
     end
   end
