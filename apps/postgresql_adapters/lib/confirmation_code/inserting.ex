@@ -18,13 +18,13 @@ defmodule PostgresqlAdapters.ConfirmationCode.Inserting do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
 
-        with query_1 = "DELETE FROM confirmation_codes",
+        with query_1 = "DELETE FROM confirmation_codes WHERE needle = $1",
              query_2 = "INSERT INTO confirmation_codes (needle, code, confirmed, created) VALUES($1, $2, $3, $4)",
              {:ok, q_1} <- Postgrex.prepare(connection, "", query_1),
              {:ok, q_2} <- Postgrex.prepare(connection, "", query_2),
              data <- [needle, code, confirmed, created],
              fun <- fn(conn) ->
-                r_0 = Postgrex.execute(conn, q_1, [])
+                r_0 = Postgrex.execute(conn, q_1, [needle])
                 r_1 = Postgrex.execute(conn, q_2, data)
 
                 case {r_0, r_1} do
