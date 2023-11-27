@@ -14,18 +14,7 @@ defmodule PostgresqlAdapters.Playlist.GettingList do
   @behaviour GetterList
 
   @impl GetterList
-  def get(%Filter{
-    user_id: _,
-    name: _,
-    created_f: _,
-    created_t: _
-  } = filter, %Sort{
-    name: _,
-    created: _
-  } = sort, %Pagination{
-    page: _,
-    limit: _
-  } = pagi) do
+  def get(%Filter{} = filter, %Sort{} = sort, %Pagination{} = pagi) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
         
