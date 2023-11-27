@@ -14,20 +14,7 @@ defmodule PostgresqlAdapters.Device.GettingList do
   @behaviour GetterList
 
   @impl GetterList
-  def get(%Filter{
-    user_id: _,
-    is_active: _, 
-    address: _, 
-    ssh_host: _, 
-    created_f: _,
-    created_t: _
-  } = filter, %Sort{
-    is_active: _,
-    created: _
-  } = sort, %Pagination{
-    page: _,
-    limit: _
-  } = pagi) do
+  def get(%Filter{} = filter, %Sort{} = sort, %Pagination{} = pagi) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
         
