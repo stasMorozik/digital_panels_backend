@@ -9,20 +9,28 @@ defmodule PostgresqlAdapters.ConfirmationCode.Inserting do
   @behaviour Transformer
 
   @impl Transformer
-  def transform(%Entity{
-    needle: needle,
-    created: created,
-    code: code,
-    confirmed: confirmed
-  }) do
+  def transform(%Entity{} = entity) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
+        query_1 = "DELETE FROM confirmation_codes WHERE needle = $1"
 
-        with query_1 = "DELETE FROM confirmation_codes WHERE needle = $1",
-             query_2 = "INSERT INTO confirmation_codes (needle, code, confirmed, created) VALUES($1, $2, $3, $4)",
-             {:ok, q_1} <- Postgrex.prepare(connection, "", query_1),
-             {:ok, q_2} <- Postgrex.prepare(connection, "", query_2),
-             data <- [needle, code, confirmed, created],
+        query_2 = "
+          INSERT INTO confirmation_codes (
+            needle, 
+            code, 
+            confirmed, 
+            created
+          ) VALUES(
+            $1, 
+            $2, 
+            $3, 
+            $4
+          )
+        "
+
+        with {:ok, query_1} <- Postgrex.prepare(connection, "", query_1),
+             {:ok, query_2} <- Postgrex.prepare(connection, "", query_2),
+             data <- [entity.needle, entity.code, entity.confirmed, entity.created],
              fun <- fn(conn) ->
                 r_0 = Postgrex.execute(conn, q_1, [needle])
                 r_1 = Postgrex.execute(conn, q_2, data)
@@ -39,7 +47,6 @@ defmodule PostgresqlAdapters.ConfirmationCode.Inserting do
         else
           {:error, e} -> Exception.new(e.message)
         end
-
       [] -> Exception.new("Database connection error")
       _ -> Exception.new("Database connection error")
     end

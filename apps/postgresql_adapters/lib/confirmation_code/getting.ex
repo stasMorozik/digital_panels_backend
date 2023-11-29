@@ -4,7 +4,9 @@ defmodule PostgresqlAdapters.ConfirmationCode.Getting do
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
-  alias Core.Shared.Types.Exception
+  
+  alias PostgresqlAdapters.ConfirmationCode.Mapper
+  alias PostgresqlAdapters.Executor
 
   @behaviour Getter
 
@@ -12,24 +14,18 @@ defmodule PostgresqlAdapters.ConfirmationCode.Getting do
   def get(needle) when is_binary(needle) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
+        query = "
+          SELECT needle, code, confirmed, created FROM confirmation_codes WHERE needle = $1
+        "
 
-        with query <- "SELECT * FROM confirmation_codes WHERE needle = $1",
-             {:ok, q} <- Postgrex.prepare(connection, "", query),
-             {:ok, _, result} <- Postgrex.execute(connection, q, [needle]),
+        with {:ok, result} <- Executor.execute(query, [needle]),
              true <- result.num_rows > 0,
-             [ [needle, code, confirmed, created] ] <- result.rows do
-
-          Success.new(%Entity{
-            needle: needle,
-            created: created,
-            code: code,
-            confirmed: confirmed
-          })
+             [ row ] <- result.rows do
+          Mapper.to_entity(row)
         else
-          {:error, e} -> Exception.new(e.message)
           false -> Error.new("Код подтверждения не найден")
+          {:exception, message} -> {:exception, message}
         end
-
       [] -> Exception.new("Database connection error")
       _ -> Exception.new("Database connection error")
     end

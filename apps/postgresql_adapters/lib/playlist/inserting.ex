@@ -11,20 +11,7 @@ defmodule PostgresqlAdapters.Playlist.Inserting do
   @behaviour Transformer
 
   @impl Transformer
-  def transform(%PlaylistEntity{
-    id: id,
-    name: name,
-    contents: contents,
-    created: created,
-    updated: updated
-  }, %UserEntity{
-    id: user_id,
-    email: _,
-    name: _,
-    surname: _,
-    created: _,
-    updated: _
-  }) do
+  def transform(%PlaylistEntity{} = playlist, %UserEntity{} = user) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
 
@@ -52,15 +39,15 @@ defmodule PostgresqlAdapters.Playlist.Inserting do
         with {:ok, q_0} <- Postgrex.prepare(connection, "", query_0),
              {:ok, q_1} <- Postgrex.prepare(connection,"", query_1),
              d_0 <- [
-                UUID.string_to_binary!(id),
-                name,
-                Jason.encode!(contents),
-                created,
-                updated
+                UUID.string_to_binary!(playlist.id),
+                playlist.name,
+                Jason.encode!(playlist.contents),
+                playlist.created,
+                playlist.updated
              ],
              d_1 <- [
-                UUID.string_to_binary!(user_id),
-                UUID.string_to_binary!(id),
+                UUID.string_to_binary!(user.user_id),
+                UUID.string_to_binary!(playlist.id),
              ],
              fun <- fn(conn) ->
                 r_0 = Postgrex.execute(conn, q_0, d_0)
