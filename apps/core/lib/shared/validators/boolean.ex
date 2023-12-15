@@ -1,17 +1,14 @@
 defmodule Core.Shared.Validators.Boolean do
   @moduledoc """
-    Валидирует дату
+    Валидирует булево значение
   """
 
-  alias Core.Shared.Types.Success
-  alias Core.Shared.Types.Error
-
-  @spec valid(boolean()) :: Success.t() | Error.t()
+  @spec valid(any()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def valid(bool) when is_boolean(bool) do
-    Success.new(bool)
+    {:ok, true}
   end
 
   def valid(_) do
-    Error.new("Не валидное булево значение")
+    {:error, "Не валидное булево значение"}
   end
 end

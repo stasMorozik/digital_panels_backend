@@ -16,5 +16,5 @@ defmodule Core.Shared.Ports.Notifier do
   alias Core.Shared.Types.Error
   alias Core.Shared.Types.Exception
 
-  @callback notify(notification()) ::  Success.t() | Error.t() | Exception.t()
+  @callback notify(notification()) :: Success.t() | Error.t() | Exception.t()
 end

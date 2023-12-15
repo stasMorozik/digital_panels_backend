@@ -5,31 +5,24 @@ defmodule Core.ConfirmationCode.Methods.Verifier do
   """
 
   alias Core.ConfirmationCode.Entity
-  alias Core.ConfirmationCode.Validators.Code
+  alias Core.ConfirmationCode.Validators.Code, as: Validator
 
-  alias Core.Shared.Types.Success
-  alias Core.Shared.Types.Error
-
-  @spec verify(Entity.t(), integer()) :: Success.t() | Error.t()
-  def verify(%Entity{} = entity, some_code) when is_integer(some_code) do
-    {:ok, cur_utc_date} = DateTime.now("Etc/UTC")
-
-    cur_unix_time = DateTime.to_unix(cur_utc_date)
-
-    if cur_unix_time > entity.created do
-      Error.new("Истекло время жизни у кода подтверждения")
+  @spec verify(Entity.t(), any()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
+  def verify(%Entity{} = entity, some_code) do
+    with {:ok, cur_utc_date} <- DateTime.now("Etc/UTC"),
+         cur_unix_time <- DateTime.to_unix(cur_utc_date),
+         false <- cur_unix_time > entity.created,
+         {:ok, _} <- Validator.valid(some_code)
+         true <- entity.code == some_code do
+      {:ok, true}
     else
-      with {:ok, _} <- Code.valid(some_code),
-           true <- entity.code == some_code do
-        Success.new(true)
-      else
-        {:error, error} -> {:error, error}
-        false -> Error.new("Не верный код подтверждения")
-      end
+      true -> {:error, "Истекло время жизни у кода подтверждения"}
+      false -> {:error, "Не верный код подтверждения"}
+      {:error, message} -> {:error, message}
     end
   end
 
   def verify(_, _) do
-    Error.new("Не валидные данные для верификации кода")
+    {:error, "Не валидные данные для верификации кода"}
   end
 end

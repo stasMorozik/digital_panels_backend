@@ -3,18 +3,15 @@ defmodule Core.Shared.Validators.Date do
     Валидирует дату
   """
 
-  alias Core.Shared.Types.Success
-  alias Core.Shared.Types.Error
-
-  @spec valid(binary()) :: Success.t() | Error.t()
+  @spec valid(any()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def valid(str_date) when is_binary(str_date) do
     case Date.from_iso8601(str_date) do
-      {:error, _} -> Error.new("Не валидная дата")
-      {:ok, date} -> Success.new(date)
+      {:error, _} -> {:error, "Не валидная дата"}
+      {:ok, date} -> {:ok, true}
     end
   end
 
   def valid(_) do
-    Error.new("Не валидная дата")
+    {:error, "Не валидная дата"}
   end
 end

@@ -3,32 +3,33 @@ defmodule Core.RefreshToken.UseCases.Refreshing do
     Юзекейз обновления токенов
   """
 
-  alias Core.Shared.Types.Success
-  alias Core.Shared.Types.Error
+  alias Core.RefreshToken.Entity, as: Refresh.Token
+  alias Core.AccessToken.Entity, as: Access.Token
 
-  @spec refresh(
-    binary()
-  ) :: Success.t() | Error.t()
+  @spec refresh(any()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def refresh(token) when is_binary(token) do
-    {result, maybe_claims} = Core.RefreshToken.Entity.verify_and_validate(token)
+    {result, maybe_claims} = RefreshToken.verify_and_validate(token)
 
     case result do
-      :error -> Error.new("Не валидный токен")
+      :error -> {:error , "Не валидный токен"}
       :ok ->
 
-        refresh_token = Core.RefreshToken.Entity.generate_and_sign!(%{
+        r_token = RefreshToken.generate_and_sign!(%{
           id: Map.get(maybe_claims, "id", "")
         })
         
-        access_token = Core.AccessToken.Entity.generate_and_sign!(%{
+        a_token = AccessToken.generate_and_sign!(%{
           id: Map.get(maybe_claims, "id", "")
         })
 
-        Success.new(%{access_token: access_token, refresh_token: refresh_token})
+        {:ok, %{
+          access_token: r_token, 
+          refresh_token: a_token
+        }}
     end
   end
 
   def refresh(_) do
-    Error.new("Не валидные аргументы для обновления токена")
+    {:error, "Не валидные аргументы для обновления токена"}
   end
 end

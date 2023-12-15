@@ -10,16 +10,16 @@ defmodule Core.ConfirmationCode.Methods.Confirmation do
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
 
-  @spec confirm(Entity.t(), integer()) :: Success.t() | Error.t()
+  @spec confirm(Entity.t(), any()) :: Success.t() | Error.t()
   def confirm(%Entity{} = entity, some_code) when is_integer(some_code) do
     with {:ok, _} <- Verifier.verify(entity, some_code) do
-      Success.new(Map.put(entity, :confirmed, true))
+      {:ok, Map.put(entity, :confirmed, true)}
     else
       {:error, error} -> {:error, error}
     end
   end
 
   def confirm(_, _) do
-    Error.new("Не валидные данные для подтверждения кода")
+    {:error, "Не валидные данные для подтверждения кода"}
   end
 end

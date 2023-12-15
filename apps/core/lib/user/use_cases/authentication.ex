@@ -26,10 +26,10 @@ defmodule Core.User.UseCases.Authentication do
     with {:ok, code_entity} <- getter_confiramtion_code.get(Map.get(args, :email)),
          {:ok, _} <- CheckerHasConfirmation.has(code_entity),
          {:ok, user_entity} <- getter_user.get(Map.get(args, :email)),
-         refresh_token <- Core.RefreshToken.Entity.generate_and_sign!(%{id: user_entity.id}),
-         access_token <- Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.id}) do
+         r_token <- Core.RefreshToken.Entity.generate_and_sign!(%{id: user_entity.id}),
+         a_token <- Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.id}) do
 
-      Success.new(%{access_token: access_token, refresh_token: refresh_token})
+      {:ok, %{access_token: a_token, refresh_token: r_token}}
 
     else
       {:error, error} -> {:error, error}
@@ -38,6 +38,6 @@ defmodule Core.User.UseCases.Authentication do
   end
 
   def auth(_, _, _) do
-    Error.new("Не валидные аргументы для аутентификаци пользователя")
+    {:error, "Не валидные аргументы для аутентификаци пользователя"}
   end
 end

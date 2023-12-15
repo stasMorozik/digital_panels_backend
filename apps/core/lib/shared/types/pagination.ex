@@ -1,8 +1,6 @@
 defmodule Core.Shared.Types.Pagination do
 
-  alias Core.Shared.Types.Pagination
-
-  @type t :: %Pagination{
+  @type t :: %Core.Shared.Types.Pagination{
     page: integer(),
     limit: integer()
   }

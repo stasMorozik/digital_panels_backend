@@ -3,25 +3,22 @@ defmodule Core.User.Validators.Name do
     Валидирует имя фамилию пользователя
   """
 
-  alias Core.Shared.Types.Success
-  alias Core.Shared.Types.Error
-
   @format ~r/^[a-zA-ZйЙцЦуУкКеЕёЁнНгГшШщЩзЗхХъЪфФыЫвВаАпПрРоОлЛдДжЖэЭяЯчЧсСмМиИтТьЬбБюЮ]+$/
   @min_length 2
   @max_length 20
 
-  @spec valid(binary()) :: Success.t() | Error.t()
+  @spec valid(binary()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def valid(name) when is_binary(name) do
     with true <- String.match?(name, @format),
          true <- String.length(name) >= @min_length,
          true <- String.length(name) <= @max_length do
-      Success.new(true)
+      {:ok, true}
     else
-      false -> Error.new("Не валидное имя пользователя")
+      false -> {:error, "Не валидное имя пользователя"}
     end
   end
 
   def valid(_) do
-    Error.new("Не валидное имя пользователя")
+    {:error, "Не валидное имя пользователя"}
   end
 end
