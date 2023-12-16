@@ -12,6 +12,8 @@ defmodule Core.ConfirmationCode.UseCases.Creating do
   alias Core.Shared.Types.Error
   alias Core.Shared.Types.Exception
 
+  @from Application.compile_env(:core, :email_address, "digital_panels@dev.org")
+
   @spec create(
     Transformer.t(),
     Notifier.t(),
@@ -22,12 +24,12 @@ defmodule Core.ConfirmationCode.UseCases.Creating do
     notifier,
     args
   ) when is_atom(transformer_code_store) and is_atom(notifier) do
-      with email <- Map.get(args, :email), 
-           {:ok, entity} <- Builder.build(Email, email),
+      with needle <- Map.get(args, :needle), 
+           {:ok, entity} <- Builder.build(Email, needle),
            {:ok, _} <- transformer_code_store.transform(entity),
-           {:ok, _} <- notifier.notify(%{
-              to: email,
-              from: Application.fetch_env!(:core, :email_address),
+           {:ok, _} <- notifier.notify(%Core.Shared.Types.Notification{
+              to: needle,
+              from: @from,
               subject: "Подтердите адрес электронной почты",
               message: "Ваш код - #{entity.code}"
            }) do

@@ -13,6 +13,8 @@ defmodule Core.User.UseCases.Registration do
   alias Core.Shared.Types.Error
   alias Core.Shared.Types.Exception
 
+  @from Application.compile_env(:core, :email_address, "digital_panels@dev.org")
+
   @spec reg(
     Transformer.t(),
     Getter.t(),
@@ -33,9 +35,9 @@ defmodule Core.User.UseCases.Registration do
          {:ok, user_entity} <- Builder.build(args),
          {:ok, _} <- transformer_users_store.transform(user_entity),
          {:ok, _}
-            <- notifier.notify(%{
+            <- notifier.notify(%Core.Shared.Types.Notification{
               to: Map.get(args, :email),
-              from: Application.fetch_env!(:core, :email_address),
+              from: @from,
               subject: "Добро пожаловать",
               message: "Рады приветствовать вас #{Map.get(args, :name)}"
             }) do
