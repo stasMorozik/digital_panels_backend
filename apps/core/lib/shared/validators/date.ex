@@ -7,7 +7,7 @@ defmodule Core.Shared.Validators.Date do
   def valid(str_date) when is_binary(str_date) do
     case Date.from_iso8601(str_date) do
       {:error, _} -> {:error, "Не валидная дата"}
-      {:ok, date} -> {:ok, true}
+      {:ok, _} -> {:ok, true}
     end
   end
 

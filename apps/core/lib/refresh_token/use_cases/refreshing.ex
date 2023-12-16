@@ -3,8 +3,8 @@ defmodule Core.RefreshToken.UseCases.Refreshing do
     Юзекейз обновления токенов
   """
 
-  alias Core.RefreshToken.Entity, as: Refresh.Token
-  alias Core.AccessToken.Entity, as: Access.Token
+  alias Core.RefreshToken.Entity, as: RefreshToken
+  alias Core.AccessToken.Entity, as: AccessToken
 
   @spec refresh(any()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def refresh(token) when is_binary(token) do

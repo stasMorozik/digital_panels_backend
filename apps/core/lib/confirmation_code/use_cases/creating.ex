@@ -15,23 +15,25 @@ defmodule Core.ConfirmationCode.UseCases.Creating do
   @spec create(
     Transformer.t(),
     Notifier.t(),
-    binary()
+    map()
   ) :: Success.t() | Error.t() | Exception.t()
   def create(
     transformer_code_store,
     notifier,
-    email
+    args
   ) when is_atom(transformer_code_store) and is_atom(notifier) do
-    with {:ok, entity} <- Builder.build(email, Email),
-         {:ok, _} <- transformer_code_store.transform(entity),
-         {:ok, _}
-            <- notifier.notify(%{
+      with email <- Map.get(args, :email), 
+           {:ok, entity} <- Builder.build(Email, email),
+           {:ok, _} <- transformer_code_store.transform(entity),
+           {:ok, _} <- notifier.notify(%{
               to: email,
-              from: "system_content_manager@dev.org",
-              subject: "Confirm email address",
-              message: "Confirmation code #{entity.code}"
-            }) do
-      Success.new(true)
+              from: Application.fetch_env!(:core, :email_address),
+              subject: "Подтердите адрес электронной почты",
+              message: "Ваш код - #{entity.code}"
+           }) do
+
+      {:ok, true}
+
     else
       {:error, error} -> {:error, error}
       {:exception, error} -> {:exception, error}
@@ -39,6 +41,6 @@ defmodule Core.ConfirmationCode.UseCases.Creating do
   end
 
   def create(_, _, _) do
-    Error.new("Не валидные аргументы для создания кода подтверждения")
+    {:error, "Не валидные аргументы для создания кода подтверждения"}
   end
 end

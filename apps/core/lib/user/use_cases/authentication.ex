@@ -3,7 +3,7 @@ defmodule Core.User.UseCases.Authentication do
     Юзекейз аутентификации пользователя пользователя
   """
 
-  alias Core.ConfirmationCode.Methods.CheckerHasConfirmation
+  alias Core.ConfirmationCode.Methods.Confirming
   alias ConfirmationCode.Ports.Getter, as: GetterCode
   alias User.Ports.Getter, as: GetterUser
 
@@ -24,7 +24,7 @@ defmodule Core.User.UseCases.Authentication do
     and is_atom(getter_user)
     and is_map(args) do
     with {:ok, code_entity} <- getter_confiramtion_code.get(Map.get(args, :email)),
-         {:ok, _} <- CheckerHasConfirmation.has(code_entity),
+         {:ok, _} <- Confirming.confirm(code_entity, Map.get(args, :code)),
          {:ok, user_entity} <- getter_user.get(Map.get(args, :email)),
          r_token <- Core.RefreshToken.Entity.generate_and_sign!(%{id: user_entity.id}),
          a_token <- Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.id}) do

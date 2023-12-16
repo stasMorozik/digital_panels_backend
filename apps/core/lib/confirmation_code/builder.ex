@@ -11,9 +11,10 @@ defmodule Core.ConfirmationCode.Builder do
   @doc """
     Функция построения сущнсоти
   """
-  @spec build(any(), atom()) :: Success.t() | Error.t()
-  def build(needle, validator) when is_atom(validator) do
-    entity() |> Core.ConfirmationCode.Builders.Needle.build(validator, needle)
+  @spec build(atom(), any()) :: Success.t() | Error.t()
+  def build(validator, needle) when is_atom(validator) do
+    entity() 
+      |> Core.ConfirmationCode.Builders.Needle.build(validator, needle)
   end
 
   def build(_, _) do
