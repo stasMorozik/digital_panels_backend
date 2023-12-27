@@ -8,7 +8,6 @@ defmodule Core.Device.Ports.GetterList do
   alias Core.Shared.Types.Exception
 
   alias Core.Shared.Types.Pagination
-
   alias Core.Device.Types.Filter
   alias Core.Device.Types.Sort
 

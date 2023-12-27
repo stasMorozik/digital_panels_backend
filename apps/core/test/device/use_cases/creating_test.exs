@@ -1,4 +1,4 @@
-defmodule User.UseCases.AuthorizationTest do
+defmodule Device.UseCases.CreatingTest do
   use ExUnit.Case
 
   alias User.FakeAdapters.Inserting, as: InsertingUser
@@ -9,7 +9,11 @@ defmodule User.UseCases.AuthorizationTest do
   alias User.FakeAdapters.GettingById, as: GettingUserById
 
   alias Core.User.UseCases.Authentication, as: AuthenticationUseCase
-  alias Core.User.UseCases.Authorization, as: UseCase
+  alias Core.User.UseCases.Authorization, as: AuthorizationUseCase
+
+  alias Device.FakeAdapters.Inserting, as: InsertingDevice
+
+  alias Core.Device.UseCases.Creating, as: UseCase
 
   setup_all do
     :mnesia.create_schema([node()])
@@ -29,12 +33,18 @@ defmodule User.UseCases.AuthorizationTest do
       [attributes: [:id, :email, :name, :surname, :created, :updated]]
     )
 
+    {:atomic, :ok} = :mnesia.create_table(
+      :devices,
+      [attributes: [:id, :ip, :latitude, :longitude, :created, :updated]]
+    )
+
     :mnesia.add_table_index(:users, :email)
+    :mnesia.add_table_index(:devices, :ip)
 
     :ok
   end
 
-  test "Авторизация пользователя" do
+  test "Создание устройства" do
     {:ok, code} = Core.ConfirmationCode.Builder.build(
       Core.Shared.Validators.Email, "test@gmail.com"
     )
@@ -53,32 +63,13 @@ defmodule User.UseCases.AuthorizationTest do
       code: code.code
     })
 
-    {result, _} = UseCase.auth(GettingUserById, %{token: tokens.access_token})
+    {result, _} = UseCase.create(GettingUserById, InsertingDevice, %{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454,
+      token: tokens.access_token
+    })
 
     assert result == :ok
-  end
-
-  test "Авторизация пользователя - не валидный токен" do
-    {:ok, code} = Core.ConfirmationCode.Builder.build(
-      Core.Shared.Validators.Email, "test1@gmail.com"
-    )
-
-    {:ok, user} = Core.User.Builder.build(%{
-      email: "test1@gmail.com",
-      name: "Тест",
-      surname: "Тестович",
-    })
-
-    {:ok, true} = InsertingConfirmationCode.transform(code)
-    {:ok, true} = InsertingUser.transform(user)
-    
-    {_, _}  = AuthenticationUseCase.auth(GettingConfirmationCode, GettingUserByEmail, %{
-      email: "test1@gmail.com",
-      code: code.code
-    })
-
-    {result, _} = UseCase.auth(GettingUserById, %{token: "invalid token"})
-
-    assert result == :error
   end
 end
