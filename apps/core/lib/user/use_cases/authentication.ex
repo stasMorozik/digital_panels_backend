@@ -28,9 +28,10 @@ defmodule Core.User.UseCases.Authentication do
          {:ok, user_entity} <- getter_user.get(Map.get(args, :email)),
          r_token <- Core.RefreshToken.Entity.generate_and_sign!(%{id: user_entity.id}),
          a_token <- Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.id}) do
-
-      {:ok, %{access_token: a_token, refresh_token: r_token}}
-
+      {:ok, %{
+        access_token: a_token, 
+        refresh_token: r_token
+      }}
     else
       {:error, error} -> {:error, error}
       {:exception, error} -> {:exception, error}

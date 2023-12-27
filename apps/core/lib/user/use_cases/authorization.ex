@@ -22,11 +22,14 @@ defmodule Core.User.UseCases.Authorization do
          {result, claims} = Token.verify_and_validate(token),
          :ok <- result,
          string_id <- Map.get(claims, "id"),
-         binary_id <- UUID.string_to_binary!(string_id) do
-      getter_user.get(binary_id)
+         binary_id <- UUID.string_to_binary!(string_id),
+         {:ok, user} <- getter_user.get(binary_id) do
+      {:ok, user}
     else
       true -> {:error, "Невалидный токен"}
       :error -> {:error, "Невалидный токен"}
+      {:error, message} -> {:error, message}
+      {:exception, message} -> {:exception, message}
     end
   end
 

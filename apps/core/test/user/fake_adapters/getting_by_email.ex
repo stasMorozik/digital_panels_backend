@@ -7,9 +7,7 @@ defmodule User.FakeAdapters.GettingByEmail do
 
   @impl Getter
   def get(email) do
-    case :mnesia.transaction(fn -> :mnesia.index_read(
-      :users, email, :email
-    ) end) do
+    case :mnesia.transaction(fn -> :mnesia.index_read(:users, email, :email) end) do
       {:atomic, list_users} -> 
         case length(list_users) > 0 do
           false -> {:error, "Пользователь не найден"}

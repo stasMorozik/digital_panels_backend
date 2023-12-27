@@ -30,12 +30,10 @@ defmodule Core.ConfirmationCode.UseCases.Creating do
            {:ok, _} <- notifier.notify(%Core.Shared.Types.Notification{
               to: needle,
               from: @from,
-              subject: "Подтердите адрес электронной почты",
+              subject: "Подтвердите адрес электронной почты",
               message: "Ваш код - #{entity.code}"
            }) do
-
       {:ok, true}
-
     else
       {:error, error} -> {:error, error}
       {:exception, error} -> {:exception, error}

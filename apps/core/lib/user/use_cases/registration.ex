@@ -41,9 +41,7 @@ defmodule Core.User.UseCases.Registration do
               subject: "Добро пожаловать",
               message: "Рады приветствовать вас #{Map.get(args, :name)}"
             }) do
-
       {:ok, true}
-      
     else
       {:error, error} -> {:error, error}
       {:exception, error} -> {:exception, error}

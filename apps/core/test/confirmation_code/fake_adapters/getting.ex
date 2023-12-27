@@ -23,7 +23,7 @@ defmodule ConfirmationCode.FakeAdapters.Getting do
               confirmed: confirmed
             }}
         end
-      {:aborted, a} -> {:error, "Код не найден"}
+      {:aborted, _} -> {:error, "Код не найден"}
     end
   end
 end
