@@ -18,9 +18,7 @@ defmodule SmtpAdapters.Notifier do
       |> subject(subject)
       |> html_body(message)
       |> text_body(message)
-
-    IO.inspect(email)
-
+      
     case SmtpAdapters.Mailer.deliver(email) do
       {:ok, _} -> {:ok, true}
       _ -> {:error, "Не удалось отправить код подтверждения на вашу электронную почту"}

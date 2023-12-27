@@ -12,11 +12,11 @@ defmodule Core.ConfirmationCode.Validators.Code do
          true <- code <= @max do
       {:ok, true}
     else
-      false -> {:error, "Не валидный код"}
+      false -> {:error, "Невалидный код"}
     end
   end
 
   def valid(_) do
-    {:error, "Не валидный код"}
+    {:error, "Невалидный код"}
   end
 end

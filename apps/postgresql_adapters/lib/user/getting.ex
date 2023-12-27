@@ -1,9 +1,6 @@
 defmodule PostgresqlAdapters.User.Getting do
   alias Core.User.Ports.Getter
-
-  alias Core.Shared.Types.Success
-  alias Core.Shared.Types.Error
-  alias Core.Shared.Types.Exception
+  alias Core.User.Entity
 
   alias PostgresqlAdapters.User.Mapper
   alias PostgresqlAdapters.Executor
@@ -17,18 +14,26 @@ defmodule PostgresqlAdapters.User.Getting do
         with query <- "SELECT id, email, name, surname, created, updated FROM users WHERE email = $1",
              {:ok, result} <- Executor.execute(query, [email]),
              true <- result.num_rows > 0,
-             [ row ] <- result.rows do
-          Mapper.to_entity(row)
+             [ row ] <- result.rows,
+             [ id, email, name, surname, created, updated ] <- row do
+          {:ok, %Entity{
+            id: UUID.binary_to_string!(id),
+            email: email,
+            name: name,
+            surname: surname,
+            created: created,
+            updated: updated
+          }}
         else
-          false -> Error.new("Пользователь не найден")
+          false -> {:error, "Пользователь не найден"}
           {:exception, message} -> {:exception, message}
         end
-      [] -> Exception.new("Database connection error")
-      _ -> Exception.new("Database connection error")
+      [] -> {:exception, "Database connection error"}
+      _ -> {:exception, "Database connection error"}
     end
   end
 
   def get(_) do
-    Error.new("Не валидные данные для получения пользователя")
+    {:error, "Не валидные данные для получения пользователя"}
   end
 end

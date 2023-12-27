@@ -2,7 +2,7 @@ defmodule ConfirmationCode.EntityTest do
   use ExUnit.Case
 
   alias Core.ConfirmationCode.Builder
-  alias Core.ConfirmationCode.Methods.Confirming
+  alias Core.ConfirmationCode.Methods.Confirmatory
   alias Core.Shared.Validators.Email
 
   test "Построение сущности" do
@@ -20,7 +20,7 @@ defmodule ConfirmationCode.EntityTest do
   test "Подтверждение адреса электронной почты" do
     {_, entity} = Builder.build(Email, "test@gmail.com")
 
-    {result, _} = Confirming.confirm(entity, entity.code)
+    {result, _} = Confirmatory.confirm(entity, entity.code)
 
     assert result == :ok
   end
@@ -28,7 +28,7 @@ defmodule ConfirmationCode.EntityTest do
   test "Подтверждение адреса электронной почты - не верный код" do
     {_, entity} = Builder.build(Email, "test@gmail.com")
 
-    {result, _} = Confirming.confirm(entity, 12)
+    {result, _} = Confirmatory.confirm(entity, 12)
 
     assert result == :error
   end

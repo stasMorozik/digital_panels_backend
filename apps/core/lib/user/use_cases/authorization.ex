@@ -23,16 +23,14 @@ defmodule Core.User.UseCases.Authorization do
          :ok <- result,
          string_id <- Map.get(claims, "id"),
          binary_id <- UUID.string_to_binary!(string_id) do
-
       getter_user.get(binary_id)
-
     else
-      true -> {:error, "Не валидный токен"}
-      :error -> {:error, "Не валидный токен"}
+      true -> {:error, "Невалидный токен"}
+      :error -> {:error, "Невалидный токен"}
     end
   end
 
   def auth(_, _) do
-    {:error, "Не валидные аргументы для авторизации пользователя"}
+    {:error, "Невалидные аргументы для авторизации пользователя"}
   end
 end

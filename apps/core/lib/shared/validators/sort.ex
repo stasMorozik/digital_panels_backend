@@ -8,11 +8,11 @@ defmodule Core.Shared.Validators.Sort do
     case String.upcase(order) do
       "ASC" -> {:ok, true}
       "DESC" -> {:ok, true}
-      _ -> {:error, "Не валидный параметр сортировки"}
+      _ -> {:error, "Невалидный параметр сортировки"}
     end
   end
 
   def valid(_) do
-    {:error, "Не валидный параметр сортировки"}
+    {:error, "Невалидный параметр сортировки"}
   end
 end

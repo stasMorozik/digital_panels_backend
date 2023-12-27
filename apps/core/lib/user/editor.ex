@@ -8,11 +8,15 @@ defmodule Core.User.Editor do
   alias Core.User.Entity
 
   @spec edit(Entity.t(), map()) :: Success.t() | Error.t()
-  def edit(%Entity{} = entity, args) do
+  def edit(%Entity{} = entity, args) when is_map(args) do
     entity(entity)
       |> email(Map.get(args, :email))
       |> name(Map.get(args, :name))
       |> surname(Map.get(args, :surname))
+  end
+
+  def edit(_, _) do
+    {:error, "Невалидные данные для редактирования пользователя"}
   end
 
   defp entity(%Entity{} = entity) do

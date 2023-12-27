@@ -11,7 +11,7 @@ defmodule Core.RefreshToken.UseCases.Refreshing do
     {result, maybe_claims} = RefreshToken.verify_and_validate(token)
 
     case result do
-      :error -> {:error , "Не валидный токен"}
+      :error -> {:error , "Невалидный токен"}
       :ok ->
 
         r_token = RefreshToken.generate_and_sign!(%{
@@ -30,6 +30,6 @@ defmodule Core.RefreshToken.UseCases.Refreshing do
   end
 
   def refresh(_) do
-    {:error, "Не валидные аргументы для обновления токена"}
+    {:error, "Невалидные аргументы для обновления токена"}
   end
 end

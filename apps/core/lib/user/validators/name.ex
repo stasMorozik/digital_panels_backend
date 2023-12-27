@@ -14,11 +14,11 @@ defmodule Core.User.Validators.Name do
          true <- String.length(name) <= @max_length do
       {:ok, true}
     else
-      false -> {:error, "Не валидное имя пользователя"}
+      false -> {:error, "Невалидное имя пользователя"}
     end
   end
 
   def valid(_) do
-    {:error, "Не валидное имя пользователя"}
+    {:error, "Невалидное имя пользователя"}
   end
 end

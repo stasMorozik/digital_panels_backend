@@ -9,11 +9,11 @@ defmodule Core.Shared.Validators.Email do
   def valid(email) when is_binary(email) do
     case String.match?(email, @format) do
       true -> {:ok, true}
-      false -> {:error, "Не валидный адрес электронной почты"}
+      false -> {:error, "Невалидный адрес электронной почты"}
     end
   end
 
   def valid(_) do
-    {:error, "Не валидный адрес электронной почты"}
+    {:error, "Невалидный адрес электронной почты"}
   end
 end

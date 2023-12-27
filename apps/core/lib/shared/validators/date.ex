@@ -6,12 +6,12 @@ defmodule Core.Shared.Validators.Date do
   @spec valid(any()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def valid(str_date) when is_binary(str_date) do
     case Date.from_iso8601(str_date) do
-      {:error, _} -> {:error, "Не валидная дата"}
+      {:error, _} -> {:error, "Невалидная дата"}
       {:ok, _} -> {:ok, true}
     end
   end
 
   def valid(_) do
-    {:error, "Не валидная дата"}
+    {:error, "Невалидная дата"}
   end
 end

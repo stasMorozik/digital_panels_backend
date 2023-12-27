@@ -2,10 +2,6 @@ defmodule PostgresqlAdapters.User.Inserting do
   alias Core.User.Ports.Transformer
   alias Core.User.Entity
 
-  alias Core.Shared.Types.Success
-  alias Core.Shared.Types.Error
-  alias Core.Shared.Types.Exception
-
   @behaviour Transformer
 
   @impl Transformer
@@ -30,17 +26,17 @@ defmodule PostgresqlAdapters.User.Inserting do
               user.updated
              ],
              {:ok, _, _} <- Postgrex.execute(connection, q, data) do
-          Success.new(true)
+          {:ok, true}
         else
-          {:error, %Postgrex.Error{postgres: %{pg_code: "23505"}}} -> Error.new("Пользователь уже существует")
-          {:error, e} -> Exception.new(e.message)
+          {:error, %Postgrex.Error{postgres: %{pg_code: "23505"}}} -> {:error, "Пользователь уже существует"}
+          {:error, e} -> {:exception, e.message}
         end
-      [] -> Exception.new("Database connection error")
-      _ -> Exception.new("Database connection error")
+      [] -> {:exception, "Database connection error"}
+      _ -> {:exception, "Database connection error"}
     end
   end
 
   def transform(_) do
-    Error.new("Не валидные данные для занесения пользователя в базу данных")
+    {:error, "Не валидные данные для занесения пользователя в базу данных"}
   end
 end

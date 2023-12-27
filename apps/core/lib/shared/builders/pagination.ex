@@ -1,7 +1,4 @@
-defmodule Core.Shared.Types.Builders.Pagi do
-  @moduledoc """
-    Валидирует данные для пагинации
-  """
+defmodule Core.Shared.Builders.Pagi do
 
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(data) when is_map(data) do
@@ -17,11 +14,11 @@ defmodule Core.Shared.Types.Builders.Pagi do
         limit: limit
       }}
     else
-      false -> {:error, "Не валидные данные для пагинации"}
+      false -> {:error, "Невалидные данные для пагинации"}
     end
   end
 
   def build(_) do
-    {:error, "Не валидные данные для пагинации"}
+    {:error, "Невалидные данные для пагинации"}
   end
 end

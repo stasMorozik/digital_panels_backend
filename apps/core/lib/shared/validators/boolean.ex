@@ -9,6 +9,6 @@ defmodule Core.Shared.Validators.Boolean do
   end
 
   def valid(_) do
-    {:error, "Не валидное булево значение"}
+    {:error, "Невалидное булево значение"}
   end
 end

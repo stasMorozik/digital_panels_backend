@@ -2,10 +2,6 @@ defmodule PostgresqlAdapters.ConfirmationCode.Inserting do
   alias Core.ConfirmationCode.Ports.Transformer
   alias Core.ConfirmationCode.Entity
 
-  alias Core.Shared.Types.Success
-  alias Core.Shared.Types.Error
-  alias Core.Shared.Types.Exception
-
   @behaviour Transformer
 
   @impl Transformer
@@ -43,16 +39,16 @@ defmodule PostgresqlAdapters.ConfirmationCode.Inserting do
                 end
              end,
              {:ok, _} <- Postgrex.transaction(connection, fun) do
-          Success.new(true)
+          {:ok, true}
         else
           {:error, e} -> Exception.new(e.message)
         end
-      [] -> Exception.new("Database connection error")
-      _ -> Exception.new("Database connection error")
+      [] -> {:exception, "Database connection error"}
+      _ -> {:exception, "Database connection error"}
     end
   end
 
   def transform(_) do
-    Error.new("Не валидные данные для занесения кода подтверждения в базу данных")
+    {:error, "Не валидные данные для занесения кода подтверждения в базу данных"}
   end
 end

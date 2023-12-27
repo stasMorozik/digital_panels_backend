@@ -7,7 +7,7 @@ defmodule Core.User.UseCases.Registration do
   alias Core.User.Builder
   alias Core.Shared.Ports.Notifier
   alias Core.ConfirmationCode.Ports.Getter
-  alias Core.ConfirmationCode.Methods.Confirming
+  alias Core.ConfirmationCode.Methods.Confirmatory
 
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
@@ -31,7 +31,7 @@ defmodule Core.User.UseCases.Registration do
     and is_atom(notifier)
     and is_map(args) do
     with {:ok, code_entity} <- getter_confiramtion_code.get(Map.get(args, :email)),
-         {:ok, _} <- Confirming.confirm(code_entity, Map.get(args, :code)),
+         {:ok, _} <- Confirmatory.confirm(code_entity, Map.get(args, :code)),
          {:ok, user_entity} <- Builder.build(args),
          {:ok, _} <- transformer_users_store.transform(user_entity),
          {:ok, _}
@@ -51,6 +51,6 @@ defmodule Core.User.UseCases.Registration do
   end
 
   def reg(_, _, _, _) do
-    {:error, "Не валидные аргументы для регистрации пользователя"}
+    {:error, "Невалидные аргументы для регистрации пользователя"}
   end
 end

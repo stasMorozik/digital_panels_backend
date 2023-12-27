@@ -43,6 +43,6 @@ defmodule Core.ConfirmationCode.UseCases.Creating do
   end
 
   def create(_, _, _) do
-    {:error, "Не валидные аргументы для создания кода подтверждения"}
+    {:error, "Невалидные аргументы для создания кода подтверждения"}
   end
 end

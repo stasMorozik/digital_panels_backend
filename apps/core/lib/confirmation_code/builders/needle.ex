@@ -9,7 +9,7 @@ defmodule Core.ConfirmationCode.Builders.Needle do
          {:ok, _} <- validator.valid(needle) do
       {:ok, Map.put(entity, :needle, needle)}
     else
-      false -> {:error, "Не валидные данные для построения кода подтверждения"}
+      false -> {:error, "Невалидные данные для построения кода подтверждения"}
       {:error, error} -> {:error, error}
     end
   end

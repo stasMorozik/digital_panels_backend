@@ -2,9 +2,6 @@ defmodule PostgresqlAdapters.ConfirmationCode.Getting do
   alias Core.ConfirmationCode.Ports.Getter
   alias Core.ConfirmationCode.Entity
 
-  alias Core.Shared.Types.Success
-  alias Core.Shared.Types.Error
-  
   alias PostgresqlAdapters.ConfirmationCode.Mapper
   alias PostgresqlAdapters.Executor
 
@@ -20,18 +17,24 @@ defmodule PostgresqlAdapters.ConfirmationCode.Getting do
 
         with {:ok, result} <- Executor.execute(query, [needle]),
              true <- result.num_rows > 0,
-             [ row ] <- result.rows do
-          Mapper.to_entity(row)
+             [ row ] <- result.rows,
+             [needle, code, confirmed, created] <- row do
+          {:ok, %Entity{
+            needle: needle,
+            created: created,
+            code: code,
+            confirmed: confirmed
+          }}
         else
-          false -> Error.new("Код подтверждения не найден")
+          false -> {:error, "Код подтверждения не найден"}
           {:exception, message} -> {:exception, message}
         end
-      [] -> Exception.new("Database connection error")
-      _ -> Exception.new("Database connection error")
+      [] -> {:exception, "Database connection error"}
+      _ -> {:exception, "Database connection error"}
     end
   end
 
   def get(_) do
-    Error.new("Не валидные данные для получения кода подтверждения")
+    {:error, "Не валидные данные для получения кода подтверждения"}
   end
 end

@@ -1,4 +1,4 @@
-defmodule Core.ConfirmationCode.Methods.Confirming do
+defmodule Core.ConfirmationCode.Methods.Confirmatory do
   @moduledoc """
     Подтверждает код, если прошел верификацию
   """
@@ -17,17 +17,15 @@ defmodule Core.ConfirmationCode.Methods.Confirming do
          false <- cur_unix_time > entity.created,
          {:ok, _} <- Code.valid(some_code),
          true <- entity.code == some_code do
-
       {:ok, Map.put(entity, :confirmed, true)}
-      
     else
       true -> {:error, "Истекло время жизни у кода подтверждения"}
-      false -> {:error, "Не верный код подтверждения"}
+      false -> {:error, "Неверный код подтверждения"}
       {:error, message} -> {:error, message}
     end
   end
 
   def confirm(_, _) do
-    {:error, "Не валидные данные для подтверждения кода"}
+    {:error, "Невалидные данные для подтверждения кода"}
   end
 end
