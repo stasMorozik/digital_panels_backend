@@ -14,7 +14,13 @@ defmodule User.EntityTest do
     assert result == :ok
   end
 
-  test "Построение сущности - не валидное имя" do
+  test "Построение сущности - невалидные данные" do
+    {result, _} = Builder.build(%{})
+
+    assert result == :error
+  end
+
+  test "Построение сущности - невалидное имя" do
     {result, _} = Builder.build(%{
       name: "Иван1",
       surname: "Иванович",
@@ -24,7 +30,7 @@ defmodule User.EntityTest do
     assert result == :error
   end
 
-  test "Построение сущности - не валидная фамилия" do
+  test "Построение сущности - невалидная фамилия" do
     {result, _} = Builder.build(%{
       name: "Иван",
       surname: "Иванович1",
@@ -34,7 +40,7 @@ defmodule User.EntityTest do
     assert result == :error
   end
 
-  test "Построение сущности - не валидное имя и фамилия" do
+  test "Построение сущности - невалидное имя и фамилия" do
     {result, _} = Builder.build(%{
       name: "Иван1",
       surname: "Иванович1",
@@ -44,7 +50,7 @@ defmodule User.EntityTest do
     assert result == :error
   end
 
-  test "Построение сущности - не валидный адрес электронной почты" do
+  test "Построение сущности - невалидный адрес электронной почты" do
     {result, _} = Builder.build(%{
       name: "Иван",
       surname: "Иванович",
@@ -124,7 +130,14 @@ defmodule User.EntityTest do
     assert entity.email == "test1@gmail.com"
   end
 
-  test "Редактирование сущности - не валидное имя" do
+  test "Редактирование сущности - невалидные данные" do
+
+    {result, _} = Editor.edit(%{}, %{})
+
+    assert result == :error
+  end
+
+  test "Редактирование сущности - невалидное имя" do
     {_, entity} = Builder.build(%{
       name: "Иван",
       surname: "Иванович",
@@ -138,7 +151,7 @@ defmodule User.EntityTest do
     assert result == :error
   end
 
-  test "Редактирование сущности - не валидная фамилия" do
+  test "Редактирование сущности - невалидная фамилия" do
     {_, entity} = Builder.build(%{
       name: "Иван",
       surname: "Иванович",
@@ -152,7 +165,7 @@ defmodule User.EntityTest do
     assert result == :error
   end
 
-  test "Редактирование сущности - не валидный адрес элкетронной почты" do
+  test "Редактирование сущности - невалидный адрес элкетронной почты" do
     {_, entity} = Builder.build(%{
       name: "Иван",
       surname: "Иванович",

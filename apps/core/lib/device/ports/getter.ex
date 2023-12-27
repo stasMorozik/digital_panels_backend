@@ -7,7 +7,9 @@ defmodule Core.Device.Ports.Getter do
   alias Core.Shared.Types.Error
   alias Core.Shared.Types.Exception
 
+  alias Core.User.Entity, as: User
+
   @type t :: __MODULE__
 
-  @callback get(binary()) ::  Success.t() | Error.t() | Exception.t()
+  @callback get(binary(), User.t()) ::  Success.t() | Error.t() | Exception.t()
 end

@@ -9,7 +9,17 @@ defmodule Core.Device.Ports.GetterList do
 
   alias Core.Shared.Types.Pagination
 
+  alias Core.Device.Types.Filter
+  alias Core.Device.Types.Sort
+
+  alias Core.User.Entity, as: User
+
   @type t :: __MODULE__
 
-  @callback get(Pagination.t()) ::  Success.t() | Error.t() | Exception.t()
+  @callback get(
+    Pagination.t(), 
+    Filter.t(), 
+    Sort.t(), 
+    User.t()
+  ) ::  Success.t() | Error.t() | Exception.t()
 end

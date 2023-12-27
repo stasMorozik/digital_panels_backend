@@ -15,7 +15,7 @@ defmodule ConfirmationCode.UseCases.CreatingTest do
 
     {:atomic, :ok} = :mnesia.create_table(
       :codes,
-      [attributes: [:email, :created, :code, :confirmed]]
+      [attributes: [:needle, :created, :code, :confirmed]]
     )
 
     :ok

@@ -7,7 +7,7 @@ defmodule Core.Device.UseCases.Creating do
   alias Core.Shared.Types.Exception
 
   @spec create(
-    User.Ports.Getter.t(),
+    Core.User.Ports.Getter.t(),
     Core.Device.Ports.Transformer.t(),
     map()
   ) :: Success.t() | Error.t() | Exception.t()
@@ -24,5 +24,9 @@ defmodule Core.Device.UseCases.Creating do
       {:error, message} -> {:error, message}
       {:exception, message} -> {:exception, message}
     end
+  end
+
+  def create(_, _, _) do
+    {:error, "Невалидные данные для создания устройства"}
   end
 end

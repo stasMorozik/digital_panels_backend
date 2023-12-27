@@ -12,11 +12,15 @@ defmodule Core.Device.Editor do
   alias Core.Device.Builders.Longitude
 
   @spec edit(Entity.t(), map()) :: Success.t() | Error.t()
-  def edit(%Entity{} = entity, args) do
+  def edit(%Entity{} = entity, args) when is_map(args) do
     entity(entity)
       |> ip(Map.get(args, :ip))
       |> longitude(Map.get(args, :longitude))
       |> latitude(Map.get(args, :latitude))
+  end
+
+  def edit(_, _) do
+    {:error, "Невалидные данные для редактирования устройства"}
   end
 
   defp entity(%Entity{} = entity) do

@@ -19,8 +19,4 @@ defmodule ConfirmationCode.FakeAdapters.Inserting do
       {:aborted, _} -> {:error, "Код уже существует"}
     end
   end
-
-  def transform(_) do
-  {:error, "Не возможно занести запись в хранилище данных"}
-  end
 end

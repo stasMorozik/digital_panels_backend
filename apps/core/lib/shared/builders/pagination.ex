@@ -8,7 +8,6 @@ defmodule Core.Shared.Builders.Pagi do
          true <- is_integer(limit),
          true <- page > 0,
          true <- limit > 0 do
-
       {:ok, %Core.Shared.Types.Pagination{
         page: page,
         limit: limit
