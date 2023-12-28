@@ -1,13 +1,12 @@
-defmodule Core.Device.Builders.Sort do
-
+defmodule Core.File.Builders.Sort do
+  
   alias Core.Shared.Validators.Sort
 
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(%{} = args) do
     sort()
-      |> ip(Map.get(args, :ip))
-      |> latitude(Map.get(args, :latitude))
-      |> longitude(Map.get(args, :longitude))
+      |> size(Map.get(args, :ip))
+      |> type(Map.get(args, :latitude))
       |> created(Map.get(args, :created))
   end
 
@@ -16,45 +15,32 @@ defmodule Core.Device.Builders.Sort do
   end
 
   defp sort do
-    {:ok, %Core.Device.Types.Sort{}}
+    {:ok, %Core.File.Types.Sort{}}
   end
 
-  defp ip({:ok, sort}, order) do
+  defp size({:ok, sort}, order) do
     with false <- order == nil,
          {:ok, _} <- Sort.valid(order) do
-      {:ok, Map.put(sort, :ip, String.upcase(order))}
+      {:ok, Map.put(sort, :size, String.upcase(order))}
     else
       true -> {:ok, sort}
     end
   end
 
-  defp ip({:error, message}, _) do
+  defp size({:error, message}, _) do
     {:error, message}
   end
 
-  defp latitude({:ok, sort}, order) do
+  defp type({:ok, sort}, order) do
     with false <- order == nil,
          {:ok, _} <- Sort.valid(order) do
-      {:ok, Map.put(sort, :latitude, String.upcase(order))}
+      {:ok, Map.put(sort, :type, String.upcase(order))}
     else
       true -> {:ok, sort}
     end
   end
 
-  defp latitude({:error, message}, _) do
-    {:error, message}
-  end
-
-  defp longitude({:ok, sort}, order) do
-    with false <- order == nil,
-         {:ok, _} <- Sort.valid(order) do
-      {:ok, Map.put(sort, :longitude, String.upcase(order))}
-    else
-      true -> {:ok, sort}
-    end
-  end
-
-  defp longitude({:error, message}, _) do
+  defp type({:error, message}, _) do
     {:error, message}
   end
 

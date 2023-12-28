@@ -7,7 +7,7 @@ defmodule Core.Device.Validators.Description do
   alias Core.Shared.Types.Error
   
   @min_length 3
-  @max_length 512
+  @max_length 256
 
   @spec valid(any()) :: Success.t() | Error.t()
   def valid(desc) when is_binary(desc) do
