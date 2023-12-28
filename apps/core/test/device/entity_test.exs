@@ -8,7 +8,8 @@ defmodule Device.EntityTest do
     {result, _} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     assert result == :ok
@@ -18,7 +19,8 @@ defmodule Device.EntityTest do
     {result, _} = Builder.build(%{
       ip: "192.168.1.",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     assert result == :error
@@ -28,7 +30,8 @@ defmodule Device.EntityTest do
     {result, _} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: -91,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     assert result == :error
@@ -38,7 +41,8 @@ defmodule Device.EntityTest do
     {result, _} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: -181
+      longitude: -181,
+      desc: "Описание"
     })
 
     assert result == :error
@@ -54,26 +58,30 @@ defmodule Device.EntityTest do
     {_, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {result, entity} = Editor.edit(entity, %{
       ip: "192.168.1.99",
       latitude: 78.454568,
-      longitude: 98.3455
+      longitude: 98.3455,
+      desc: "Описание 1"
     })
 
     assert result == :ok
     assert entity.ip == "192.168.1.99"
     assert entity.latitude == 78.454568
     assert entity.longitude == 98.3455
+    assert entity.desc == "Описание 1"
   end
 
   test "Редактирование сущности - только ip" do
     {_, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {result, entity} = Editor.edit(entity, %{
@@ -88,7 +96,8 @@ defmodule Device.EntityTest do
     {_, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {result, entity} = Editor.edit(entity, %{
@@ -103,7 +112,8 @@ defmodule Device.EntityTest do
     {_, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {result, entity} = Editor.edit(entity, %{
@@ -124,7 +134,8 @@ defmodule Device.EntityTest do
     {_, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {result, _} = Editor.edit(entity, %{
@@ -138,7 +149,8 @@ defmodule Device.EntityTest do
     {_, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {result, _} = Editor.edit(entity, %{
@@ -152,7 +164,8 @@ defmodule Device.EntityTest do
     {_, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {result, _} = Editor.edit(entity, %{

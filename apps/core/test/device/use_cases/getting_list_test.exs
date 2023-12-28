@@ -59,7 +59,8 @@ defmodule Device.UseCases.GettingListTest do
     {:ok, device} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)
@@ -100,7 +101,8 @@ defmodule Device.UseCases.GettingListTest do
     {:ok, device} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)
@@ -141,14 +143,15 @@ defmodule Device.UseCases.GettingListTest do
     {:ok, device} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)
     {:ok, true} = InsertingUser.transform(user)
     {:ok, true} = InsertingDevice.transform(device, user)
 
-    {result, list} = UseCase.get(GettingUserById, GettingListDevice, %{
+    {result, _} = UseCase.get(GettingUserById, GettingListDevice, %{
       pagi: %{
         page: 1,
         limit: 10

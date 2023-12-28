@@ -67,6 +67,7 @@ defmodule Device.UseCases.CreatingTest do
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
+      desc: "Описание",
       token: tokens.access_token
     })
 
@@ -91,6 +92,7 @@ defmodule Device.UseCases.CreatingTest do
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
+      desc: "Описание",
       token: "invalid token"
     })
 

@@ -59,7 +59,8 @@ defmodule Device.UseCases.UpdatingTest do
     {:ok, device} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)
@@ -75,6 +76,7 @@ defmodule Device.UseCases.UpdatingTest do
       ip: "192.168.1.97",
       latitude: 78.454568,
       longitude: 98.3453,
+      desc: "Описание",
       token: tokens.access_token,
       id: device.id
     })
@@ -96,13 +98,15 @@ defmodule Device.UseCases.UpdatingTest do
     {:ok, device_0} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {:ok, device_1} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)
@@ -118,8 +122,9 @@ defmodule Device.UseCases.UpdatingTest do
       ip: "192.168.1.97",
       latitude: 78.454568,
       longitude: 98.3453,
+      desc: "Описание",
       token: tokens.access_token,
-      id: device_1.id
+      id: device_1.id,
     })
 
     assert result == :error
@@ -139,7 +144,8 @@ defmodule Device.UseCases.UpdatingTest do
     {:ok, device} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)
@@ -150,6 +156,7 @@ defmodule Device.UseCases.UpdatingTest do
       ip: "192.168.1.97",
       latitude: 78.454568,
       longitude: 98.3453,
+      desc: "Описание",
       token: "invalid token",
       id: device.id
     })

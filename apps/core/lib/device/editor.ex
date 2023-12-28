@@ -10,6 +10,7 @@ defmodule Core.Device.Editor do
   alias Core.Device.Builders.Ip
   alias Core.Device.Builders.Latitude
   alias Core.Device.Builders.Longitude
+  alias Core.Device.Builders.Description
 
   @spec edit(Entity.t(), map()) :: Success.t() | Error.t()
   def edit(%Entity{} = entity, args) when is_map(args) do
@@ -17,6 +18,7 @@ defmodule Core.Device.Editor do
       |> ip(Map.get(args, :ip))
       |> longitude(Map.get(args, :longitude))
       |> latitude(Map.get(args, :latitude))
+      |> desc(Map.get(args, :desc))
   end
 
   def edit(_, _) do
@@ -64,6 +66,17 @@ defmodule Core.Device.Editor do
   end
 
   defp longitude({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp desc({:ok, entity}, desc) do
+    case desc do
+      nil -> {:ok, entity}
+      desc -> Description.build({:ok, entity}, desc)
+    end
+  end
+
+  defp desc({:error, message}, _) do
     {:error, message}
   end
 end

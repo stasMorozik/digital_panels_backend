@@ -59,7 +59,8 @@ defmodule Device.UseCases.GettingTest do
     {:ok, device} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)
@@ -93,13 +94,15 @@ defmodule Device.UseCases.GettingTest do
     {:ok, device_0} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {:ok, device_1} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)
@@ -133,7 +136,8 @@ defmodule Device.UseCases.GettingTest do
     {:ok, device} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454
+      longitude: 98.3454,
+      desc: "Описание"
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)
