@@ -14,13 +14,13 @@ defmodule Core.File.Validators.Extension do
 
   @spec valid(any()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def valid(extname) when is_binary(extname) do
-    case Map.get(@extensions, extname) do
-      nil -> {:error, "Невалидное расширение"}
+    case Map.get(@extensions, String.to_atom(extname)) do
+      nil -> {:error, "Невалидное расширение файла"}
       _ -> {:ok, true}
     end
   end
 
   def valid(_) do
-    {:error, "Невалидное расширение"}
+    {:error, "Невалидное расширение файла"}
   end
 end

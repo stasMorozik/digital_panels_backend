@@ -3,7 +3,7 @@ defmodule Core.File.Types.Filter do
   @type t :: %Core.File.Types.Filter{
     type: binary(),
     extension: binary(),
-    size: float(),
+    size: integer(),
     created_f: binary(),
     created_t: binary(),
   }

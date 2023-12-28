@@ -11,7 +11,7 @@ defmodule Core.File.Entity do
     url: binary(),
     extension: binary(),
     type: binary(),
-    size: float(),
+    size: integer(),
     created: binary()
   }
 

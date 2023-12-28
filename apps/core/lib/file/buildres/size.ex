@@ -6,9 +6,9 @@ defmodule Core.File.Builders.Size do
   alias FileSize
 
   @spec build(Success.t() | Error.t(), any()) :: Success.t() | Error.t()
-  def build({:ok, entity}, size) do
-    case Core.File.Validators.Size.valid(size) do
-      {:ok, _} -> {:ok, Map.put(entity, :size, FileSize.value_to_float(size))}
+  def build({:ok, entity}, tuple) do
+    case Core.File.Validators.Size.valid(tuple) do
+      {:ok, _} -> {:ok, Map.put(entity, :size, FileSize.to_integer(elem(tuple, 1)))}
       {:error, message} -> {:error, message}
     end
   end

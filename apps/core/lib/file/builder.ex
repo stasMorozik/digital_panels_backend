@@ -6,10 +6,10 @@ defmodule Core.File.Builder do
   alias UUID
 
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
-  def build(%{path: path, name: name, extname: extname, file_size: file_size}) do
+  def build(%{path: path, name: name, extname: extname, size: size}) do
     entity()
       |> Core.File.Builders.Extension.build(extname)
-      |> Core.File.Builders.Size.build(file_size)
+      |> Core.File.Builders.Size.build(size)
       |> Core.File.Builders.Path.build(path)
       |> Core.File.Builders.Type.build(extname)
       |> Core.File.Builders.Url.build(name)

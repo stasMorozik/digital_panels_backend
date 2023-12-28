@@ -5,18 +5,22 @@ defmodule Core.File.Validators.Size do
 
   alias FileSize
 
-  @size FileSize.new(50, :mb)
+  @max_size FileSize.new(50, :mb)
+  @min_size FileSize.new(0, :mb)
 
-  @spec valid(FileSize.t()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
-  def valid(size) when is_struct(size) do
-    case FileSize.compare(size, @size) do
-      :eq -> {:ok, true}
-      :lt -> {:ok, true}
-      :gt -> {:error, "Невалидный размер файла"}
+  @spec valid({atom(), FileSize.t()}) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
+  def valid({:ok, size}) when is_struct(size) do
+    with compared <- FileSize.compare(size, @max_size),
+         true <- compared == :eq || compared == :lt,
+         compared <- FileSize.compare(size, @min_size),
+         true <- compared == :gt do
+      {:ok, true}
+    else
+      false -> {:error, "Невалидный размер файла"}
     end
   end
 
   def valid(_) do
-    {:error, "Невалидный размер файла"}
+    {:error, "Невалидные данные для валидации размера файла"}
   end
 end

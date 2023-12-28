@@ -18,7 +18,7 @@ defmodule Core.File.Builders.Type do
   @spec build(Success.t() | Error.t(), any()) :: Success.t() | Error.t()
   def build({:ok, entity}, extname) do
     case Core.File.Validators.Extension.valid(extname) do
-      {:ok, _} -> {:ok, Map.put(entity, :type, Map.get(@extensions_types, extname))}
+      {:ok, _} -> {:ok, Map.put(entity, :type, Map.get(@extensions_types, String.to_atom(extname)))}
       {:error, message} -> {:error, message}
     end
   end
