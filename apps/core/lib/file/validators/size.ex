@@ -3,8 +3,6 @@ defmodule Core.File.Validators.Size do
     Валидирует размер файла
   """
 
-  alias FileSize
-
   @max_size FileSize.new(50, :mb)
   @min_size FileSize.new(0, :mb)
 
