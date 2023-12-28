@@ -18,9 +18,9 @@ defmodule Core.Device.UseCases.GettingList do
          is_atom(getter_list_device) and
          is_map(args) do
     with {:ok, user} <- Authorization.auth(getter_user, args),
-         {:ok, pagi} <- Core.Shared.Builders.Pagi.build(args),
-         {:ok, filter} <- Core.Device.Builders.Filter.build(args),
-         {:ok, sort} <- Core.Device.Builders.Sort.build(args),
+         {:ok, pagi} <- Core.Shared.Builders.Pagi.build(Map.get(args, :pagi, %{page: 1, limit: 10})),
+         {:ok, filter} <- Core.Device.Builders.Filter.build(Map.get(args, :filter, %{})),
+         {:ok, sort} <- Core.Device.Builders.Sort.build(Map.get(args, :sort, %{})),
          {:ok, list} <- getter_list_device.get(pagi, filter, sort, user) do
       {:ok, list}
     else

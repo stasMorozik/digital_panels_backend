@@ -26,12 +26,12 @@ defmodule Core.Device.UseCases.Updating do
 
     with :ok <- result,
          {:ok, user} <- Authorization.auth(getter_user, args),
-         {:ok, device} <- getter_device.get(UUID.string_to_binary!(args.id)),
+         {:ok, device} <- getter_device.get(UUID.string_to_binary!(args.id), user),
          {:ok, device} <- Core.Device.Editor.edit(device, args),
          {:ok, _} <- transformer_device.transform(device, user) do
       {:ok, true}
     else
-      :error -> "Не валидный UUID устройства"
+      :error -> {:error, "Не валидный UUID устройства"}
       {:error, message} -> {:error, message}
       {:exception, message} -> {:exception, message}
     end

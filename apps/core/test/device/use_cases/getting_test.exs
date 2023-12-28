@@ -1,4 +1,4 @@
-defmodule Device.UseCases.CreatingTest do
+defmodule Device.UseCases.GettingTest do
   use ExUnit.Case
 
   alias User.FakeAdapters.Inserting, as: InsertingUser
@@ -7,12 +7,13 @@ defmodule Device.UseCases.CreatingTest do
   alias ConfirmationCode.FakeAdapters.Getting, as: GettingConfirmationCode
   alias User.FakeAdapters.GettingByEmail, as: GettingUserByEmail
   alias User.FakeAdapters.GettingById, as: GettingUserById
+  alias Device.FakeAdapters.Getting, as: GettingDevice
 
   alias Core.User.UseCases.Authentication, as: AuthenticationUseCase
 
   alias Device.FakeAdapters.Inserting, as: InsertingDevice
 
-  alias Core.Device.UseCases.Creating, as: UseCase
+  alias Core.Device.UseCases.Getting, as: UseCase
 
   setup_all do
     :mnesia.create_schema([node()])
@@ -20,8 +21,8 @@ defmodule Device.UseCases.CreatingTest do
     :ok = :mnesia.start()
 
     :mnesia.delete_table(:codes)
-    :mnesia.delete_table(:users)
     :mnesia.delete_table(:devices)
+    :mnesia.delete_table(:users)
 
     {:atomic, :ok} = :mnesia.create_table(
       :codes,
@@ -44,7 +45,7 @@ defmodule Device.UseCases.CreatingTest do
     :ok
   end
 
-  test "Создание устройства" do
+  test "Получение устройства" do
     {:ok, code} = Core.ConfirmationCode.Builder.build(
       Core.Shared.Validators.Email, "test@gmail.com"
     )
@@ -55,25 +56,30 @@ defmodule Device.UseCases.CreatingTest do
       surname: "Тестович",
     })
 
+    {:ok, device} = Core.Device.Builder.build(%{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454
+    })
+
     {:ok, true} = InsertingConfirmationCode.transform(code)
     {:ok, true} = InsertingUser.transform(user)
+    {:ok, true} = InsertingDevice.transform(device, user)
     
     {_, tokens}  = AuthenticationUseCase.auth(GettingConfirmationCode, GettingUserByEmail, %{
       email: "test@gmail.com",
       code: code.code
     })
 
-    {result, _} = UseCase.create(GettingUserById, InsertingDevice, %{
-      ip: "192.168.1.98",
-      latitude: 78.454567,
-      longitude: 98.3454,
-      token: tokens.access_token
+    {result, _} = UseCase.get(GettingUserById, GettingDevice, %{
+      token: tokens.access_token,
+      id: device.id
     })
 
     assert result == :ok
   end
 
-  test "Создание устройства - невалидный токен" do
+  test "Получение устройства - устройство не найдено" do
     {:ok, code} = Core.ConfirmationCode.Builder.build(
       Core.Shared.Validators.Email, "test1@gmail.com"
     )
@@ -84,14 +90,59 @@ defmodule Device.UseCases.CreatingTest do
       surname: "Тестович",
     })
 
-    {:ok, true} = InsertingConfirmationCode.transform(code)
-    {:ok, true} = InsertingUser.transform(user)
-
-    {result, _} = UseCase.create(GettingUserById, InsertingDevice, %{
+    {:ok, device_0} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
-      longitude: 98.3454,
-      token: "invalid token"
+      longitude: 98.3454
+    })
+
+    {:ok, device_1} = Core.Device.Builder.build(%{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454
+    })
+
+    {:ok, true} = InsertingConfirmationCode.transform(code)
+    {:ok, true} = InsertingUser.transform(user)
+    {:ok, true} = InsertingDevice.transform(device_0, user)
+    
+    {_, tokens}  = AuthenticationUseCase.auth(GettingConfirmationCode, GettingUserByEmail, %{
+      email: "test1@gmail.com",
+      code: code.code
+    })
+
+    {result, _} = UseCase.get(GettingUserById, GettingDevice, %{
+      token: tokens.access_token,
+      id: device_1.id
+    })
+
+    assert result == :error
+  end
+
+  test "Получение устройства - невалидный токен" do
+    {:ok, code} = Core.ConfirmationCode.Builder.build(
+      Core.Shared.Validators.Email, "test2@gmail.com"
+    )
+
+    {:ok, user} = Core.User.Builder.build(%{
+      email: "test2@gmail.com",
+      name: "Тест",
+      surname: "Тестович",
+    })
+
+    {:ok, device} = Core.Device.Builder.build(%{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454
+    })
+
+    {:ok, true} = InsertingConfirmationCode.transform(code)
+    {:ok, true} = InsertingUser.transform(user)
+    {:ok, true} = InsertingDevice.transform(device, user)
+
+    {result, _} = UseCase.get(GettingUserById, GettingDevice, %{
+      token: "invalid token",
+      id: device.id
     })
 
     assert result == :error
