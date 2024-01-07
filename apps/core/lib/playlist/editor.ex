@@ -11,7 +11,7 @@ defmodule Core.Playlist.Editor do
   def edit(%Entity{} = entity, args) when is_map(args) do
     entity(entity)
       |> name(Map.get(args, :name))
-      |> contents(Map.get(args, :contents))
+      |> Core.Playlist.Builders.Contents.build(Map.get(args, :contents, []))
   end
 
   def edit(_, _) do
@@ -34,17 +34,6 @@ defmodule Core.Playlist.Editor do
   end
 
   defp name({:error, message}, _) do
-    {:error, message}
-  end
-
-  defp contents({:ok, entity}, contents) do
-    case contents do
-      nil -> {:ok, entity}
-      contents -> Core.Playlist.Builders.Contents.build({:ok, entity}, contents)
-    end
-  end
-
-  defp contents({:error, message}, _) do
     {:error, message}
   end
 end

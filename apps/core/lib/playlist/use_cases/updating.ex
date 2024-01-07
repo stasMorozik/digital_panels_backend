@@ -1,4 +1,4 @@
-defmodule Core.Playlist.UseCases.Creating do
+defmodule Core.Playlist.UseCases.Updating do
   
   alias Core.User.UseCases.Authorization
 
@@ -6,14 +6,16 @@ defmodule Core.Playlist.UseCases.Creating do
   alias Core.Shared.Types.Error
   alias Core.Shared.Types.Exception
 
-  @spec create(
+  @spec update(
     Core.User.Ports.Getter.t(),
+    Core.Playlist.Ports.Getter.t(),
     Core.Content.Ports.GetterList.t(),
     Core.Playlist.Ports.Transformer.t(),
     map()
   ) :: Success.t() | Error.t() | Exception.t()
-  def create(
+  def update(
     getter_user,
+    getter_playlist,
     getter_list_content,
     transformer_playlist, 
     args
@@ -21,22 +23,28 @@ defmodule Core.Playlist.UseCases.Creating do
          is_atom(transformer_playlist) and 
          is_atom(getter_list_content) and
          is_map(args) do
-    with {:ok, user} <- Authorization.auth(getter_user, args),
+
+    {result, _} = UUID.info(Map.get(args, :id))
+
+    with :ok <- result,
+         {:ok, user} <- Authorization.auth(getter_user, args),
+         {:ok, playlist} <- getter_playlist.get(UUID.string_to_binary!(args.id), user),
          {:ok, pagi} <- Core.Shared.Builders.Pagi.build(%{page: 1, limit: 100}),
          identifiers <- Map.get(args, :contents, []),
          {:ok, filter} <- Core.Content.Builders.Filter.build(%{identifiers: identifiers}),
          {:ok, sort} <- Core.Content.Builders.Sort.build(%{}),
          {:ok, contents} <- getter_list_content.get(pagi, filter, sort, user),
-         {:ok, playlist} <- Core.Playlist.Builder.build(Map.put(args, :contents, contents)),
+         {:ok, playlist} <- Core.Playlist.Editor.edit(playlist, Map.put(args, :contents, contents)),
          {:ok, _} <- transformer_playlist.transform(playlist, user) do
       {:ok, true}
     else
+      :error -> {:error, "Не валидный UUID плэйлиста"}
       {:error, message} -> {:error, message}
       {:exception, message} -> {:exception, message}
     end
   end
 
-  def create(_, _, _, _) do
-    {:error, "Невалидные данные для создания плэйлиста"}
+  def update(_, _, _, _) do
+    {:error, "Невалидные данные для обновления плэйлиста"}
   end
 end
