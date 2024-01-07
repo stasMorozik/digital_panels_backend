@@ -1,4 +1,4 @@
-defmodule Device.UseCases.CreatingTest do
+defmodule File.UseCases.GettingListTest do
   use ExUnit.Case
 
   alias User.FakeAdapters.Inserting, as: InsertingUser
@@ -10,9 +10,10 @@ defmodule Device.UseCases.CreatingTest do
 
   alias Core.User.UseCases.Authentication, as: AuthenticationUseCase
 
-  alias Device.FakeAdapters.Inserting, as: InsertingDevice
+  alias File.FakeAdapters.Inserting, as: InsertingFile
+  alias File.FakeAdapters.GettingList, as: GettingListFile
 
-  alias Core.Device.UseCases.Creating, as: UseCase
+  alias Core.File.UseCases.GettingList, as: UseCase
 
   setup_all do
     :mnesia.create_schema([node()])
@@ -21,7 +22,7 @@ defmodule Device.UseCases.CreatingTest do
 
     :mnesia.delete_table(:codes)
     :mnesia.delete_table(:users)
-    :mnesia.delete_table(:devices)
+    :mnesia.delete_table(:files)
 
     {:atomic, :ok} = :mnesia.create_table(
       :codes,
@@ -34,17 +35,20 @@ defmodule Device.UseCases.CreatingTest do
     )
 
     {:atomic, :ok} = :mnesia.create_table(
-      :devices,
-      [attributes: [:id, :ip, :latitude, :longitude, :created, :updated]]
+      :files,
+      [attributes: [:id, :path, :url, :extension, :type, :size, :created]]
     )
 
     :mnesia.add_table_index(:users, :email)
-    :mnesia.add_table_index(:devices, :ip)
+    :mnesia.add_table_index(:files, :type)
+
+    File.touch("/tmp/not_emty_png.png", 1544519753)
+    File.write("/tmp/not_emty_png.png", "content")
 
     :ok
   end
 
-  test "Создание устройства" do
+  test "Получение списка файлов" do
     {:ok, code} = Core.ConfirmationCode.Builder.build(
       Core.Shared.Validators.Email, "test@gmail.com"
     )
@@ -63,18 +67,30 @@ defmodule Device.UseCases.CreatingTest do
       code: code.code
     })
 
-    {result, _} = UseCase.create(GettingUserById, InsertingDevice, %{
-      ip: "192.168.1.98",
-      latitude: 78.454567,
-      longitude: 98.3454,
-      desc: "Описание",
+    {:ok, file} = Core.File.Builder.build(%{
+      path: "/tmp/not_emty_png.png",
+      name: Path.basename("/tmp/not_emty_png.png"),
+      extname: Path.extname("/tmp/not_emty_png.png"),
+      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
+    })
+
+    {:ok, true} = InsertingFile.transform(file, user)
+
+    {result, _} = UseCase.get(GettingUserById, GettingListFile, %{
+      pagi: %{
+        page: 1,
+        limit: 10
+      },
+      filter: %{
+        extension: ".png"
+      },
       token: tokens.access_token
     })
 
     assert result == :ok
   end
 
-  test "Создание устройства - невалидный токен" do
+  test "Получение списка файлов - невалидный токен" do
     {:ok, code} = Core.ConfirmationCode.Builder.build(
       Core.Shared.Validators.Email, "test1@gmail.com"
     )
@@ -88,11 +104,23 @@ defmodule Device.UseCases.CreatingTest do
     {:ok, true} = InsertingConfirmationCode.transform(code)
     {:ok, true} = InsertingUser.transform(user)
 
-    {result, _} = UseCase.create(GettingUserById, InsertingDevice, %{
-      ip: "192.168.1.98",
-      latitude: 78.454567,
-      longitude: 98.3454,
-      desc: "Описание",
+    {:ok, file} = Core.File.Builder.build(%{
+      path: "/tmp/not_emty_png.png",
+      name: Path.basename("/tmp/not_emty_png.png"),
+      extname: Path.extname("/tmp/not_emty_png.png"),
+      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
+    })
+
+    {:ok, true} = InsertingFile.transform(file, user)
+
+    {result, _} = UseCase.get(GettingUserById, GettingListFile, %{
+      pagi: %{
+        page: 1,
+        limit: 10
+      },
+      filter: %{
+        extension: ".png"
+      },
       token: "invalid token"
     })
 

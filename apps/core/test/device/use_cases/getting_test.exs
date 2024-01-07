@@ -67,7 +67,7 @@ defmodule Device.UseCases.GettingTest do
     {:ok, true} = InsertingUser.transform(user)
     {:ok, true} = InsertingDevice.transform(device, user)
     
-    {_, tokens}  = AuthenticationUseCase.auth(GettingConfirmationCode, GettingUserByEmail, %{
+    {:ok, tokens}  = AuthenticationUseCase.auth(GettingConfirmationCode, GettingUserByEmail, %{
       email: "test@gmail.com",
       code: code.code
     })

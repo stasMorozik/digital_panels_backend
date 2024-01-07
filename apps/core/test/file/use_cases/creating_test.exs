@@ -65,7 +65,7 @@ defmodule File.UseCases.CreatingTest do
     {:ok, true} = InsertingConfirmationCode.transform(code)
     {:ok, true} = InsertingUser.transform(user)
     
-    {_, tokens}  = AuthenticationUseCase.auth(GettingConfirmationCode, GettingUserByEmail, %{
+    {:ok, tokens}  = AuthenticationUseCase.auth(GettingConfirmationCode, GettingUserByEmail, %{
       email: "test@gmail.com",
       code: code.code
     })
