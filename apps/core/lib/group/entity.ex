@@ -8,6 +8,14 @@ defmodule Core.Group.Entity do
   @type t :: %Entity{
     id: binary(),
     name: binary(),
-    devices: list(Core.Device.Entity.t())
+    devices: list(Core.Device.Entity.t()),
+    created: binary(),
+    updated: binary()
   }
+
+  defstruct id: nil, 
+            name: nil, 
+            devices: [], 
+            created: nil, 
+            updated: nil
 end
