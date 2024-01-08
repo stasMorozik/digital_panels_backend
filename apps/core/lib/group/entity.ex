@@ -15,7 +15,7 @@ defmodule Core.Group.Entity do
 
   defstruct id: nil, 
             name: nil, 
-            devices: [], 
+            devices: nil, 
             created: nil, 
             updated: nil
 end

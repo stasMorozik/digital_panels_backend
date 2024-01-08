@@ -8,24 +8,12 @@ defmodule Core.Schedule.Entity do
   @type t :: %Entity{
     id: binary(),
     name: binary(),
-    playlist: Core.Playlist.Entity.t(),
-    once: boolean(),
-    week_day: binary(),
-    day: binary(),
-    date: binary(),
-    start: integer(),
-    created: binary(),
-    updated: binary()
+    timings: list(Core.Schedule.Types.Timing.t()),
+    group: Core.Group.Entity.t()
   }
 
   defstruct id: nil, 
             name: nil, 
-            playlist: nil,
-            once: nil,
-            week_day: nil,
-            day: nil,
-            date: nil,
-            start: nil,
-            created: nil,
-            updated: nil
+            timings: nil,
+            group: nil
 end

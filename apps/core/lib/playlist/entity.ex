@@ -15,7 +15,7 @@ defmodule Core.Playlist.Entity do
 
   defstruct id: nil, 
             name: nil,
-            contents: [],
+            contents: nil,
             created: nil,
             updated: nil
 end
