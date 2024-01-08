@@ -5,6 +5,8 @@ defmodule Core.Content.Builders.Filter do
   alias Core.Content.Validators.Identifiers
   alias Core.Shared.Validators.Date
 
+  alias UUID
+
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(%{} = args) do
     filter()
@@ -81,7 +83,8 @@ defmodule Core.Content.Builders.Filter do
 
   defp identifiers({:ok, filter}, identifiers) do
     with false <- identifiers == nil,
-         {:ok, _} <- Identifiers.valid(identifiers) do
+         {:ok, _} <- Identifiers.valid(identifiers),
+         identifiers <- Enum.map(identifiers, fn uuid -> UUID.string_to_binary!(uuid) end) do
       {:ok, Map.put(filter, :identifiers, identifiers)}
     else
       true -> {:ok, filter}
