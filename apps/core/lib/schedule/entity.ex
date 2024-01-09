@@ -9,11 +9,15 @@ defmodule Core.Schedule.Entity do
     id: binary(),
     name: binary(),
     timings: list(Core.Schedule.Types.Timing.t()),
-    group: Core.Group.Entity.t()
+    group: Core.Group.Entity.t(),
+    created: nil,
+    updated: nil
   }
 
   defstruct id: nil, 
             name: nil, 
             timings: nil,
-            group: nil
+            group: nil,
+            created: nil,
+            updated: nil
 end
