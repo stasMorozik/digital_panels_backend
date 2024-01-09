@@ -1,6 +1,6 @@
 defmodule Core.Playlist.Validators.Sum do
   @moduledoc """
-    Валидирует количество файлов
+    Валидирует количество контента
   """
 
   alias Core.Shared.Types.Success
@@ -15,11 +15,11 @@ defmodule Core.Playlist.Validators.Sum do
          true <- sum <= @max do
       {:ok, true}
     else
-      false -> {:error, "Невалидное количество файлов"}
+      false -> {:error, "Невалидное количество контента"}
     end
   end
 
   def valid(_) do
-    {:error, "Невалидное количество файлов"}
+    {:error, "Невалидное количество контента"}
   end
 end

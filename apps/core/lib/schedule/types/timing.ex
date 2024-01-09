@@ -12,7 +12,7 @@ defmodule Core.Schedule.Types.Timing do
     loop: boolean(),
     day: binary(),
     week_day: binary(),
-    date: binary() | none(),
+    date: binary(),
     start: integer()
   }
 
