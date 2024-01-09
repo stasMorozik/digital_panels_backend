@@ -1,4 +1,4 @@
-defmodule Core.Content.Validators.Identifiers do
+defmodule Core.Shared.Validators.Identifiers do
   @moduledoc """
     Валидирует список идентификаторов
   """

@@ -5,8 +5,12 @@ defmodule Core.Device.Types.Filter do
     latitude: float(),
     longitude: float(),
     created_f: binary(),
-    created_t: binary(),
+    created_t: binary()
   }
 
-  defstruct ip: nil, latitude: nil, longitude: nil, created_f: nil, created_t: nil
+  defstruct ip: nil,
+            latitude: nil,
+            longitude: nil,
+            created_f: nil,
+            created_t: nil
 end

@@ -22,10 +22,9 @@ defmodule Core.Playlist.UseCases.Creating do
          is_atom(getter_list_content) and
          is_map(args) do
     with {:ok, user} <- Authorization.auth(getter_user, args),
-         {:ok, pagi} <- Core.Shared.Builders.Pagi.build(%{page: 1, limit: 100}),
-         identifiers <- Map.get(args, :contents, []),
-         {:ok, filter} <- Core.Content.Builders.Filter.build(%{identifiers: identifiers}),
-         {:ok, sort} <- Core.Content.Builders.Sort.build(%{}),
+         {:ok, pagi} <- Core.Shared.Builders.Pagi.build(Map.get(args, :pagi, %{page: 1, limit: 10})),
+         {:ok, filter} <- Core.Content.Builders.Filter.build(Map.get(args, :filter, %{})),
+         {:ok, sort} <- Core.Content.Builders.Sort.build(Map.get(args, :sort, %{})),
          {:ok, contents} <- getter_list_content.get(pagi, filter, sort, user),
          {:ok, playlist} <- Core.Playlist.Builder.build(Map.put(args, :contents, contents)),
          {:ok, _} <- transformer_playlist.transform(playlist, user) do

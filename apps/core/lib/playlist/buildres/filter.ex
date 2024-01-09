@@ -1,12 +1,15 @@
 defmodule Core.Playlist.Builders.Filter do
   
   alias Core.Playlist.Validators.Name
+  alias Core.Playlist.Validators.Sum
   alias Core.Shared.Validators.Date
 
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(%{} = args) do
     filter()
       |> name(Map.get(args, :name))
+      |> sum_f(Map.get(args, :sum_f))
+      |> sum_t(Map.get(args, :sum_t))
       |> created_f(Map.get(args, :created_f))
       |> created_t(Map.get(args, :created_t))
   end
@@ -30,6 +33,34 @@ defmodule Core.Playlist.Builders.Filter do
   end
 
   defp name({:error, message}, _) do
+    {:error, message}
+  end
+  
+  defp sum_f({:ok, filter}, sum_f) do
+    with false <- sum_f == nil,
+         {:ok, _} <- Sum.valid(sum_f) do
+      {:ok, Map.put(filter, :sum_f, sum_f)}
+    else
+      true -> {:ok, filter}
+      {:error, message} -> {:error, message}
+    end
+  end
+
+  defp sum_f({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp sum_t({:ok, filter}, sum_t) do
+    with false <- sum_t == nil,
+         {:ok, _} <- Sum.valid(sum_t) do
+      {:ok, Map.put(filter, :sum_t, sum_t)}
+    else
+      true -> {:ok, filter}
+      {:error, message} -> {:error, message}
+    end
+  end
+
+  defp sum_t({:error, message}, _) do
     {:error, message}
   end
 

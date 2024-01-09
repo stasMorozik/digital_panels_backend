@@ -8,6 +8,7 @@ defmodule Core.Playlist.Builder do
     entity() 
       |> Core.Playlist.Builders.Name.build(name)
       |> Core.Playlist.Builders.Contents.build(contents)
+      |> Core.Playlist.Builders.Sum.build(contents)
   end
 
   def build(_) do

@@ -30,7 +30,7 @@ defmodule Core.Group.UseCases.Updating do
     with :ok <- result,
          {:ok, user} <- Authorization.auth(getter_user, args),
          {:ok, group} <- getter_group.get(UUID.string_to_binary!(args.id), user),
-         {:ok, pagi} <- Core.Shared.Builders.Pagi.build(Map.get(args, :pagi, %{page: 1, limit: 100})),
+         {:ok, pagi} <- Core.Shared.Builders.Pagi.build(Map.get(args, :pagi, %{page: 1, limit: 10})),
          {:ok, filter} <- Core.Device.Builders.Filter.build(Map.get(args, :filter, %{})),
          {:ok, sort} <- Core.Device.Builders.Sort.build(Map.get(args, :sort, %{})),
          {:ok, devices} <- getter_list_device.get(pagi, filter, sort, user),

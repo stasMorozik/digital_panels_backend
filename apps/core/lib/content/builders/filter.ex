@@ -2,7 +2,6 @@ defmodule Core.Content.Builders.Filter do
   
   alias Core.Content.Validators.Name
   alias Core.Content.Validators.Duration
-  alias Core.Content.Validators.Identifiers
   alias Core.Shared.Validators.Date
 
   alias UUID
@@ -14,7 +13,6 @@ defmodule Core.Content.Builders.Filter do
       |> duration(Map.get(args, :duration))
       |> created_f(Map.get(args, :created_f))
       |> created_t(Map.get(args, :created_t))
-      |> identifiers(Map.get(args, :identifiers))
   end
 
   def build(_) do
@@ -78,21 +76,6 @@ defmodule Core.Content.Builders.Filter do
   end
 
   defp created_t({:error, message}, _) do
-    {:error, message}
-  end
-
-  defp identifiers({:ok, filter}, identifiers) do
-    with false <- identifiers == nil,
-         {:ok, _} <- Identifiers.valid(identifiers),
-         identifiers <- Enum.map(identifiers, fn uuid -> UUID.string_to_binary!(uuid) end) do
-      {:ok, Map.put(filter, :identifiers, identifiers)}
-    else
-      true -> {:ok, filter}
-      {:error, message} -> {:error, message}
-    end
-  end
-
-  defp identifiers({:error, message}, _) do
     {:error, message}
   end
 end

@@ -12,6 +12,7 @@ defmodule Core.Playlist.Editor do
     entity(entity)
       |> name(Map.get(args, :name))
       |> Core.Playlist.Builders.Contents.build(Map.get(args, :contents, []))
+      |> Core.Playlist.Builders.Sum.build(Map.get(args, :contents, []))
   end
 
   def edit(_, _) do
@@ -22,6 +23,7 @@ defmodule Core.Playlist.Editor do
     {:ok, %Entity{
       id: entity.id,
       name: entity.name,
+      sum: entity.sum,
       contents: entity.contents,
       created: entity.created, 
       updated: Date.utc_today
