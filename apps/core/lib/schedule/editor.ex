@@ -42,7 +42,7 @@ defmodule Core.Schedule.Editor do
     {:error, message}
   end
 
-  defp group({:ok, entity}, name) do
+  defp group({:ok, entity}, group) do
     case group do
       nil -> {:ok, entity}
       group -> Core.Schedule.Builders.Group.build({:ok, entity}, group)
