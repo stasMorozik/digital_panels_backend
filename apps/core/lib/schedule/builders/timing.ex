@@ -19,12 +19,12 @@ defmodule Core.Schedule.Builders.Timing do
       |> Core.Schedule.Builders.Playlist.build(playlist)
       |> Core.Schedule.Builders.Type.build(type)
       |> Core.Schedule.Builders.Day.build(type, day)
-      |> Core.Schedule.Builders.StartHour.build(start_hour)
-      |> Core.Schedule.Builders.EndHour.build(end_hour)
-      |> Core.Schedule.Builders.StartMinute.build(start_minute)
-      |> Core.Schedule.Builders.EndMinute.build(end_minute)
-      |> Core.Schedule.Builders.Start.build(start_hour, start_minute)
-      |> Core.Schedule.Builders.End.build(end_hour, end_minute)
+      |> Core.Schedule.Builders.Hour.build(:start, start_hour)
+      |> Core.Schedule.Builders.Hour.build(:end, end_hour)
+      |> Core.Schedule.Builders.Minute.build(:start, start_minute)
+      |> Core.Schedule.Builders.Minute.build(:end, end_minute)
+      |> Core.Schedule.Builders.Start.build({start_hour, start_minute})
+      |> Core.Schedule.Builders.End.build({end_hour, end_minute})
       |> Core.Schedule.Builders.Sum.build({start_hour, start_minute}, {end_hour, end_minute})
   end
 

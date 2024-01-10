@@ -9,11 +9,11 @@ defmodule Core.Schedule.Validators.MonthDay do
          true <- month_day <= @max do
       {:ok, true}
     else
-      false -> {:error, "Невалидный день месяца для тайминга"}
+      false -> {:error, "Невалидный день месяца показа"}
     end
   end
 
   def valid(_) do
-    {:error, "Невалидный день месяца для тайминга"}
+    {:error, "Невалидный день месяца показа"}
   end
 end

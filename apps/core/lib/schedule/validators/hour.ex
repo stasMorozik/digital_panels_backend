@@ -9,11 +9,11 @@ defmodule Core.Schedule.Validators.Hour do
          true <- hour <= @max do
       {:ok, true}
     else
-      false -> {:error, "Невалидный час начала показа плэйлиста"}
+      false -> {:error, "Невалидные часы показа"}
     end
   end
 
   def valid(_) do
-    {:error, "Невалидный час начала показа плэйлиста"}
+    {:error, "Невалидные часы показа"}
   end
 end

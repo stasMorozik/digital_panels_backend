@@ -6,6 +6,6 @@ defmodule Core.Schedule.Validators.Day do
   end
 
   def valid(_) do
-    {:error, "Невалидный день для тайминга"}
+    {:error, "Невалидный день показа"}
   end
 end

@@ -1,4 +1,4 @@
-defmodule Core.Schedule.Builders.StartHour do
+defmodule Core.Schedule.Builders.Hour do
   
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error

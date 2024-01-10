@@ -9,11 +9,11 @@ defmodule Core.Schedule.Validators.WeekDay do
          true <- week_day <= @max do
       {:ok, true}
     else
-      false -> {:error, "Невалидный день недели для тайминга"}
+      false -> {:error, "Невалидный день недели показа"}
     end
   end
 
   def valid(_) do
-    {:error, "Невалидный день недели для тайминга"}
+    {:error, "Невалидный день недели показа"}
   end
 end

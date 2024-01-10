@@ -7,11 +7,11 @@ defmodule Core.Schedule.Validators.Date do
          true <- date <= (current_time + 2_419_200) do
       {:ok, true}
     else
-      false -> {:error, "Невалидная дата для тайминга"}
+      false -> {:error, "Невалидная дата показа"}
     end
   end
 
   def valid(_) do
-    {:error, "Невалидная дата для тайминга"}
+    {:error, "Невалидная дата показа"}
   end
 end
