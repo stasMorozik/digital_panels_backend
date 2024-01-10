@@ -9,19 +9,25 @@ defmodule Core.Schedule.Types.Timing do
     id: binary(),
     playlist: Core.Playlist.Entity.t(),
     type: binary(),
-    loop: boolean(),
-    day: binary(),
-    week_day: binary(),
-    date: binary(),
-    start: integer()
+    day: integer(),
+    start_hour: integer(),
+    end_hour: integer(),
+    start_minute: integer(),
+    end_minute: integer(),
+    start: integer(),
+    end: integer(),
+    sum: integer()
   }
 
   defstruct id: nil,
             playlist: nil,
             type: nil,
-            loop: nil,
             day: nil,
-            week_day: nil,
-            date: nil,
-            start: nil
+            start_hour: nil,
+            end_hour: nil,
+            start_minute: nil,
+            end_minute: nil,
+            start: nil,
+            end: nil,
+            sum: nil
 end
