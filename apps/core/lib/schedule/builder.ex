@@ -6,10 +6,11 @@ defmodule Core.Schedule.Builder do
   alias UUID
 
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
-  def build(%{timings: timings, group: group}) do
+  def build(%{timings: timings, group: group, name: name}) do
     entity()
-      |> Core.Schedule.Builders.Timings.build(timings)
+      |> Core.Schedule.Builders.Name.build(name)
       |> Core.Schedule.Builders.Group.build(group)
+      |> Core.Schedule.Builders.Timings.build(timings)
   end
 
   def build(_) do
