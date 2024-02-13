@@ -1,4 +1,4 @@
-defmodule Content.UseCases.CreatingTest do
+defmodule Content.UseCases.UpdatingTest do
   use ExUnit.Case
 
   alias User.FakeAdapters.Inserting, as: InsertingUser
@@ -14,9 +14,12 @@ defmodule Content.UseCases.CreatingTest do
   alias File.FakeAdapters.Inserting, as: InsertingFile
   alias File.FakeAdapters.Getting, as: GettingFile
 
-  alias Content.FakeAdapters.Inserting, as: InsertingContent
+  alias Core.Content.Builder, as: ContentBuilder
 
-  alias Core.Content.UseCases.Creating, as: UseCase
+  alias Content.FakeAdapters.Inserting, as: InsertingContent
+  alias Content.FakeAdapters.Getting, as: GettingContent
+
+  alias Core.Content.UseCases.Updating, as: UseCase
 
   setup_all do
     File.touch("/tmp/not_emty_png.png", 1544519753)
@@ -56,7 +59,7 @@ defmodule Content.UseCases.CreatingTest do
     :ok
   end
 
-  test "Создание контента" do
+  test "Обновление контента" do
     {:ok, code} = Core.ConfirmationCode.Builder.build(
       Core.Shared.Validators.Email, "test@gmail.com"
     )
@@ -83,47 +86,23 @@ defmodule Content.UseCases.CreatingTest do
     })
 
     {:ok, true} = InsertingFile.transform(file, user)
+    
+    {:ok, content} = ContentBuilder.build(%{
+      name: "Тест_1234",
+      duration: 15,
+      file: file
+    })
 
-    {result, _} = UseCase.create(GettingUserById, GettingFile, InsertingContent, %{
+    {:ok, true} = InsertingContent.transform(content, user)
+
+    {result, _} = UseCase.update(GettingUserById, GettingContent, GettingFile, InsertingContent, %{
       name: "Тест_123",
       duration: 15,
       file_id: file.id,
+      id: content.id,
       token: tokens.access_token
     })
 
     assert result == :ok
-  end
-
-  test "Создание файла - невалидный токен" do
-    {:ok, code} = Core.ConfirmationCode.Builder.build(
-      Core.Shared.Validators.Email, "test1@gmail.com"
-    )
-
-    {:ok, user} = Core.User.Builder.build(%{
-      email: "test1@gmail.com",
-      name: "Тест",
-      surname: "Тестович",
-    })
-
-    {:ok, true} = InsertingConfirmationCode.transform(code)
-    {:ok, true} = InsertingUser.transform(user)
-
-    {:ok, file} = FileBuilder.build(%{
-      path: "/tmp/not_emty_png.png",
-      name: Path.basename("/tmp/not_emty_png.png"),
-      extname: Path.extname("/tmp/not_emty_png.png"),
-      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
-    })
-
-    {:ok, true} = InsertingFile.transform(file, user)
-
-    {result, _} = UseCase.create(GettingUserById, GettingFile, InsertingContent, %{
-      name: "Тест_123",
-      duration: 15,
-      file_id: file.id,
-      token: "Invalid_token"
-    })
-
-    assert result == :error
   end
 end

@@ -1,4 +1,4 @@
-defmodule Core.Content.UseCases.Crating do
+defmodule Core.Content.UseCases.Creating do
   
   alias Core.User.UseCases.Authorization
 
