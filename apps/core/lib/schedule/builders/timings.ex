@@ -31,7 +31,7 @@ defmodule Core.Schedule.Builders.Timings do
           case Core.Schedule.Validators.Entry.valid(args_0, args_1) do
             {:ok, true} -> build(tail, [timing | acc_list], Map.put(acc_hash, hash, new_timing))
             {:error, message} -> {:error, message}
-          end 
+          end
       end
     else
       {:error, message} -> {:error, message}

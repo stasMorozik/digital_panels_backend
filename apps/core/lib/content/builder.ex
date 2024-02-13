@@ -20,7 +20,8 @@ defmodule Core.Content.Builder do
   defp entity do
     {:ok, %Core.Content.Entity{
       id: UUID.uuid4(), 
-      created: Date.utc_today
+      created: Date.utc_today,
+      updated: Date.utc_today
     }}
   end
 end

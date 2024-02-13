@@ -8,6 +8,10 @@ defmodule Core.Content.Builders.File do
     {:ok, Map.put(entity, :file, file)}
   end
 
+  def build({:ok, _}, _) do    
+    {:error, "Не валидный файл"}
+  end
+
   def build({:error, message}, _) do
     {:error, message}
   end
