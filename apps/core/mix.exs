@@ -39,7 +39,8 @@ defmodule Core.MixProject do
     "test/device/fake_adapters",
     "test/user/fake_adapters",
     "test/file/fake_adapters",
-    "test/content/fake_adapters"
+    "test/content/fake_adapters",
+    "test/group/fake_adapters"
   ]
   defp elixirc_paths(_), do: ["lib"]
 end

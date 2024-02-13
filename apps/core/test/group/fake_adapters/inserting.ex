@@ -7,20 +7,20 @@ defmodule Group.FakeAdapters.Inserting do
   alias Core.User.Entity, as: UserEntity
 
   @impl Transformer
-  def transform(%GroupEntity{
-    id: id,
-    path: path,
-    url: url,
-    extension: extension,
-    type: type,
-    size: size,
-    created: created
-  }, %UserEntity{} = _) do
+  def transform(%GroupEntity{} = group, %UserEntity{} = _) do
     case :mnesia.transaction(
-      fn -> :mnesia.write({:files, id, path, url, extension, type, size, created}) end
+      fn -> :mnesia.write({
+        :groups, 
+        group.id, 
+        group.name,
+        group.sum, 
+        group.devices,
+        group.created,
+        group.updated
+      }) end
     ) do
       {:atomic, :ok} -> {:ok, true}
-      {:aborted, _} -> {:error, "Файл уже существует"}
+      {:aborted, _} -> {:error, "Группа уже существует"}
     end
   end
 end

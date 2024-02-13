@@ -8,26 +8,25 @@ defmodule Group.FakeAdapters.Getting do
 
   @impl Getter
   def get(id, %UserEntity{} = _) do
-    case :mnesia.transaction (fn -> :mnesia.read({:files, UUID.binary_to_string!(id)}) end) do
-      {:atomic, list_files} -> 
-        case length(list_files) > 0 do
-          false -> {:error, "Файл не найден"}
+    case :mnesia.transaction (fn -> :mnesia.read({:groups, UUID.binary_to_string!(id)}) end) do
+      {:atomic, list_groups} -> 
+        case length(list_groups) > 0 do
+          false -> {:error, "Группа не найдена"}
           true -> 
-            [file | _] = list_files
+            [group | _] = list_groups
 
-            {:files, id, path, url, extension, type, size, created} = file
+            {:groups, id, name, sum, devices, created, updated} = group
 
-            {:ok, %FileEntity{
+            {:ok, %GroupEntity{
               id: id,
-              path: path,
-              url: url,
-              extension: extension,
-              type: type,
-              size: size,
-              created: created
+              name: name,
+              sum: sum,
+              devices: devices,
+              created: created,
+              updated: updated
             }}
         end
-      {:aborted, _} -> {:error, "Файл не найден"}
+      {:aborted, _} -> {:error, "Группа не найдена"}
     end
   end
 end

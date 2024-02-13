@@ -14,6 +14,10 @@ defmodule Core.Group.Builder do
       
   end
 
+  def build(_) do
+    {:error, "Не валидные данные для создания группы"}
+  end
+
   defp entity do
     {:ok, %Entity{
       id: UUID.uuid4(), 

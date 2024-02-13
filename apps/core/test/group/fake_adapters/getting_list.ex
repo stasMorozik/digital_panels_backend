@@ -12,23 +12,22 @@ defmodule Group.FakeAdapters.GettingList do
 
   @impl GetterList
   def get(%Pagination{} = _ , %Filter{} = filter, %Sort{} = _, %UserEntity{} = _) do
-    case :mnesia.transaction (fn -> :mnesia.index_read(:files, filter.type, :type) end) do
-      {:atomic, list_files} -> 
-        case length(list_files) > 0 do
+    case :mnesia.transaction (fn -> :mnesia.index_read(:groups, filter.name, :name) end) do
+      {:atomic, list_groups} -> 
+        case length(list_groups) > 0 do
           false -> {:ok, []}
           true -> 
-            [file | _] = list_files
+            [group | _] = list_groups
 
-            {:files, id, path, url, extension, type, size, created} = file
+            {:groups, id, name, sum, devices, created, updated} = group
 
-            {:ok, [%FileEntity{
+            {:ok, [%GroupEntity{
               id: id,
-              path: path,
-              url: url,
-              extension: extension,
-              type: type,
-              size: size,
-              created: created
+              name: name,
+              sum: sum,
+              devices: devices,
+              created: created,
+              updated: updated
             }]}
         end
       {:aborted, _} -> {:ok, []}
