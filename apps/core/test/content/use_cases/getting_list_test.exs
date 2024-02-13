@@ -1,4 +1,4 @@
-defmodule Content.UseCases.UpdatingTest do
+defmodule Content.UseCases.GettingListTest do
   use ExUnit.Case
 
   alias User.FakeAdapters.Inserting, as: InsertingUser
@@ -12,14 +12,13 @@ defmodule Content.UseCases.UpdatingTest do
 
   alias Core.File.Builder, as: FileBuilder
   alias File.FakeAdapters.Inserting, as: InsertingFile
-  alias File.FakeAdapters.Getting, as: GettingFile
 
   alias Core.Content.Builder, as: ContentBuilder
 
   alias Content.FakeAdapters.Inserting, as: InsertingContent
-  alias Content.FakeAdapters.Getting, as: GettingContent
+  alias Content.FakeAdapters.GettingList, as: GettingListContent
 
-  alias Core.Content.UseCases.Updating, as: UseCase
+  alias Core.Content.UseCases.GettingList, as: UseCase
 
   setup_all do
     File.touch("/tmp/not_emty_png.png", 1544519753)
@@ -55,11 +54,12 @@ defmodule Content.UseCases.UpdatingTest do
     )
 
     :mnesia.add_table_index(:users, :email)
+    :mnesia.add_table_index(:contents, :name)
 
     :ok
   end
 
-  test "Обновление контента" do
+  test "Получение списка контента" do
     {:ok, code} = Core.ConfirmationCode.Builder.build(
       Core.Shared.Validators.Email, "test@gmail.com"
     )
@@ -95,11 +95,17 @@ defmodule Content.UseCases.UpdatingTest do
 
     {:ok, true} = InsertingContent.transform(content, user)
 
-    {result, _} = UseCase.update(GettingUserById, GettingContent, GettingFile, InsertingContent, %{
-      name: "Тест_123",
-      duration: 15,
-      file_id: file.id,
-      id: content.id,
+    {result, _} = UseCase.get(GettingUserById, GettingListContent, %{
+      pagi: %{
+        page: 1,
+        limit: 10
+      },
+      filter: %{
+        name: "Тест_1234"
+      },
+      sort: %{
+
+      },
       token: tokens.access_token
     })
 
@@ -137,11 +143,17 @@ defmodule Content.UseCases.UpdatingTest do
 
     {:ok, true} = InsertingContent.transform(content, user)
 
-    {result, _} = UseCase.update(GettingUserById, GettingContent, GettingFile, InsertingContent, %{
-      name: "Тест_123",
-      duration: 15,
-      file_id: file.id,
-      id: content.id,
+    {result, _} = UseCase.get(GettingUserById, GettingListContent, %{
+      pagi: %{
+        page: 1,
+        limit: 10
+      },
+      filter: %{
+        name: "Тест_1234"
+      },
+      sort: %{
+
+      },
       token: "Invalid_token"
     })
 

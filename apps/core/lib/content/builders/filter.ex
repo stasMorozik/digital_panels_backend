@@ -20,7 +20,7 @@ defmodule Core.Content.Builders.Filter do
   end
 
   defp filter do
-    {:ok, %Core.Playlist.Types.Filter{}}
+    {:ok, %Core.Content.Types.Filter{}}
   end
 
   defp name({:ok, filter}, name) do
