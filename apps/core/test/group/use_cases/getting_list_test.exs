@@ -1,4 +1,4 @@
-defmodule Group.UseCases.CreatingTest do
+defmodule Group.UseCases.GettingListTest do
   use ExUnit.Case
 
   alias User.FakeAdapters.Inserting, as: InsertingUser
@@ -10,13 +10,14 @@ defmodule Group.UseCases.CreatingTest do
 
   alias Core.Device.Builder, as: DeviceBuilder
   alias Device.FakeAdapters.Inserting, as: InsertingDevice
-  alias Device.FakeAdapters.GettingList, as: GettingListDevice
 
   alias Group.FakeAdapters.Inserting, as: InsertingGroup
+  alias Group.FakeAdapters.GettingList, as: GettingListGroup
 
   alias Core.User.UseCases.Authentication, as: AuthenticationUseCase
 
-  alias Core.Group.UseCases.Creating, as: UseCase
+  alias Core.Group.Builder, as: GroupBuilder
+  alias Core.Group.UseCases.GettingList, as: UseCase
 
   setup_all do
     :mnesia.create_schema([node()])
@@ -50,11 +51,12 @@ defmodule Group.UseCases.CreatingTest do
 
     :mnesia.add_table_index(:users, :email)
     :mnesia.add_table_index(:devices, :ip)
+    :mnesia.add_table_index(:groups, :name)
 
     :ok
   end
 
-  test "Создание группы" do
+  test "Получение списка групп" do
     {:ok, code} = Core.ConfirmationCode.Builder.build(
       Core.Shared.Validators.Email, "test@gmail.com"
     )
@@ -80,69 +82,31 @@ defmodule Group.UseCases.CreatingTest do
       desc: "Описание"
     })
 
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест",
+      devices: [device]
+    })
+
     {:ok, true} = InsertingDevice.transform(device, user)
 
-    {result, _} = UseCase.create(GettingUserById, GettingListDevice, InsertingGroup, %{
+    {:ok, true} = InsertingGroup.transform(group, user)
+
+    {result, _} = UseCase.get(GettingUserById, GettingListGroup, %{
       pagi: %{
         page: 1,
         limit: 10
       },
       filter: %{
-        ip: "192.168.1.98"
+        name: "Тест"
       },
       sort: %{},
-      name: "Тест_1234",
       token: tokens.access_token
     })
 
     assert result == :ok
   end
 
-  test "Создание группы - не валидный список устройств" do
-    {:ok, code} = Core.ConfirmationCode.Builder.build(
-      Core.Shared.Validators.Email, "test@gmail.com"
-    )
-
-    {:ok, user} = Core.User.Builder.build(%{
-      email: "test@gmail.com",
-      name: "Тест",
-      surname: "Тестович",
-    })
-
-    {:ok, true} = InsertingConfirmationCode.transform(code)
-    {:ok, true} = InsertingUser.transform(user)
-    
-    {:ok, tokens}  = AuthenticationUseCase.auth(GettingConfirmationCode, GettingUserByEmail, %{
-      email: "test@gmail.com",
-      code: code.code
-    })
-
-    {:ok, device} = DeviceBuilder.build(%{
-      ip: "192.168.1.98",
-      latitude: 78.454567,
-      longitude: 98.3454,
-      desc: "Описание"
-    })
-
-    {:ok, true} = InsertingDevice.transform(device, user)
-
-    {result, _} = UseCase.create(GettingUserById, GettingListDevice, InsertingGroup, %{
-      pagi: %{
-        page: 1,
-        limit: 10
-      },
-      filter: %{
-        ip: "192.168.1.97"
-      },
-      sort: %{},
-      name: "Тест_1234",
-      token: tokens.access_token
-    })
-
-    assert result == :error
-  end
-
-  test "Создание группы - не валидный токен" do
+  test "Получение списка групп - не валидный токен" do
     {:ok, code} = Core.ConfirmationCode.Builder.build(
       Core.Shared.Validators.Email, "test@gmail.com"
     )
@@ -163,18 +127,24 @@ defmodule Group.UseCases.CreatingTest do
       desc: "Описание"
     })
 
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест",
+      devices: [device]
+    })
+
     {:ok, true} = InsertingDevice.transform(device, user)
 
-    {result, _} = UseCase.create(GettingUserById, GettingListDevice, InsertingGroup, %{
+    {:ok, true} = InsertingGroup.transform(group, user)
+
+    {result, _} = UseCase.get(GettingUserById, GettingListGroup, %{
       pagi: %{
         page: 1,
         limit: 10
       },
       filter: %{
-        ip: "192.168.1.98"
+        name: "Тест"
       },
       sort: %{},
-      name: "Тест_1234",
       token: "invalid_token"
     })
 

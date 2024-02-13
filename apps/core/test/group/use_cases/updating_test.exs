@@ -56,7 +56,7 @@ defmodule Group.UseCases.UpdatingTest do
     :ok
   end
 
-  test "Обновление устройства" do
+  test "Обновление группы" do
     {:ok, code} = Core.ConfirmationCode.Builder.build(
       Core.Shared.Validators.Email, "test@gmail.com"
     )
@@ -108,7 +108,7 @@ defmodule Group.UseCases.UpdatingTest do
     assert result == :ok
   end
 
-  test "Обновление устройства - не валидный токен" do
+  test "Обновление группы - не валидный токен" do
     {:ok, code} = Core.ConfirmationCode.Builder.build(
       Core.Shared.Validators.Email, "test@gmail.com"
     )
