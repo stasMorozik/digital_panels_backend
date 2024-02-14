@@ -22,11 +22,11 @@ defmodule Core.Schedule.Builders.Timings do
          type <- new_timing.type,
          day <- to_string(new_timing.day),
          hash <- Base.encode64("#{type}#{day}", padding: false),
-         timing <- Map.get(acc_hash, String.to_atom(type)) do
+         timing <- Map.get(acc_hash, hash) do
       case timing == nil do
-        true -> 
+        true ->
           build(tail, [new_timing | acc_list], Map.put(acc_hash, hash, new_timing))
-        false -> 
+        false ->
           args_0 = {new_timing.start, new_timing.end}
           args_1 = {timing.start, timing.end}
           case Core.Schedule.Validators.Entry.valid(args_0, args_1) do
