@@ -31,6 +31,6 @@ defmodule Core.Playlist.UseCases.GettingList do
   end
 
   def get(_, _, _) do
-    {:error, "Невалидные данные для получения контента"}
+    {:error, "Невалидные данные для получения списка плэйлистов"}
   end
 end
