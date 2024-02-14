@@ -15,12 +15,13 @@ defmodule Schedule.FakeAdapters.Getting do
           true -> 
             [schedule | _] = list_schedules
 
-            {:schedules, id, name, timings, created, updated} = schedule
+            {:schedules, id, name, timings, group, created, updated} = schedule
 
             {:ok, %ScheduleEntity{
               id: id,
               name: name,
               timings: timings,
+              group: group,
               created: created,
               updated: updated
             }}

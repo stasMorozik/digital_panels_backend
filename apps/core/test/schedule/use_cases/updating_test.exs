@@ -1,4 +1,4 @@
-defmodule Schedule.UseCases.CreatingTest do
+defmodule Schedule.UseCases.UpdatingTest do
   use ExUnit.Case
 
   alias User.FakeAdapters.Inserting, as: InsertingUser
@@ -25,11 +25,13 @@ defmodule Schedule.UseCases.CreatingTest do
   alias Core.Group.Builder, as: GroupBuilder
   alias Group.FakeAdapters.Inserting, as: InsertingGroup
 
+  alias Core.Schedule.Builder, as: ScheduleBuilder
   alias Playlist.FakeAdapters.Getting, as: GettingPlaylist
   alias Group.FakeAdapters.Getting, as: GettingGroup
   alias Schedule.FakeAdapters.Inserting, as: InsertingSchedule
+  alias Schedule.FakeAdapters.Getting, as: GettingSchedule
 
-  alias Core.Schedule.UseCases.Creating, as: UseCase
+  alias Core.Schedule.UseCases.Updating, as: UseCase
 
   setup_all do
     File.touch("/tmp/not_emty_png.png", 1544519753)
@@ -93,7 +95,7 @@ defmodule Schedule.UseCases.CreatingTest do
     :ok
   end
 
-  test "Создание расписания" do
+  test "Обновление расписания" do
     {:ok, code} = Core.ConfirmationCode.Builder.build(
       Core.Shared.Validators.Email, "test@gmail.com"
     )
@@ -152,8 +154,25 @@ defmodule Schedule.UseCases.CreatingTest do
 
     {:ok, true} = InsertingPlaylist.transform(playlist, user)
 
-    {result, _} = UseCase.create(
-      GettingUserById, 
+    {:ok, schedule} = ScheduleBuilder.build(%{
+      timings: [%{
+        playlist: playlist, 
+        type: "Каждый день",
+        day: nil, 
+        start_hour: 1,
+        end_hour: 2,
+        start_minute: 0,
+        end_minute: 30
+      }], 
+      group: group, 
+      name: "Тест_1234"
+    })
+
+    {:ok, true} = InsertingSchedule.transform(schedule, user)
+
+    {result, _} = UseCase.update(
+      GettingUserById,
+      GettingSchedule, 
       GettingPlaylist, 
       GettingGroup, 
       InsertingSchedule, 
@@ -178,7 +197,8 @@ defmodule Schedule.UseCases.CreatingTest do
             end_minute: 30
           },
         ],
-        group_id: group.id, 
+        group_id: group.id,
+        id: schedule.id,
         name: "Тест_1234",
         token: tokens.access_token
       }

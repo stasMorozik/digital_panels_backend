@@ -14,6 +14,7 @@ defmodule Schedule.FakeAdapters.Inserting do
         schedule.id, 
         schedule.name,
         schedule.timings,
+        schedule.group,
         schedule.created,
         schedule.updated
       }) end

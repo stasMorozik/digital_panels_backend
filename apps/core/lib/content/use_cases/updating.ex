@@ -33,6 +33,10 @@ defmodule Core.Content.UseCases.Updating do
          {:ok, user} <- Authorization.auth(getter_user, args),
          {:ok, content} <- getter_content.get(UUID.string_to_binary!(args.id), user),
          {:ok, file} <- getter_file.get(UUID.string_to_binary!(args.file_id), user),
+         args <- Map.put(args, :file, case args.file_id == file.id do 
+            true -> nil
+            false -> file
+         end),
          {:ok, content} <- Core.Content.Editor.edit(content, Map.put(args, :file, file)),
          {:ok, _} <- transformer_content.transform(content, user) do
       {:ok, true}
