@@ -11,7 +11,7 @@ defmodule Playlist.FakeAdapters.Getting do
     case :mnesia.transaction (fn -> :mnesia.read({:playlists, UUID.binary_to_string!(id)}) end) do
       {:atomic, list_playlists} -> 
         case length(list_playlists) > 0 do
-          false -> {:error, "Плэйлист уже существует"}
+          false -> {:error, "Плэйлист не найден"}
           true -> 
             [playlist | _] = list_playlists
 
@@ -26,7 +26,9 @@ defmodule Playlist.FakeAdapters.Getting do
               updated: updated
             }}
         end
-      {:aborted, _} -> {:error, "Плэйлист уже существует"}
+      {:aborted, t} -> 
+        IO.inspect(t)
+        {:error, "Плэйлист не найден"}
     end
   end
 end

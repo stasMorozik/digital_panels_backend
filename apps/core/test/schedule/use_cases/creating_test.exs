@@ -1,4 +1,4 @@
-defmodule Playlist.UseCases.GettingListTest do
+defmodule Schedule.UseCases.CreatingTest do
   use ExUnit.Case
 
   alias User.FakeAdapters.Inserting, as: InsertingUser
@@ -11,16 +11,25 @@ defmodule Playlist.UseCases.GettingListTest do
   alias Core.User.UseCases.Authentication, as: AuthenticationUseCase
 
   alias Core.File.Builder, as: FileBuilder
-  alias Core.Content.Builder, as: ContentBuilder
   alias File.FakeAdapters.Inserting, as: InsertingFile
   
+  alias Core.Content.Builder, as: ContentBuilder
   alias Content.FakeAdapters.Inserting, as: InsertingContent
 
   alias Core.Playlist.Builder, as: PlaylistBuilder
   alias Playlist.FakeAdapters.Inserting, as: InsertingPlaylist
-  alias Playlist.FakeAdapters.GettingList, as: GettingListPlaylist
 
-  alias Core.Playlist.UseCases.GettingList, as: UseCase
+  alias Core.Device.Builder, as: DeviceBuilder
+  alias Device.FakeAdapters.Inserting, as: InsertingDevice
+
+  alias Core.Group.Builder, as: GroupBuilder
+  alias Group.FakeAdapters.Inserting, as: InsertingGroup
+
+  alias Playlist.FakeAdapters.Getting, as: GettingPlaylist
+  alias Group.FakeAdapters.Getting, as: GettingGroup
+  alias Schedule.FakeAdapters.Inserting, as: InsertingSchedule
+
+  alias Core.Schedule.UseCases.Creating, as: UseCase
 
   setup_all do
     File.touch("/tmp/not_emty_png.png", 1544519753)
@@ -35,6 +44,9 @@ defmodule Playlist.UseCases.GettingListTest do
     :mnesia.delete_table(:files)
     :mnesia.delete_table(:contents)
     :mnesia.delete_table(:playlists)
+    :mnesia.delete_table(:devices)
+    :mnesia.delete_table(:groups)
+    :mnesia.delete_table(:schedules)
 
     {:atomic, :ok} = :mnesia.create_table(
       :codes,
@@ -61,14 +73,27 @@ defmodule Playlist.UseCases.GettingListTest do
       [attributes: [:id, :name, :sum, :contents, :created, :updated]]
     )
 
+    {:atomic, :ok} = :mnesia.create_table(
+      :devices,
+      [attributes: [:id, :ip, :latitude, :longitude, :created, :updated]]
+    )
+
+    {:atomic, :ok} = :mnesia.create_table(
+      :groups,
+      [attributes: [:id, :name, :sum, :devices, :created, :updated]]
+    )
+
+    {:atomic, :ok} = :mnesia.create_table(
+      :schedules,
+      [attributes: [:id, :name, :timings, :created, :updated]]
+    )
+
     :mnesia.add_table_index(:users, :email)
-    :mnesia.add_table_index(:contents, :name)
-    :mnesia.add_table_index(:playlists, :name)
 
     :ok
   end
 
-  test "Получение списка плэйлистов" do
+  test "Создание расписания" do
     {:ok, code} = Core.ConfirmationCode.Builder.build(
       Core.Shared.Validators.Email, "test@gmail.com"
     )
@@ -94,98 +119,71 @@ defmodule Playlist.UseCases.GettingListTest do
       size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
     })
 
+    {:ok, true} = InsertingFile.transform(file, user)
+    
     {:ok, content} = ContentBuilder.build(%{
       name: "Тест_1234",
       duration: 15,
       file: file
     })
 
+    {:ok, true} = InsertingContent.transform(content, user)
+
+    {:ok, device} = DeviceBuilder.build(%{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454,
+      desc: "Описание"
+    })
+
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест",
+      devices: [device]
+    })
+
+    {:ok, true} = InsertingDevice.transform(device, user)
+
+    {:ok, true} = InsertingGroup.transform(group, user)
+
     {:ok, playlist} = PlaylistBuilder.build(%{
       name: "Тест_1234", 
       contents: [content]
     })
 
-    {:ok, true} = InsertingFile.transform(file, user)
-
-    {:ok, true} = InsertingContent.transform(content, user)
-
     {:ok, true} = InsertingPlaylist.transform(playlist, user)
 
-    {result, _} = UseCase.get(
+    {result, _} = UseCase.create(
       GettingUserById, 
-      GettingListPlaylist,
+      GettingPlaylist, 
+      GettingGroup, 
+      InsertingSchedule, 
       %{
-        pagi: %{
-          page: 1,
-          limit: 1
-        },
-        filter: %{
-          name: "Тест_1234"
-        },
-        sort: %{
-        },
-        token: tokens.access_token,
+        timings: [
+          %{
+            playlist_id: playlist.id, 
+            type: "Каждый день",
+            day: nil, 
+            start_hour: 1,
+            end_hour: 2,
+            start_minute: 0,
+            end_minute: 30
+          },
+          %{
+            playlist_id: playlist.id, 
+            type: "Каждый день",
+            day: nil, 
+            start_hour: 3,
+            end_hour: 4,
+            start_minute: 0,
+            end_minute: 30
+          },
+        ],
+        group_id: group.id, 
+        name: "Тест_1234",
+        token: tokens.access_token
       }
     )
 
     assert result == :ok
-  end
-
-  test "Получение списка плэйлистов - не валидный токен" do
-    {:ok, code} = Core.ConfirmationCode.Builder.build(
-      Core.Shared.Validators.Email, "test@gmail.com"
-    )
-
-    {:ok, user} = Core.User.Builder.build(%{
-      email: "test@gmail.com",
-      name: "Тест",
-      surname: "Тестович",
-    })
-
-    {:ok, true} = InsertingConfirmationCode.transform(code)
-    {:ok, true} = InsertingUser.transform(user)
-
-    {:ok, file} = FileBuilder.build(%{
-      path: "/tmp/not_emty_png.png",
-      name: Path.basename("/tmp/not_emty_png.png"),
-      extname: Path.extname("/tmp/not_emty_png.png"),
-      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
-    })
-
-    {:ok, content} = ContentBuilder.build(%{
-      name: "Тест_1234",
-      duration: 15,
-      file: file
-    })
-
-    {:ok, playlist} = PlaylistBuilder.build(%{
-      name: "Тест_1234", 
-      contents: [content]
-    })
-
-    {:ok, true} = InsertingFile.transform(file, user)
-
-    {:ok, true} = InsertingContent.transform(content, user)
-
-    {:ok, true} = InsertingPlaylist.transform(playlist, user)
-
-    {result, _} = UseCase.get(
-      GettingUserById, 
-      GettingListPlaylist,
-      %{
-        pagi: %{
-          page: 1,
-          limit: 1
-        },
-        filter: %{
-          name: "Тест_1234"
-        },
-        sort: %{
-        },
-        token: "Invalid_token",
-      }
-    )
-
-    assert result == :error
   end
 end
