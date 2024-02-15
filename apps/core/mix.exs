@@ -41,7 +41,8 @@ defmodule Core.MixProject do
     "test/file/fake_adapters",
     "test/content/fake_adapters",
     "test/group/fake_adapters",
-    "test/playlist/fake_adapters"
+    "test/playlist/fake_adapters",
+    "test/task/fake_adapters"
   ]
   defp elixirc_paths(_), do: ["lib"]
 end
