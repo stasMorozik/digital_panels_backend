@@ -5,8 +5,15 @@ defmodule Core.Task.Builders.End do
 
   @spec build(Success.t() | Error.t(), any()) :: Success.t() | Error.t()
   def build({:ok, entity}, {end_hour, end_minute}) do
-    with {:ok, true} <- Core.Task.Validators.Hour.valid(end_hour),
+    with fun_0 <- fn (hour) ->
+            case hour == 24 do
+              true -> 0
+              false -> hour
+            end
+         end,
+         {:ok, true} <- Core.Task.Validators.Hour.valid(end_hour),
          {:ok, true} <- Core.Task.Validators.Minute.valid(end_minute),
+         end_hour <- fun_0.(end_hour),
          minutes <- (end_hour * 60) + end_minute do
       {:ok, Map.put(entity, :end, minutes)}
     else

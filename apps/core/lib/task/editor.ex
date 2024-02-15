@@ -32,7 +32,7 @@ defmodule Core.Task.Editor do
       |> Core.Task.Builders.Start.build({start_hour, start_minute})
       |> Core.Task.Builders.End.build({end_hour, end_minute})
       |> Core.Task.Builders.Sum.build({start_hour, start_minute}, {end_hour, end_minute})
-      |> Core.Task.Builders.Hash.build(type, day)
+      |> Core.Task.Builders.Hash.build({type, day, end_hour, end_minute})
   end
 
   def edit(_, _) do

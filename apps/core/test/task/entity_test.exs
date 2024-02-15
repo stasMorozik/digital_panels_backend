@@ -21,7 +21,55 @@ defmodule Task.EntityTest do
       type: "Каждый день",
       day: nil, 
       start_hour: 1,
-      end_hour: 2,
+      end_hour: 5,
+      start_minute: 0,
+      end_minute: 30
+    })
+
+    assert result == :ok
+  end
+
+  test "Построение сущности - 1" do
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, playlist} = PlaylistBuilder.build(%{
+      name: "Тест_1234"
+    })
+
+    {result, _} = TaskBuilder.build(%{
+      name: "Тест_1234",
+      playlist: playlist,
+      group: group,
+      type: "Каждый день",
+      day: nil, 
+      start_hour: 24,
+      end_hour: 1,
+      start_minute: 0,
+      end_minute: 30
+    })
+
+    assert result == :ok
+  end
+
+  test "Построение сущности - 2" do
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, playlist} = PlaylistBuilder.build(%{
+      name: "Тест_1234"
+    })
+
+    {result, _} = TaskBuilder.build(%{
+      name: "Тест_1234",
+      playlist: playlist,
+      group: group,
+      type: "Каждый день",
+      day: nil, 
+      start_hour: 24,
+      end_hour: 24,
       start_minute: 0,
       end_minute: 30
     })
