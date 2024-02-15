@@ -8,12 +8,12 @@ defmodule Group.UseCases.UpdatingTest do
   alias User.FakeAdapters.GettingByEmail, as: GettingUserByEmail
   alias User.FakeAdapters.GettingById, as: GettingUserById
 
+  alias Core.Group.Builder, as: GroupBuilder
   alias Group.FakeAdapters.Inserting, as: InsertingGroup
   alias Group.FakeAdapters.Getting, as: GettingGroup
 
   alias Core.User.UseCases.Authentication, as: AuthenticationUseCase
 
-  alias Core.Group.Builder, as: GroupBuilder
   alias Core.Group.UseCases.Updating, as: UseCase
 
   setup_all do

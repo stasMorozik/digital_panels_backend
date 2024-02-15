@@ -11,22 +11,22 @@ defmodule Task.FakeAdapters.Inserting do
     case :mnesia.transaction(
       fn -> :mnesia.write({
         :tasks, 
-        id: task.id,
-        hash: task.hash,
-        name: task.name,
-        playlist: task.playlist,
-        group: task.group,
-        type: task.type,
-        day: task.day,
-        start_hour: task.start_hour,
-        end_hour: task.end_hour,
-        start_minute: task.start_minute,
-        end_minute: task.end_minute,
-        start_a: task.start,
-        end_a: task.end,
-        sum: task.sum,
-        created: task.created,
-        updated: task.updated
+        task.id, 
+        task.hash,
+        task.name,
+        task.playlist,
+        task.group,
+        task.type,
+        task.day,
+        task.start_hour,
+        task.end_hour,
+        task.start_minute,
+        task.end_minute,
+        task.start,
+        task.end,
+        task.sum,
+        task.created, 
+        task.updated
       }) end
     ) do
       {:atomic, :ok} -> {:ok, true}

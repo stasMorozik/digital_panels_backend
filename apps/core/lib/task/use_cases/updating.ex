@@ -6,7 +6,7 @@ defmodule Core.Task.UseCases.Updating do
   alias Core.Shared.Types.Error
   alias Core.Shared.Types.Exception
 
-  @spec create(
+  @spec update(
     Core.User.Ports.Getter.t(),
     Core.Playlist.Ports.Getter.t(),
     Core.Group.Ports.Getter.t(),
@@ -15,7 +15,7 @@ defmodule Core.Task.UseCases.Updating do
     Core.Task.Ports.Transformer.t(),
     map()
   ) :: Success.t() | Error.t() | Exception.t()
-  def create(
+  def update(
     getter_user,
     getter_playlist,
     getter_group,
@@ -66,7 +66,7 @@ defmodule Core.Task.UseCases.Updating do
     end
   end
 
-  def create(_, _, _, _, _, _) do
+  def update(_, _, _, _, _, _, _) do
     {:error, "Невалидные данные для обновления задания"}
   end
 end

@@ -11,7 +11,7 @@ defmodule Task.FakeAdapters.Getting do
     case :mnesia.transaction (fn -> :mnesia.read({:tasks, UUID.binary_to_string!(id)}) end) do
       {:atomic, list_tasks} -> 
         case length(list_tasks) > 0 do
-          false -> {:error, "Задание не найден"}
+          false -> {:error, "Задание не найдено"}
           true -> 
             [task | _] = list_tasks
 
@@ -53,7 +53,7 @@ defmodule Task.FakeAdapters.Getting do
               updated: updated
             }}
         end
-      {:aborted, _} -> {:error, "Задание не найден"}
+      {:aborted, _} -> {:error, "Задание не найдено"}
     end
   end
 end

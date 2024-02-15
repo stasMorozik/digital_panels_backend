@@ -35,7 +35,9 @@ defmodule Core.Task.Builder do
 
   defp type do
     {:ok, %Entity{
-      id: UUID.uuid4()
+      id: UUID.uuid4(),
+      created: Date.utc_today, 
+      updated: Date.utc_today
     }}
   end
 end
