@@ -20,17 +20,13 @@ defmodule Core.Playlist.UseCases.Updating do
   ) when is_atom(getter_user) and 
          is_atom(transformer_playlist) and 
          is_map(args) do
-
-    {result, _} = UUID.info(Map.get(args, :id))
-
-    with :ok <- result,
-         {:ok, user} <- Authorization.auth(getter_user, args),
+    with {:ok, user} <- Authorization.auth(getter_user, args),
+         {:ok, true} <- Core.Shared.Validators.Identifier.valid(Map.get(args, :id)),
          {:ok, playlist} <- getter_playlist.get(UUID.string_to_binary!(args.id), user),
          {:ok, playlist} <- Core.Playlist.Editor.edit(playlist, args),
          {:ok, _} <- transformer_playlist.transform(playlist, user) do
       {:ok, true}
     else
-      :error -> {:error, "Не валидный UUID плэйлиста"}
       {:error, message} -> {:error, message}
       {:exception, message} -> {:exception, message}
     end

@@ -28,7 +28,7 @@ defmodule Core.Playlist.UseCases.Creating do
     end
   end
 
-  def create(_, _, _, _) do
+  def create(_, _, _) do
     {:error, "Невалидные данные для создания плэйлиста"}
   end
 end

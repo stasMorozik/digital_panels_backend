@@ -21,11 +21,8 @@ defmodule Core.Device.UseCases.Creating do
          is_atom(getter_group) and
          is_atom(transformer_device) and
          is_map(args) do
-
-    {result, _} = UUID.info(Map.get(args, :group_id))
-    
     with {:ok, user} <- Authorization.auth(getter_user, args),
-         :ok <- result,
+         {:ok, true} <- Core.Shared.Validators.Identifier.valid(Map.get(args, :group_id)),
          {:ok, group} <- getter_group.get(UUID.string_to_binary!(args.group_id), user),
          {:ok, group} <- Core.Group.Editor.edit(group, %{sum: group.sum + 1}),
          args <- Map.put(args, :group, group),
@@ -33,7 +30,6 @@ defmodule Core.Device.UseCases.Creating do
          {:ok, _} <- transformer_device.transform(device, user) do
       {:ok, true}
     else
-      :error -> {:error, "Не валидный UUID группы"}
       {:error, message} -> {:error, message}
       {:exception, message} -> {:exception, message}
     end

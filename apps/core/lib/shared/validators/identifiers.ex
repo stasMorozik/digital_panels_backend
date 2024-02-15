@@ -1,22 +1,20 @@
-defmodule Core.Shared.Validators.Identifiers do
+defmodule Core.Shared.Validators.Identifier do
   @moduledoc """
-    Валидирует список идентификаторов
+    Валидирует идентификатор
   """
 
   alias UUID
 
   @spec valid(any()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
-  def valid(identifiers) when is_list(identifiers) do
-    with validated <- Enum.map(identifiers, fn uuid -> UUID.info(uuid) end),
-         filtered <- Enum.filter(validated, fn {result, _} -> result == :error end),
-         true <- length(filtered) == 0 do
+  def valid(identifier) when is_binary(identifier) do
+    with {:ok, _} <- UUID.info(identifier) do
       {:ok, true}
     else
-      false -> {:error, "Невалидный список идентификаторов"}
+      {:error, _} -> {:error, "Невалидный идентификатор"}
     end
   end
 
   def valid(_) do
-    {:error, "Невалидный список идентификаторов"}
+    {:error, "Невалидный идентификатор"}
   end
 end

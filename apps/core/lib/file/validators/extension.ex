@@ -3,20 +3,20 @@ defmodule Core.File.Validators.Extension do
     Валидирует расширение файла
   """
 
-  @extensions %{
-    ".jpg": true,
-    ".jpeg": true,
-    ".png": true,
-    ".gif": true,
-    ".mp4": true,
-    ".avi": true
-  }
+  @extensions [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".mp4",
+    ".avi"
+  ]
 
   @spec valid(any()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def valid(extname) when is_binary(extname) do
-    case Map.get(@extensions, String.to_atom(extname)) do
-      nil -> {:error, "Невалидное расширение файла"}
-      _ -> {:ok, true}
+    case extname in @extensions do
+      false -> {:error, "Невалидное расширение файла"}
+      true -> {:ok, true}
     end
   end
 

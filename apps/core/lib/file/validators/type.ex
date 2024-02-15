@@ -3,16 +3,16 @@ defmodule Core.File.Validators.Type do
     Валидирует тип файла(для фильтра)
   """
 
-  @types %{
-    "Изображение": true,
-    "Видеозапись": true
-  }
+  @types [
+    "Изображение",
+    "Видеозапись"
+  ]
 
   @spec valid(any()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def valid(type) when is_binary(type) do
-    case Map.get(@types, String.to_atom(type)) do
-      nil -> {:error, "Невалидный тип файла"}
-      _ -> {:ok, true}
+    case type in @types do
+      false -> {:error, "Невалидный тип файла"}
+      true -> {:ok, true}
     end
   end
 

@@ -21,17 +21,13 @@ defmodule Core.Group.UseCases.Updating do
          is_atom(getter_group) and
          is_atom(transformer_group) and
          is_map(args) do
-    
-    {result, _} = UUID.info(Map.get(args, :id))
-
-    with :ok <- result,
-         {:ok, user} <- Authorization.auth(getter_user, args),
+    with {:ok, user} <- Authorization.auth(getter_user, args),
+         {:ok, true} <- Core.Shared.Validators.Identifier.valid(Map.get(args, :id)),
          {:ok, group} <- getter_group.get(UUID.string_to_binary!(args.id), user),
          {:ok, group} <- Core.Group.Editor.edit(group, args),
-         {:ok, _} <- transformer_group.transform(group, user) do
+         {:ok, true} <- transformer_group.transform(group, user) do
       {:ok, true}
     else
-      :error -> {:error, "Не валидный UUID группы"}
       {:error, message} -> {:error, message}
       {:exception, message} -> {:exception, message}
     end

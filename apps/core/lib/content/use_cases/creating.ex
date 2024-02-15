@@ -24,13 +24,9 @@ defmodule Core.Content.UseCases.Creating do
          is_atom(getter_file) and
          is_atom(transformer_content) and 
          is_map(args) do
-
-    {result_0, _} = UUID.info(Map.get(args, :file_id))
-    {result_1, _} = UUID.info(Map.get(args, :playlist_id))
-    
     with {:ok, user} <- Authorization.auth(getter_user, args),
-         :ok <- result_0,
-         :ok <- result_1,
+         {:ok, true} <- Core.Shared.Validators.Identifier.valid(Map.get(args, :file_id)),
+         {:ok, true} <- Core.Shared.Validators.Identifier.valid(Map.get(args, :playlist_id)),
          {:ok, file} <- getter_file.get(UUID.string_to_binary!(args.file_id), user),
          {:ok, playlist} <- getter_playlist.get(UUID.string_to_binary!(args.playlist_id), user),
          {:ok, playlist} <- Core.Playlist.Editor.edit(playlist, %{sum: playlist.sum + 1}),
@@ -40,7 +36,6 @@ defmodule Core.Content.UseCases.Creating do
          {:ok, true} <- transformer_content.transform(content, user) do
       {:ok, true}
     else
-      :error -> {:error, "Не валидный UUID файла/плэйлиста"}
       {:error, message} -> {:error, message}
       {:exception, message} -> {:exception, message}
     end

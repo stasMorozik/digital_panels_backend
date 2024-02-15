@@ -23,8 +23,8 @@ defmodule Core.File.UseCases.Creating do
          is_map(args) do
     with {:ok, user} <- Authorization.auth(getter_user, args),
          {:ok, file} <- Core.File.Builder.build(args),
-         {:ok, _} <- transformer_file_0.transform(file, user),
-         {:ok, _} <- transformer_file_1.transform(file, user) do
+         {:ok, true} <- transformer_file_0.transform(file, user),
+         {:ok, true} <- transformer_file_1.transform(file, user) do
       {:ok, true}
     else
       {:error, message} -> {:error, message}
