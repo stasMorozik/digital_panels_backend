@@ -19,9 +19,6 @@ defmodule Schedule.UseCases.UpdatingTest do
   alias Core.Playlist.Builder, as: PlaylistBuilder
   alias Playlist.FakeAdapters.Inserting, as: InsertingPlaylist
 
-  alias Core.Device.Builder, as: DeviceBuilder
-  alias Device.FakeAdapters.Inserting, as: InsertingDevice
-
   alias Core.Group.Builder, as: GroupBuilder
   alias Group.FakeAdapters.Inserting, as: InsertingGroup
 
@@ -46,7 +43,6 @@ defmodule Schedule.UseCases.UpdatingTest do
     :mnesia.delete_table(:files)
     :mnesia.delete_table(:contents)
     :mnesia.delete_table(:playlists)
-    :mnesia.delete_table(:devices)
     :mnesia.delete_table(:groups)
     :mnesia.delete_table(:schedules)
 
@@ -73,11 +69,6 @@ defmodule Schedule.UseCases.UpdatingTest do
     {:atomic, :ok} = :mnesia.create_table(
       :playlists,
       [attributes: [:id, :name, :sum, :contents, :created, :updated]]
-    )
-
-    {:atomic, :ok} = :mnesia.create_table(
-      :devices,
-      [attributes: [:id, :ip, :latitude, :longitude, :created, :updated]]
     )
 
     {:atomic, :ok} = :mnesia.create_table(
@@ -131,19 +122,10 @@ defmodule Schedule.UseCases.UpdatingTest do
 
     {:ok, true} = InsertingContent.transform(content, user)
 
-    {:ok, device} = DeviceBuilder.build(%{
-      ip: "192.168.1.98",
-      latitude: 78.454567,
-      longitude: 98.3454,
-      desc: "Описание"
-    })
-
     {:ok, group} = GroupBuilder.build(%{
       name: "Тест",
-      devices: [device]
+      devices: []
     })
-
-    {:ok, true} = InsertingDevice.transform(device, user)
 
     {:ok, true} = InsertingGroup.transform(group, user)
 

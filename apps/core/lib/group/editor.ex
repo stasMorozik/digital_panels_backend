@@ -11,8 +11,7 @@ defmodule Core.Group.Editor do
   def edit(%Entity{} = entity, args) when is_map(args) do
     entity(entity)
       |> name(Map.get(args, :name))
-      |> Core.Group.Builders.Devices.build(Map.get(args, :devices, []))
-      |> Core.Group.Builders.Sum.build(Map.get(args, :devices, []))
+      |> sum(Map.get(args, :sum))
   end
 
   def edit(_, _) do
@@ -38,6 +37,17 @@ defmodule Core.Group.Editor do
   end
 
   defp name({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp sum({:ok, entity}, sum) do
+    case sum do
+      nil -> {:ok, entity}
+      sum -> Core.Group.Builders.Sum.build({:ok, entity}, sum)
+    end
+  end
+
+  defp sum({:error, message}, _) do
     {:error, message}
   end
 end
