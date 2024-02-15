@@ -18,7 +18,7 @@ defmodule Core.Task.Builders.Minute do
     end
   end
 
-  def build({:error, message}, _, _) do
+  def build({:error, message}, _) do
     {:error, message}
   end
 end

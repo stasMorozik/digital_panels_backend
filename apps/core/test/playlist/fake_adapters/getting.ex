@@ -26,9 +26,7 @@ defmodule Playlist.FakeAdapters.Getting do
               updated: updated
             }}
         end
-      {:aborted, t} -> 
-        IO.inspect(t)
-        {:error, "Плэйлист не найден"}
+      {:aborted, _} -> {:error, "Плэйлист не найден"}
     end
   end
 end

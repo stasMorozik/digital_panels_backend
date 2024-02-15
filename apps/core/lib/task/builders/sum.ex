@@ -3,7 +3,7 @@ defmodule Core.Task.Builders.Sum do
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
 
-  @spec build(Success.t() | Error.t(), any()) :: Success.t() | Error.t()
+  @spec build(Success.t() | Error.t(), tuple(), tuple()) :: Success.t() | Error.t()
   def build({:ok, entity}, {start_hour, start_minute}, {end_hour, end_minute}) do
     with {:ok, true} <- Core.Task.Validators.Hour.valid(start_hour),
          {:ok, true} <- Core.Task.Validators.Minute.valid(start_minute),
@@ -18,7 +18,7 @@ defmodule Core.Task.Builders.Sum do
     end
   end
 
-  def build({:error, message}, _) do
+  def build({:error, message}, _, _) do
     {:error, message}
   end
 end
