@@ -1,6 +1,7 @@
 defmodule Content.EntityTest do
   use ExUnit.Case
 
+  alias Core.Playlist.Builder, as: PlaylistBuilder
   alias Core.Content.Builder, as: ContentBuilder
   alias Core.File.Builder, as: FileBuilder
 
@@ -19,10 +20,16 @@ defmodule Content.EntityTest do
       size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
     })
 
+    {:ok, playlist} = PlaylistBuilder.build(%{
+      name: "Тест_1234"
+    })
+
     {result, _} = ContentBuilder.build(%{
       name: "Тест_1234",
       duration: 15,
-      file: file
+      file: file,
+      playlist: playlist,
+      serial_number: 1
     })
 
     assert result == :ok
@@ -36,10 +43,16 @@ defmodule Content.EntityTest do
       size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
     })
 
+    {:ok, playlist} = PlaylistBuilder.build(%{
+      name: "Тест_1234"
+    })
+
     {result, _} = ContentBuilder.build(%{
       name: "Тест_1234@",
       duration: 15,
-      file: file
+      file: file,
+      playlist: playlist,
+      serial_number: 1
     })
 
     assert result == :error
@@ -53,20 +66,32 @@ defmodule Content.EntityTest do
       size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
     })
 
+    {:ok, playlist} = PlaylistBuilder.build(%{
+      name: "Тест_1234"
+    })
+
     {result, _} = ContentBuilder.build(%{
       name: "Тест_1234",
       duration: 150,
-      file: file
+      file: file,
+      playlist: playlist,
+      serial_number: 1
     })
 
     assert result == :error
   end
 
   test "Построение сущности - невалидный файл" do
+    {:ok, playlist} = PlaylistBuilder.build(%{
+      name: "Тест_1234"
+    })
+
     {result, _} = ContentBuilder.build(%{
       name: "Тест_1234",
       duration: 15,
-      file: %{}
+      file: %{},
+      playlist: playlist,
+      serial_number: 1
     })
 
     assert result == :error

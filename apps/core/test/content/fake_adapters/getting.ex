@@ -15,13 +15,15 @@ defmodule Content.FakeAdapters.Getting do
           true -> 
             [content | _] = list_contents
 
-            {:contents, id, name, duration, file, created, updated} = content
+            {:contents, id, name, duration, file, playlist, serial_number, created, updated} = content
 
             {:ok, %ContentEntity{
               id: id,
               name: name,
               duration: duration,
               file: file,
+              playlist: playlist,
+              serial_number: serial_number,
               created: created,
               updated: updated
             }}

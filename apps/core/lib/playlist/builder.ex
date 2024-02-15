@@ -4,11 +4,9 @@ defmodule Core.Playlist.Builder do
   """
 
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
-  def build(%{name: name, contents: contents}) do
+  def build(%{name: name}) do
     entity() 
       |> Core.Playlist.Builders.Name.build(name)
-      |> Core.Playlist.Builders.Contents.build(contents)
-      |> Core.Playlist.Builders.Sum.build(contents)
   end
 
   def build(_) do
@@ -18,7 +16,8 @@ defmodule Core.Playlist.Builder do
   # Функция построения базового плэйлиста
   defp entity do
     {:ok, %Core.Playlist.Entity{
-      id: UUID.uuid4(), 
+      id: UUID.uuid4(),
+      sum: 0, 
       created: Date.utc_today, 
       updated: Date.utc_today
     }}

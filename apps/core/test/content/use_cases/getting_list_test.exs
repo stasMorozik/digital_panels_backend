@@ -15,6 +15,8 @@ defmodule Content.UseCases.GettingListTest do
 
   alias Core.Content.Builder, as: ContentBuilder
 
+  alias Core.Playlist.Builder, as: PlaylistBuilder
+
   alias Content.FakeAdapters.Inserting, as: InsertingContent
   alias Content.FakeAdapters.GettingList, as: GettingListContent
 
@@ -50,7 +52,7 @@ defmodule Content.UseCases.GettingListTest do
 
     {:atomic, :ok} = :mnesia.create_table(
       :contents,
-      [attributes: [:id, :name, :duration, :file, :created, :updated]]
+      [attributes: [:id, :name, :duration, :file, :playlist, :serial_number, :created, :updated]]
     )
 
     :mnesia.add_table_index(:users, :email)
@@ -86,11 +88,17 @@ defmodule Content.UseCases.GettingListTest do
     })
 
     {:ok, true} = InsertingFile.transform(file, user)
+
+    {:ok, playlist} = PlaylistBuilder.build(%{
+      name: "Тест_1234"
+    })
     
     {:ok, content} = ContentBuilder.build(%{
       name: "Тест_1234",
       duration: 15,
-      file: file
+      file: file,
+      playlist: playlist,
+      serial_number: 1
     })
 
     {:ok, true} = InsertingContent.transform(content, user)
@@ -134,11 +142,17 @@ defmodule Content.UseCases.GettingListTest do
     })
 
     {:ok, true} = InsertingFile.transform(file, user)
+
+    {:ok, playlist} = PlaylistBuilder.build(%{
+      name: "Тест_1234"
+    })
     
     {:ok, content} = ContentBuilder.build(%{
       name: "Тест_1234",
       duration: 15,
-      file: file
+      file: file,
+      playlist: playlist,
+      serial_number: 1
     })
 
     {:ok, true} = InsertingContent.transform(content, user)

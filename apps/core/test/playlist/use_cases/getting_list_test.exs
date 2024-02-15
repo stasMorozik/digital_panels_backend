@@ -10,12 +10,6 @@ defmodule Playlist.UseCases.GettingListTest do
 
   alias Core.User.UseCases.Authentication, as: AuthenticationUseCase
 
-  alias Core.File.Builder, as: FileBuilder
-  alias Core.Content.Builder, as: ContentBuilder
-  alias File.FakeAdapters.Inserting, as: InsertingFile
-  
-  alias Content.FakeAdapters.Inserting, as: InsertingContent
-
   alias Core.Playlist.Builder, as: PlaylistBuilder
   alias Playlist.FakeAdapters.Inserting, as: InsertingPlaylist
   alias Playlist.FakeAdapters.GettingList, as: GettingListPlaylist
@@ -32,8 +26,6 @@ defmodule Playlist.UseCases.GettingListTest do
 
     :mnesia.delete_table(:codes)
     :mnesia.delete_table(:users)
-    :mnesia.delete_table(:files)
-    :mnesia.delete_table(:contents)
     :mnesia.delete_table(:playlists)
 
     {:atomic, :ok} = :mnesia.create_table(
@@ -47,22 +39,11 @@ defmodule Playlist.UseCases.GettingListTest do
     )
 
     {:atomic, :ok} = :mnesia.create_table(
-      :files,
-      [attributes: [:id, :path, :url, :extension, :type, :size, :created]]
-    )
-
-    {:atomic, :ok} = :mnesia.create_table(
-      :contents,
-      [attributes: [:id, :name, :duration, :file, :created, :updated]]
-    )
-
-    {:atomic, :ok} = :mnesia.create_table(
       :playlists,
       [attributes: [:id, :name, :sum, :contents, :created, :updated]]
     )
 
     :mnesia.add_table_index(:users, :email)
-    :mnesia.add_table_index(:contents, :name)
     :mnesia.add_table_index(:playlists, :name)
 
     :ok
@@ -87,27 +68,9 @@ defmodule Playlist.UseCases.GettingListTest do
       code: code.code
     })
 
-    {:ok, file} = FileBuilder.build(%{
-      path: "/tmp/not_emty_png.png",
-      name: Path.basename("/tmp/not_emty_png.png"),
-      extname: Path.extname("/tmp/not_emty_png.png"),
-      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
-    })
-
-    {:ok, content} = ContentBuilder.build(%{
-      name: "Тест_1234",
-      duration: 15,
-      file: file
-    })
-
     {:ok, playlist} = PlaylistBuilder.build(%{
-      name: "Тест_1234", 
-      contents: [content]
+      name: "Тест_1234"
     })
-
-    {:ok, true} = InsertingFile.transform(file, user)
-
-    {:ok, true} = InsertingContent.transform(content, user)
 
     {:ok, true} = InsertingPlaylist.transform(playlist, user)
 
@@ -145,27 +108,9 @@ defmodule Playlist.UseCases.GettingListTest do
     {:ok, true} = InsertingConfirmationCode.transform(code)
     {:ok, true} = InsertingUser.transform(user)
 
-    {:ok, file} = FileBuilder.build(%{
-      path: "/tmp/not_emty_png.png",
-      name: Path.basename("/tmp/not_emty_png.png"),
-      extname: Path.extname("/tmp/not_emty_png.png"),
-      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
-    })
-
-    {:ok, content} = ContentBuilder.build(%{
-      name: "Тест_1234",
-      duration: 15,
-      file: file
-    })
-
     {:ok, playlist} = PlaylistBuilder.build(%{
-      name: "Тест_1234", 
-      contents: [content]
+      name: "Тест_1234"
     })
-
-    {:ok, true} = InsertingFile.transform(file, user)
-
-    {:ok, true} = InsertingContent.transform(content, user)
 
     {:ok, true} = InsertingPlaylist.transform(playlist, user)
 

@@ -63,7 +63,7 @@ defmodule Schedule.UseCases.UpdatingTest do
 
     {:atomic, :ok} = :mnesia.create_table(
       :contents,
-      [attributes: [:id, :name, :duration, :file, :created, :updated]]
+      [attributes: [:id, :name, :duration, :file, :playlist, :serial_number, :created, :updated]]
     )
 
     {:atomic, :ok} = :mnesia.create_table(
@@ -113,26 +113,26 @@ defmodule Schedule.UseCases.UpdatingTest do
     })
 
     {:ok, true} = InsertingFile.transform(file, user)
+
+    {:ok, playlist} = PlaylistBuilder.build(%{
+      name: "Тест_1234"
+    })
     
     {:ok, content} = ContentBuilder.build(%{
       name: "Тест_1234",
       duration: 15,
-      file: file
+      file: file,
+      playlist: playlist,
+      serial_number: 1
     })
 
     {:ok, true} = InsertingContent.transform(content, user)
 
     {:ok, group} = GroupBuilder.build(%{
-      name: "Тест",
-      devices: []
+      name: "Тест"
     })
 
     {:ok, true} = InsertingGroup.transform(group, user)
-
-    {:ok, playlist} = PlaylistBuilder.build(%{
-      name: "Тест_1234", 
-      contents: [content]
-    })
 
     {:ok, true} = InsertingPlaylist.transform(playlist, user)
 

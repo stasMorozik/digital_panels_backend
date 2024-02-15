@@ -1,13 +1,12 @@
-defmodule Core.Playlist.Builders.Sum do
+defmodule Core.Content.Builders.Playlist do
   
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
 
   @spec build(Success.t() | Error.t(), any()) :: Success.t() | Error.t()
-  def build({:ok, entity}, sum) do
-    with {:ok, true} <- Core.Playlist.Validators.Sum.valid(sum) do
-      {:ok, Map.put(entity, :sum, sum)}
-    else
+  def build({:ok, entity}, playlist) do
+    case Core.Content.Validators.Playlist.valid(playlist) do
+      {:ok, _} -> {:ok, Map.put(entity, :playlist, playlist)}
       {:error, message} -> {:error, message}
     end
   end

@@ -144,7 +144,7 @@ defmodule Device.UseCases.UpdatingTest do
       code: code.code
     })
 
-    {result, _} = UseCase.update(GettingUserById, GettingDevice, InsertingDevice, %{
+    {result, _} = UseCase.update(GettingUserById, GettingGroup, GettingDevice, InsertingDevice, %{
       ip: "192.168.1.97",
       latitude: 78.454568,
       longitude: 98.3453,
@@ -186,7 +186,7 @@ defmodule Device.UseCases.UpdatingTest do
     {:ok, true} = InsertingUser.transform(user)
     {:ok, true} = InsertingDevice.transform(device, user)
 
-    {result, _} = UseCase.update(GettingUserById, GettingDevice, InsertingDevice, %{
+    {result, _} = UseCase.update(GettingUserById, GettingGroup, GettingDevice, InsertingDevice, %{
       ip: "192.168.1.97",
       latitude: 78.454568,
       longitude: 98.3453,

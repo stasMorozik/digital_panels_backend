@@ -15,6 +15,10 @@ defmodule Content.UseCases.CreatingTest do
   alias File.FakeAdapters.Getting, as: GettingFile
 
   alias Content.FakeAdapters.Inserting, as: InsertingContent
+  
+  alias Core.Playlist.Builder, as: PlaylistBuilder
+  alias Playlist.FakeAdapters.Inserting, as: InsertingPlaylist
+  alias Playlist.FakeAdapters.Getting, as: GettingPlaylist
 
   alias Core.Content.UseCases.Creating, as: UseCase
 
@@ -30,6 +34,7 @@ defmodule Content.UseCases.CreatingTest do
     :mnesia.delete_table(:users)
     :mnesia.delete_table(:files)
     :mnesia.delete_table(:contents)
+    :mnesia.delete_table(:playlists)
 
     {:atomic, :ok} = :mnesia.create_table(
       :codes,
@@ -42,13 +47,18 @@ defmodule Content.UseCases.CreatingTest do
     )
 
     {:atomic, :ok} = :mnesia.create_table(
+      :playlists,
+      [attributes: [:id, :name, :sum, :contents, :created, :updated]]
+    )
+
+    {:atomic, :ok} = :mnesia.create_table(
       :files,
       [attributes: [:id, :path, :url, :extension, :type, :size, :created]]
     )
 
     {:atomic, :ok} = :mnesia.create_table(
       :contents,
-      [attributes: [:id, :name, :duration, :file, :created, :updated]]
+      [attributes: [:id, :name, :duration, :file, :playlist, :serial_number, :created, :updated]]
     )
 
     :mnesia.add_table_index(:users, :email)
@@ -84,10 +94,18 @@ defmodule Content.UseCases.CreatingTest do
 
     {:ok, true} = InsertingFile.transform(file, user)
 
-    {result, _} = UseCase.create(GettingUserById, GettingFile, InsertingContent, %{
+    {:ok, playlist} = PlaylistBuilder.build(%{
+      name: "Тест_1234"
+    })
+
+    {:ok, true} = InsertingPlaylist.transform(playlist, user)
+
+    {result, _} = UseCase.create(GettingUserById, GettingPlaylist, GettingFile, InsertingContent, %{
       name: "Тест_123",
       duration: 15,
       file_id: file.id,
+      playlist_id: playlist.id,
+      serial_number: 1,
       token: tokens.access_token
     })
 
@@ -117,10 +135,18 @@ defmodule Content.UseCases.CreatingTest do
 
     {:ok, true} = InsertingFile.transform(file, user)
 
-    {result, _} = UseCase.create(GettingUserById, GettingFile, InsertingContent, %{
+    {:ok, playlist} = PlaylistBuilder.build(%{
+      name: "Тест_1234"
+    })
+
+    {:ok, true} = InsertingPlaylist.transform(playlist, user)
+
+    {result, _} = UseCase.create(GettingUserById, GettingPlaylist, GettingFile, InsertingContent, %{
       name: "Тест_123",
       duration: 15,
       file_id: file.id,
+      playlist_id: playlist.id,
+      serial_number: 1,
       token: "Invalid_token"
     })
 

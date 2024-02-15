@@ -14,7 +14,9 @@ defmodule Content.FakeAdapters.Inserting do
         content.id, 
         content.name, 
         content.duration, 
-        content.file, 
+        content.file,
+        content.playlist,
+        content.serial_number, 
         content.created, 
         content.updated
       }) end

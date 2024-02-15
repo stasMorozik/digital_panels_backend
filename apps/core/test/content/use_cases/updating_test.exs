@@ -16,6 +16,10 @@ defmodule Content.UseCases.UpdatingTest do
 
   alias Core.Content.Builder, as: ContentBuilder
 
+  alias Core.Playlist.Builder, as: PlaylistBuilder
+  alias Playlist.FakeAdapters.Inserting, as: InsertingPlaylist
+  alias Playlist.FakeAdapters.Getting, as: GettingPlaylist
+
   alias Content.FakeAdapters.Inserting, as: InsertingContent
   alias Content.FakeAdapters.Getting, as: GettingContent
 
@@ -33,6 +37,7 @@ defmodule Content.UseCases.UpdatingTest do
     :mnesia.delete_table(:users)
     :mnesia.delete_table(:files)
     :mnesia.delete_table(:contents)
+    :mnesia.delete_table(:playlists)
 
     {:atomic, :ok} = :mnesia.create_table(
       :codes,
@@ -45,13 +50,18 @@ defmodule Content.UseCases.UpdatingTest do
     )
 
     {:atomic, :ok} = :mnesia.create_table(
+      :playlists,
+      [attributes: [:id, :name, :sum, :contents, :created, :updated]]
+    )
+
+    {:atomic, :ok} = :mnesia.create_table(
       :files,
       [attributes: [:id, :path, :url, :extension, :type, :size, :created]]
     )
 
     {:atomic, :ok} = :mnesia.create_table(
       :contents,
-      [attributes: [:id, :name, :duration, :file, :created, :updated]]
+      [attributes: [:id, :name, :duration, :file, :playlist, :serial_number, :created, :updated]]
     )
 
     :mnesia.add_table_index(:users, :email)
@@ -86,21 +96,30 @@ defmodule Content.UseCases.UpdatingTest do
     })
 
     {:ok, true} = InsertingFile.transform(file, user)
+
+    {:ok, playlist} = PlaylistBuilder.build(%{
+      name: "Тест_1234"
+    })
+
+    {:ok, true} = InsertingPlaylist.transform(playlist, user)
     
     {:ok, content} = ContentBuilder.build(%{
       name: "Тест_1234",
       duration: 15,
-      file: file
+      file: file,
+      playlist: playlist,
+      serial_number: 1
     })
 
     {:ok, true} = InsertingContent.transform(content, user)
 
-    {result, _} = UseCase.update(GettingUserById, GettingContent, GettingFile, InsertingContent, %{
+    {result, _} = UseCase.update(GettingUserById, GettingPlaylist, GettingContent, GettingFile, InsertingContent, %{
       name: "Тест_123",
       duration: 15,
       file_id: file.id,
+      playlist_id: playlist.id,
       id: content.id,
-      token: tokens.access_token
+      token: tokens.access_token,
     })
 
     assert result == :ok
@@ -128,19 +147,28 @@ defmodule Content.UseCases.UpdatingTest do
     })
 
     {:ok, true} = InsertingFile.transform(file, user)
+
+    {:ok, playlist} = PlaylistBuilder.build(%{
+      name: "Тест_1234"
+    })
+
+    {:ok, true} = InsertingPlaylist.transform(playlist, user)
     
     {:ok, content} = ContentBuilder.build(%{
       name: "Тест_1234",
       duration: 15,
-      file: file
+      file: file,
+      playlist: playlist,
+      serial_number: 1
     })
 
     {:ok, true} = InsertingContent.transform(content, user)
 
-    {result, _} = UseCase.update(GettingUserById, GettingContent, GettingFile, InsertingContent, %{
+    {result, _} = UseCase.update(GettingUserById, GettingPlaylist, GettingContent, GettingFile, InsertingContent, %{
       name: "Тест_123",
       duration: 15,
       file_id: file.id,
+      playlist_id: playlist.id,
       id: content.id,
       token: "Invalid_token"
     })

@@ -13,6 +13,8 @@ defmodule Core.Content.Editor do
       |> name(Map.get(args, :name))
       |> duration(Map.get(args, :duration))
       |> file(Map.get(args, :file))
+      |> playlist(Map.get(args, :playlist))
+      |> serial_number(Map.get(args, :serial_number))
   end
 
   def edit(_, _) do
@@ -25,6 +27,8 @@ defmodule Core.Content.Editor do
       name: entity.name,
       duration: entity.duration,
       file: entity.file,
+      playlist: entity.playlist,
+      serial_number: entity.serial_number,
       created: entity.created, 
       updated: Date.utc_today
     }}
@@ -60,6 +64,28 @@ defmodule Core.Content.Editor do
   end
 
   defp file({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp playlist({:ok, entity}, playlist) do
+    case playlist do
+      nil -> {:ok, entity}
+      playlist -> Core.Content.Builders.Playlist.build({:ok, entity}, playlist)
+    end
+  end
+
+  defp playlist({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp serial_number({:ok, entity}, serial_number) do
+    case serial_number do
+      nil -> {:ok, entity}
+      serial_number -> Core.Content.Builders.SerialNumber.build({:ok, entity}, serial_number)
+    end
+  end
+
+  defp serial_number({:error, message}, _) do
     {:error, message}
   end
 end

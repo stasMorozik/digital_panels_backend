@@ -6,11 +6,19 @@ defmodule Core.Content.Builder do
   alias UUID
   
   @spec build(map()) :: Success.t() | Error.t()
-  def build(%{duration: duration, file: file, name: name}) do    
+  def build(%{
+    duration: duration, 
+    file: file, 
+    name: name, 
+    playlist: playlist, 
+    serial_number: serial_number
+  }) do    
     entity()
       |> Core.Content.Builders.Name.build(name)
       |> Core.Content.Builders.Duration.build(duration)
       |> Core.Content.Builders.File.build(file)
+      |> Core.Content.Builders.Playlist.build(playlist)
+      |> Core.Content.Builders.SerialNumber.build(serial_number)
   end
 
   def build(_) do

@@ -33,7 +33,6 @@ defmodule Core.Device.UseCases.Updating do
          :ok <- result_1,
          {:ok, device} <- getter_device.get(UUID.string_to_binary!(args.id), user),
          {:ok, group} <- getter_group.get(UUID.string_to_binary!(args.group_id), user),
-         {:ok, group} <- Core.Group.Editor.edit(group, %{sum: group.sum + 1}),
          args <- Map.put(args, :group, case group.id == device.group.id do
             true -> nil
             false -> group
@@ -48,7 +47,7 @@ defmodule Core.Device.UseCases.Updating do
     end
   end
 
-  def update(_, _, _, _) do
+  def update(_, _, _, _, _) do
     {:error, "Невалидные данные для обновления устройства"}
   end
 end

@@ -8,36 +8,45 @@ defmodule Core.Content.UseCases.Creating do
 
   @spec create(
     Core.User.Ports.Getter.t(),
+    Core.Playlist.Ports.Getter.t(),
     Core.File.Ports.Getter.t(),
     Core.Content.Ports.Transformer.t(),
     map()
   ) :: Success.t() | Error.t() | Exception.t()
   def create(
     getter_user,
+    getter_playlist,
     getter_file, 
     transformer_content, 
     args
-  ) when is_atom(getter_user) and 
+  ) when is_atom(getter_user) and
+         is_atom(getter_playlist) and 
          is_atom(getter_file) and
          is_atom(transformer_content) and 
          is_map(args) do
 
-    {result, _} = UUID.info(Map.get(args, :file_id))
+    {result_0, _} = UUID.info(Map.get(args, :file_id))
+    {result_1, _} = UUID.info(Map.get(args, :playlist_id))
     
-    with :ok <- result,
-         {:ok, user} <- Authorization.auth(getter_user, args),
+    with {:ok, user} <- Authorization.auth(getter_user, args),
+         :ok <- result_0,
+         :ok <- result_1,
          {:ok, file} <- getter_file.get(UUID.string_to_binary!(args.file_id), user),
-         {:ok, content} <- Core.Content.Builder.build(Map.put(args, :file, file)),
-         {:ok, _} <- transformer_content.transform(content, user) do
+         {:ok, playlist} <- getter_playlist.get(UUID.string_to_binary!(args.playlist_id), user),
+         {:ok, playlist} <- Core.Playlist.Editor.edit(playlist, %{sum: playlist.sum + 1}),
+         args <- Map.put(args, :file, file),
+         args <- Map.put(args, :playlist, playlist),
+         {:ok, content} <- Core.Content.Builder.build(args),
+         {:ok, true} <- transformer_content.transform(content, user) do
       {:ok, true}
     else
-      :error -> {:error, "Не валидный UUID файла"}
+      :error -> {:error, "Не валидный UUID файла/плэйлиста"}
       {:error, message} -> {:error, message}
       {:exception, message} -> {:exception, message}
     end
   end
 
-  def create(_, _, _, _) do
+  def create(_, _, _, _, _) do
     {:error, "Невалидные данные для создания контента"}
   end
 end
