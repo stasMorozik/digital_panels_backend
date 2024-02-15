@@ -65,8 +65,7 @@ defmodule Group.UseCases.UpdatingTest do
     })
 
     {:ok, group} = GroupBuilder.build(%{
-      name: "Тест",
-      devices: []
+      name: "Тест"
     })
 
     {:ok, true} = InsertingGroup.transform(group, user)
@@ -101,7 +100,6 @@ defmodule Group.UseCases.UpdatingTest do
 
     {:ok, group} = GroupBuilder.build(%{
       name: "Тест",
-      devices: []
     })
 
     {:ok, true} = InsertingGroup.transform(group, user)

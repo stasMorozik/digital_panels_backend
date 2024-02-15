@@ -6,12 +6,13 @@ defmodule Core.Device.Builder do
   alias UUID
 
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
-  def build(%{ip: ip, latitude: latitude, longitude: longitude, desc: desc}) do
+  def build(%{ip: ip, latitude: latitude, longitude: longitude, desc: desc, group: group}) do
     entity()
       |> Core.Device.Builders.Ip.build(ip)
       |> Core.Device.Builders.Latitude.build(latitude)
       |> Core.Device.Builders.Longitude.build(longitude)
       |> Core.Device.Builders.Description.build(desc)
+      |> Core.Device.Builders.Group.build(group)
   end
 
   def build(_) do

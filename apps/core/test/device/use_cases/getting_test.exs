@@ -8,6 +8,7 @@ defmodule Device.UseCases.GettingTest do
   alias User.FakeAdapters.GettingByEmail, as: GettingUserByEmail
   alias User.FakeAdapters.GettingById, as: GettingUserById
   alias Device.FakeAdapters.Getting, as: GettingDevice
+  alias Core.Group.Builder, as: GroupBuilder
 
   alias Core.User.UseCases.Authentication, as: AuthenticationUseCase
 
@@ -36,7 +37,7 @@ defmodule Device.UseCases.GettingTest do
 
     {:atomic, :ok} = :mnesia.create_table(
       :devices,
-      [attributes: [:id, :ip, :latitude, :longitude, :created, :updated]]
+      [attributes: [:id, :ip, :latitude, :longitude, :group, :created, :updated]]
     )
 
     :mnesia.add_table_index(:users, :email)
@@ -56,11 +57,16 @@ defmodule Device.UseCases.GettingTest do
       surname: "Тестович",
     })
 
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест",
+    })
+
     {:ok, device} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)
@@ -91,18 +97,24 @@ defmodule Device.UseCases.GettingTest do
       surname: "Тестович",
     })
 
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест",
+    })
+
     {:ok, device_0} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {:ok, device_1} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)
@@ -133,11 +145,16 @@ defmodule Device.UseCases.GettingTest do
       surname: "Тестович",
     })
 
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест",
+    })
+
     {:ok, device} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)

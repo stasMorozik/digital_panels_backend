@@ -11,9 +11,17 @@ defmodule Core.Device.Entity do
     latitude: float(),
     longitude: float(),
     desc: binary(),
+    group: Core.Group.Entity.t(),
     created: binary(),
     updated: binary()
   }
 
-  defstruct id: nil, ip: nil, latitude: nil, longitude: nil, desc: nil, created: nil, updated: nil
+  defstruct id: nil, 
+            ip: nil, 
+            latitude: nil, 
+            longitude: nil, 
+            desc: nil,
+            group: nil,
+            created: nil, 
+            updated: nil
 end

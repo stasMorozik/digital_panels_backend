@@ -8,6 +8,7 @@ defmodule Device.UseCases.GettingListTest do
   alias User.FakeAdapters.GettingByEmail, as: GettingUserByEmail
   alias User.FakeAdapters.GettingById, as: GettingUserById
   alias Device.FakeAdapters.GettingList, as: GettingListDevice
+  alias Core.Group.Builder, as: GroupBuilder
 
   alias Core.User.UseCases.Authentication, as: AuthenticationUseCase
 
@@ -36,7 +37,7 @@ defmodule Device.UseCases.GettingListTest do
 
     {:atomic, :ok} = :mnesia.create_table(
       :devices,
-      [attributes: [:id, :ip, :latitude, :longitude, :created, :updated]]
+      [attributes: [:id, :ip, :latitude, :longitude, :group, :created, :updated]]
     )
 
     :mnesia.add_table_index(:users, :email)
@@ -56,11 +57,16 @@ defmodule Device.UseCases.GettingListTest do
       surname: "Тестович",
     })
 
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест",
+    })
+
     {:ok, device} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)
@@ -98,11 +104,16 @@ defmodule Device.UseCases.GettingListTest do
       surname: "Тестович",
     })
 
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест",
+    })
+
     {:ok, device} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)
@@ -140,11 +151,16 @@ defmodule Device.UseCases.GettingListTest do
       surname: "Тестович",
     })
 
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
     {:ok, device} = Core.Device.Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {:ok, true} = InsertingConfirmationCode.transform(code)

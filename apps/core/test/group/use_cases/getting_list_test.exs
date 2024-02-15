@@ -41,7 +41,7 @@ defmodule Group.UseCases.GettingListTest do
 
     {:atomic, :ok} = :mnesia.create_table(
       :devices,
-      [attributes: [:id, :ip, :latitude, :longitude, :created, :updated]]
+      [attributes: [:id, :ip, :latitude, :longitude, :group, :created, :updated]]
     )
 
     {:atomic, :ok} = :mnesia.create_table(
@@ -75,16 +75,16 @@ defmodule Group.UseCases.GettingListTest do
       code: code.code
     })
 
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест",
+    })
+
     {:ok, device} = DeviceBuilder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
-    })
-
-    {:ok, group} = GroupBuilder.build(%{
-      name: "Тест",
-      devices: [device]
+      desc: "Описание",
+      group: group
     })
 
     {:ok, true} = InsertingDevice.transform(device, user)
@@ -120,16 +120,16 @@ defmodule Group.UseCases.GettingListTest do
     {:ok, true} = InsertingConfirmationCode.transform(code)
     {:ok, true} = InsertingUser.transform(user)
 
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
     {:ok, device} = DeviceBuilder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
-    })
-
-    {:ok, group} = GroupBuilder.build(%{
-      name: "Тест",
-      devices: [device]
+      desc: "Описание",
+      group: group
     })
 
     {:ok, true} = InsertingDevice.transform(device, user)

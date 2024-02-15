@@ -1,48 +1,69 @@
 defmodule Device.EntityTest do
   use ExUnit.Case
 
+  alias Core.Group.Builder, as: GroupBuilder
   alias Core.Device.Builder
   alias Core.Device.Editor
 
   test "Построение сущности" do
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
     {result, _} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     assert result == :ok
   end
 
   test "Построение сущности - невалидный ip" do
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+    
     {result, _} = Builder.build(%{
       ip: "192.168.1.",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     assert result == :error
   end
 
   test "Построение сущности - невалидная широта" do
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
     {result, _} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: -91,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     assert result == :error
   end
 
   test "Построение сущности - невалидная долгота" do
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
     {result, _} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: -181,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     assert result == :error
@@ -55,18 +76,24 @@ defmodule Device.EntityTest do
   end
 
   test "Редактирование сущности" do
-    {_, entity} = Builder.build(%{
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {result, entity} = Editor.edit(entity, %{
       ip: "192.168.1.99",
       latitude: 78.454568,
       longitude: 98.3455,
-      desc: "Описание 1"
+      desc: "Описание 1",
+      group: group
     })
 
     assert result == :ok
@@ -77,11 +104,16 @@ defmodule Device.EntityTest do
   end
 
   test "Редактирование сущности - только ip" do
-    {_, entity} = Builder.build(%{
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {result, entity} = Editor.edit(entity, %{
@@ -93,11 +125,16 @@ defmodule Device.EntityTest do
   end
 
   test "Редактирование сущности - только широта" do
-    {_, entity} = Builder.build(%{
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {result, entity} = Editor.edit(entity, %{
@@ -109,11 +146,16 @@ defmodule Device.EntityTest do
   end
 
   test "Редактирование сущности - только долгота" do
-    {_, entity} = Builder.build(%{
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {result, entity} = Editor.edit(entity, %{
@@ -131,11 +173,16 @@ defmodule Device.EntityTest do
   end
 
   test "Редактирование сущности - невалидный ip" do
-    {_, entity} = Builder.build(%{
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {result, _} = Editor.edit(entity, %{
@@ -146,11 +193,16 @@ defmodule Device.EntityTest do
   end
 
   test "Редактирование сущности - невалидная широта" do
-    {_, entity} = Builder.build(%{
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {result, _} = Editor.edit(entity, %{
@@ -161,11 +213,16 @@ defmodule Device.EntityTest do
   end
 
   test "Редактирование сущности - невалидная долгота" do
-    {_, entity} = Builder.build(%{
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+    
+    {:ok, entity} = Builder.build(%{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
-      desc: "Описание"
+      desc: "Описание",
+      group: group
     })
 
     {result, _} = Editor.edit(entity, %{

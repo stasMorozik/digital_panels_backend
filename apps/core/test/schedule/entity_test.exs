@@ -6,7 +6,6 @@ defmodule Schedule.EntityTest do
   alias Core.Playlist.Builder, as: PlaylistBuilder
   alias Core.Schedule.Builder, as: ScheduleBuilder
   alias Core.Group.Builder, as: GroupBuilder
-  alias Core.Device.Builder, as: DeviceBuilder
 
   setup_all do
     File.touch("/tmp/not_emty_png.png", 1544519753)
@@ -34,16 +33,8 @@ defmodule Schedule.EntityTest do
       contents: [content]
     })
 
-    {:ok, device} = DeviceBuilder.build(%{
-      ip: "192.168.1.98",
-      latitude: 78.454567,
-      longitude: 98.3454,
-      desc: "Описание"
-    })
-
     {:ok, group} = GroupBuilder.build(%{
-      name: "Тест",
-      devices: [device]
+      name: "Тест"
     })
 
     {result, _} = ScheduleBuilder.build(%{
@@ -82,16 +73,8 @@ defmodule Schedule.EntityTest do
       contents: [content]
     })
 
-    {:ok, device} = DeviceBuilder.build(%{
-      ip: "192.168.1.98",
-      latitude: 78.454567,
-      longitude: 98.3454,
-      desc: "Описание"
-    })
-
     {:ok, group} = GroupBuilder.build(%{
       name: "Тест",
-      devices: [device]
     })
 
     {result, _} = ScheduleBuilder.build(%{

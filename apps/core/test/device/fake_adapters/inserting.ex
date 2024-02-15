@@ -14,7 +14,8 @@ defmodule Device.FakeAdapters.Inserting do
         device.id, 
         device.ip, 
         device.latitude, 
-        device.longitude, 
+        device.longitude,
+        device.group, 
         device.created, 
         device.updated
       }) end

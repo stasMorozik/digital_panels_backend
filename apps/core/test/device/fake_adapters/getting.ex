@@ -15,13 +15,14 @@ defmodule Device.FakeAdapters.Getting do
           true -> 
             [device | _] = list_devices
 
-            {:devices, id, ip, latitude, longitude, created, updated} = device
+            {:devices, id, ip, latitude, longitude, group, created, updated} = device
 
             {:ok, %DeviceEntity{
               id: id,
               ip: ip,
               latitude: latitude,
               longitude: longitude,
+              group: group,
               created: created,
               updated: updated
             }}

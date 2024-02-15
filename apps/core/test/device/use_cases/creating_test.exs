@@ -10,6 +10,10 @@ defmodule Device.UseCases.CreatingTest do
 
   alias Core.User.UseCases.Authentication, as: AuthenticationUseCase
 
+  alias Core.Group.Builder, as: GroupBuilder
+  alias Group.FakeAdapters.Inserting, as: InsertingGroup
+  alias Group.FakeAdapters.Getting, as: GettingGroup
+
   alias Device.FakeAdapters.Inserting, as: InsertingDevice
 
   alias Core.Device.UseCases.Creating, as: UseCase
@@ -22,6 +26,7 @@ defmodule Device.UseCases.CreatingTest do
     :mnesia.delete_table(:codes)
     :mnesia.delete_table(:users)
     :mnesia.delete_table(:devices)
+    :mnesia.delete_table(:groups)
 
     {:atomic, :ok} = :mnesia.create_table(
       :codes,
@@ -35,7 +40,12 @@ defmodule Device.UseCases.CreatingTest do
 
     {:atomic, :ok} = :mnesia.create_table(
       :devices,
-      [attributes: [:id, :ip, :latitude, :longitude, :created, :updated]]
+      [attributes: [:id, :ip, :latitude, :longitude, :group, :created, :updated]]
+    )
+
+    {:atomic, :ok} = :mnesia.create_table(
+      :groups,
+      [attributes: [:id, :name, :sum, :devices, :created, :updated]]
     )
 
     :mnesia.add_table_index(:users, :email)
@@ -63,12 +73,19 @@ defmodule Device.UseCases.CreatingTest do
       code: code.code
     })
 
-    {result, _} = UseCase.create(GettingUserById, InsertingDevice, %{
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, true} = InsertingGroup.transform(group, user)
+
+    {result, _} = UseCase.create(GettingUserById, GettingGroup, InsertingDevice, %{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
       desc: "Описание",
-      token: tokens.access_token
+      token: tokens.access_token,
+      group_id: group.id
     })
 
     assert result == :ok
@@ -88,12 +105,19 @@ defmodule Device.UseCases.CreatingTest do
     {:ok, true} = InsertingConfirmationCode.transform(code)
     {:ok, true} = InsertingUser.transform(user)
 
-    {result, _} = UseCase.create(GettingUserById, InsertingDevice, %{
+    {:ok, group} = GroupBuilder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, true} = InsertingGroup.transform(group, user)
+
+    {result, _} = UseCase.create(GettingUserById, GettingGroup, InsertingDevice, %{
       ip: "192.168.1.98",
       latitude: 78.454567,
       longitude: 98.3454,
       desc: "Описание",
-      token: "invalid token"
+      token: "invalid token",
+      group_id: group.id
     })
 
     assert result == :error
