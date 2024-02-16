@@ -12,7 +12,6 @@ defmodule Task.FakeAdapters.Inserting do
       fn -> :mnesia.write({
         :tasks, 
         task.id, 
-        task.hash,
         task.name,
         task.playlist,
         task.group,

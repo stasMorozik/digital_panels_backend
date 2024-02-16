@@ -17,7 +17,6 @@ defmodule Task.FakeAdapters.Getting do
 
             { :tasks, 
               id,
-              hash,
               name,
               playlist,
               group,
@@ -36,7 +35,6 @@ defmodule Task.FakeAdapters.Getting do
 
             {:ok, %TaskEntity{
               id: id,
-              hash: hash,
               name: name,
               playlist: playlist,
               group: group,

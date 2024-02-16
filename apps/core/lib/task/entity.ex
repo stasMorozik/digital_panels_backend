@@ -7,7 +7,6 @@ defmodule Core.Task.Entity do
 
   @type t :: %Entity{
     id: binary(),
-    hash: binary(),
     name: binary(),
     playlist: Core.Playlist.Entity.t(),
     group: Core.Group.Entity.t(),
@@ -25,7 +24,6 @@ defmodule Core.Task.Entity do
   }
 
   defstruct id: nil,
-            hash: nil,
             name: nil,
             playlist: nil,
             group: nil,

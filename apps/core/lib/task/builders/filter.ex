@@ -1,7 +1,9 @@
 defmodule Core.Task.Builders.Filter do
   
-  alias Core.Task.Validators.Name
-  alias Core.Task.Validators.Type
+  alias Core.Task.Builders.Name
+  alias Core.Task.Builders.Type
+  alias Core.Task.Builders.Start
+  alias Core.Task.Builders.End
   alias Core.Shared.Validators.Date
   alias Core.Shared.Validators.Identifier
 
@@ -11,6 +13,8 @@ defmodule Core.Task.Builders.Filter do
       |> name(Map.get(args, :name))
       |> type(Map.get(args, :type))
       |> group(Map.get(args, :group))
+      |> start_hm({Map.get(args, :start_hour), Map.get(args, :start_minute)})
+      |> end_hm({Map.get(args, :end_hour), Map.get(args, :end_minute)})
       |> created_f(Map.get(args, :created_f))
       |> created_t(Map.get(args, :created_t))
   end
@@ -25,8 +29,8 @@ defmodule Core.Task.Builders.Filter do
 
   defp name({:ok, filter}, name) do
     with false <- name == nil,
-         {:ok, _} <- Name.valid(name) do
-      {:ok, Map.put(filter, :name, name)}
+         {:ok, filter} <- Name.build({:ok, filter}, name) do
+      {:ok, filter}
     else
       true -> {:ok, filter}
       {:error, message} -> {:error, message}
@@ -39,8 +43,8 @@ defmodule Core.Task.Builders.Filter do
 
   defp type({:ok, filter}, type) do
     with false <- type == nil,
-         {:ok, _} <- Type.valid(type) do
-      {:ok, Map.put(filter, :type, type)}
+         {:ok, filter} <- Type.build({:ok, filter}, type) do
+      {:ok, filter}
     else
       true -> {:ok, filter}
       {:error, message} -> {:error, message}
@@ -90,6 +94,36 @@ defmodule Core.Task.Builders.Filter do
   end
 
   defp created_t({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp start_hm({:ok, filter}, {start_hour, start_minute}) do
+    with false <- start_hour == nil,
+         false <- start_minute == nil,
+         {:ok, filter} <- Start.build({:ok, filter}, {start_hour, start_minute}) do
+      {:ok, filter}
+    else
+      true -> {:ok, filter}
+      {:error, message} -> {:error, message}
+    end
+  end
+
+  defp start_hm({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp end_hm({:ok, filter}, {end_hour, end_minute}) do
+    with false <- end_hour == nil,
+         false <- end_minute == nil,
+         {:ok, filter} <- End.build({:ok, filter}, {end_hour, end_minute}) do
+      {:ok, filter}
+    else
+      true -> {:ok, filter}
+      {:error, message} -> {:error, message}
+    end
+  end
+
+  defp end_hm({:error, message}, _) do
     {:error, message}
   end
 end

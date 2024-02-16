@@ -19,7 +19,7 @@ defmodule Task.UseCases.CreatingTest do
   alias Group.FakeAdapters.Getting, as: GettingGroup
 
   alias Core.Task.Builder, as: TaskBuilder
-  alias Task.FakeAdapters.GettingByHash, as: GettingTaskByHash
+  alias Task.FakeAdapters.GettingList, as: GettingListTask
   alias Task.FakeAdapters.Inserting, as: InsertingTask
 
   alias Core.Task.UseCases.Creating, as: UseCase
@@ -60,7 +60,6 @@ defmodule Task.UseCases.CreatingTest do
       :tasks,
       [attributes: [
         :id, 
-        :hash,
         :name,
         :playlist,
         :group,
@@ -79,7 +78,8 @@ defmodule Task.UseCases.CreatingTest do
     )
 
     :mnesia.add_table_index(:users, :email)
-    :mnesia.add_table_index(:tasks, :hash)
+
+    :mnesia.add_table_index(:tasks, :start_a)
 
     :ok
   end
@@ -119,7 +119,7 @@ defmodule Task.UseCases.CreatingTest do
       GettingUserById,
       GettingPlaylist,
       GettingGroup,
-      GettingTaskByHash,
+      GettingListTask,
       InsertingTask,
       %{
         playlist_id: playlist.id,
@@ -187,7 +187,7 @@ defmodule Task.UseCases.CreatingTest do
       GettingUserById,
       GettingPlaylist,
       GettingGroup,
-      GettingTaskByHash,
+      GettingListTask,
       InsertingTask,
       %{
         playlist_id: playlist.id,

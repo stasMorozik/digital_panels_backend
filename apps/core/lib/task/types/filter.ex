@@ -4,6 +4,8 @@ defmodule Core.Task.Types.Filter do
     name: binary(),
     type: binary(),
     group: binary(),
+    start: integer(),
+    end: integer(),
     created_f: binary(),
     created_t: binary(),
   }
@@ -11,6 +13,8 @@ defmodule Core.Task.Types.Filter do
   defstruct name: nil,
             type: nil,
             group: nil,
+            start: nil,
+            end: nil,
             created_f: nil, 
             created_t: nil
 end

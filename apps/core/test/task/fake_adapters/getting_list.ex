@@ -12,7 +12,7 @@ defmodule Task.FakeAdapters.GettingList do
 
   @impl GetterList
   def get(%Pagination{} = _ , %Filter{} = filter, %Sort{} = _, %UserEntity{} = _) do
-    case :mnesia.transaction (fn -> :mnesia.index_read(:tasks, filter.name, :name) end) do
+    case :mnesia.transaction (fn -> :mnesia.index_read(:tasks, filter.start, :start_a) end) do
       {:atomic, list_tasks} -> 
         case length(list_tasks) > 0 do
           false -> {:ok, []}
@@ -21,7 +21,6 @@ defmodule Task.FakeAdapters.GettingList do
 
             { :tasks, 
               id,
-              hash,
               name,
               playlist,
               group,
@@ -40,7 +39,6 @@ defmodule Task.FakeAdapters.GettingList do
 
             {:ok, [%TaskEntity{
               id: id,
-              hash: hash,
               name: name,
               playlist: playlist,
               group: group,
