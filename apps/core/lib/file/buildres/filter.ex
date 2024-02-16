@@ -4,14 +4,13 @@ defmodule Core.File.Builders.Filter do
   alias Core.File.Builders.Extension
   alias Core.File.Builders.Size
 
-  alias Core.File.Validators.Type
-
   alias Core.Shared.Validators.Date
 
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(%{} = args) do
     filter()
       |> type(Map.get(args, :type))
+      |> url(Map.get(args, :url))
       |> extension(Map.get(args, :extension))
       |> size(Map.get(args, :size))
       |> created_f(Map.get(args, :created_f))
@@ -27,16 +26,27 @@ defmodule Core.File.Builders.Filter do
   end
 
   defp type({:ok, filter}, type) do
-    with false <- type == nil,
-         {:ok, _} <- Type.valid(type) do
-      {:ok, Map.put(filter, :type, type)}
-    else
-      true -> {:ok, filter}
-      {:error, message} -> {:error, message}
+    case type do
+      nil -> {:ok, filter}
+      type -> Type.build({:ok, filter}, type)
     end
   end
 
   defp type({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp url({:ok, filter}, url) do
+    with false <- url == nil,
+         true <- is_binary(url) do
+      {:ok, Map.put(filter, :url, url)}
+    else
+      true -> {:ok, filter}
+      false -> {:error, "Не валидный url"}
+    end
+  end
+
+  defp url({:error, message}, _) do
     {:error, message}
   end
 

@@ -1,16 +1,14 @@
-defmodule Core.Content.Builders.Filter do
+defmodule Core.Assembly.Builders.Filter do
   
-  alias Core.Content.Builders.Name
-  alias Core.Content.Builders.Duration
-  alias Core.Shared.Validators.Date
+  alias Core.Assembly.Builders.Type
 
-  alias UUID
+  alias Core.Shared.Validators.Date
 
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(%{} = args) do
     filter()
-      |> name(Map.get(args, :name))
-      |> duration(Map.get(args, :duration))
+      |> type(Map.get(args, :type))
+      |> url(Map.get(args, :url))
       |> created_f(Map.get(args, :created_f))
       |> created_t(Map.get(args, :created_t))
   end
@@ -20,28 +18,31 @@ defmodule Core.Content.Builders.Filter do
   end
 
   defp filter do
-    {:ok, %Core.Content.Types.Filter{}}
+    {:ok, %Core.Assembly.Types.Filter{}}
   end
 
-  defp name({:ok, filter}, name) do
-    case name do
+  defp type({:ok, filter}, type) do
+    case type do
       nil -> {:ok, filter}
-      name -> Name.build({:ok, filter}, name)
+      type -> Type.build({:ok, filter}, type)
     end
   end
 
-  defp name({:error, message}, _) do
+  defp type({:error, message}, _) do
     {:error, message}
   end
 
-  defp duration({:ok, filter}, duration) do
-    case duration do
-      nil -> {:ok, filter}
-      duration -> Duration.build({:ok, filter}, duration)
+  defp url({:ok, filter}, url) do
+    with false <- url == nil,
+         true <- is_binary(url) do
+      {:ok, Map.put(filter, :url, url)}
+    else
+      true -> {:ok, filter}
+      false -> {:error, "Не валидный url"}
     end
   end
 
-  defp duration({:error, message}, _) do
+  defp url({:error, message}, _) do
     {:error, message}
   end
 

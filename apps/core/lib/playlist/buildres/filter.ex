@@ -1,6 +1,6 @@
 defmodule Core.Playlist.Builders.Filter do
   
-  alias Core.Playlist.Validators.Name
+  alias Core.Playlist.Builders.Name
   alias Core.Playlist.Validators.Sum
   alias Core.Shared.Validators.Date
 
@@ -23,12 +23,9 @@ defmodule Core.Playlist.Builders.Filter do
   end
 
   defp name({:ok, filter}, name) do
-    with false <- name == nil,
-         {:ok, _} <- Name.valid(name) do
-      {:ok, Map.put(filter, :name, name)}
-    else
-      true -> {:ok, filter}
-      {:error, message} -> {:error, message}
+    case name do
+      nil -> {:ok, filter}
+      name -> Name.build({:ok, filter}, name)
     end
   end
 

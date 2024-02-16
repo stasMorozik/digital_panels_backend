@@ -1,6 +1,6 @@
 defmodule Core.Group.Builders.Filter do
   
-  alias Core.Group.Validators.Name
+  alias Core.Group.Builders.Name
   alias Core.Group.Validators.Sum
   alias Core.Shared.Validators.Date
 
@@ -23,12 +23,9 @@ defmodule Core.Group.Builders.Filter do
   end
 
   defp name({:ok, filter}, name) do
-    with false <- name == nil,
-         {:ok, _} <- Name.valid(name) do
-      {:ok, Map.put(filter, :name, name)}
-    else
-      true -> {:ok, filter}
-      {:error, message} -> {:error, message}
+    case name do
+      nil -> {:ok, filter}
+      name -> Name.build({:ok, filter}, name)
     end
   end
 

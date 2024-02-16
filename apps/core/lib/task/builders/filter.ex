@@ -28,12 +28,9 @@ defmodule Core.Task.Builders.Filter do
   end
 
   defp name({:ok, filter}, name) do
-    with false <- name == nil,
-         {:ok, filter} <- Name.build({:ok, filter}, name) do
-      {:ok, filter}
-    else
-      true -> {:ok, filter}
-      {:error, message} -> {:error, message}
+    case name do
+      nil -> {:ok, filter}
+      name -> Name.build({:ok, filter}, name)
     end
   end
 
@@ -42,12 +39,9 @@ defmodule Core.Task.Builders.Filter do
   end
 
   defp type({:ok, filter}, type) do
-    with false <- type == nil,
-         {:ok, filter} <- Type.build({:ok, filter}, type) do
-      {:ok, filter}
-    else
-      true -> {:ok, filter}
-      {:error, message} -> {:error, message}
+    case type do
+      nil -> {:ok, filter}
+      type -> Type.build({:ok, filter}, type)
     end
   end
 
