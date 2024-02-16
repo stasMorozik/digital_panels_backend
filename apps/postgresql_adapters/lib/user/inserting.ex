@@ -4,17 +4,26 @@ defmodule PostgresqlAdapters.User.Inserting do
 
   @behaviour Transformer
 
+  @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key, "!qazSymKeyXsw2")
+
+  @query "
+    INSERT INTO users (
+      id, email, name, surname, created, updated
+    ) VALUES(
+      $1,
+      pgp_sym_encrypt($2,'#{@pg_secret_key}'), 
+      pgp_sym_encrypt($3,'#{@pg_secret_key}'), 
+      pgp_sym_encrypt($4,'#{@pg_secret_key}'),
+      $5, 
+      $6
+    )
+  "
+
   @impl Transformer
   def transform(%Entity{} = user) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
-        query = "
-          INSERT INTO users (
-            id, email, name, surname, created, updated
-          ) VALUES(
-            $1, $2, $3, $4, $5, $6
-          )
-        "
+        query = @query
 
         with {:ok, q} <- Postgrex.prepare(connection, "", query),
              data <- [
@@ -29,7 +38,7 @@ defmodule PostgresqlAdapters.User.Inserting do
           {:ok, true}
         else
           {:error, %Postgrex.Error{postgres: %{pg_code: "23505"}}} -> {:error, "Пользователь уже существует"}
-          {:error, e} -> {:exception, e.message}
+          {:error, e} -> {:exception, e}
         end
       [] -> {:exception, "Database connection error"}
       _ -> {:exception, "Database connection error"}

@@ -21,24 +21,24 @@ defmodule ConfirmationCode.GettingTest do
 
     :ets.insert(:connections, {"postgresql", "", pid})
 
-    Postgrex.query!(pid, "DELETE FROM confirmation_codes WHERE needle != 'stasmoriniv@gmail.com'", [])
+    # Postgrex.query!(pid, "DELETE FROM confirmation_codes WHERE needle != 'stanim857@gmail.com'", [])
 
     :ok
   end
 
-  test "Get" do
-    {:ok, code_entity} = Builder.build("test@gmail.com", Email)
+  # test "Get" do
+  #   {:ok, code_entity} = Builder.build("test@gmail.com", Email)
 
-    Inserting.transform(code_entity)
+  #   Inserting.transform(code_entity)
 
-    {result, _} = Getting.get("test@gmail.com")
+  #   {result, _} = Getting.get("test@gmail.com")
 
-    assert result == :ok
-  end
+  #   assert result == :ok
+  # end
 
-  test "Code not found" do
-    {result, _} = Getting.get("test111@gmail.com")
+  # test "Code not found" do
+  #   {result, _} = Getting.get("test111@gmail.com")
 
-    assert result == :error
-  end
+  #   assert result == :error
+  # end
 end

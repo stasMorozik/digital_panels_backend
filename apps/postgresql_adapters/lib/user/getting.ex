@@ -2,17 +2,20 @@ defmodule PostgresqlAdapters.User.Getting do
   alias Core.User.Ports.Getter
   alias Core.User.Entity
 
-  alias PostgresqlAdapters.User.Mapper
   alias PostgresqlAdapters.Executor
 
   @behaviour Getter
+
+  @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key, "!qazSymKeyXsw2")
+
+  @query "SELECT id, pgp_sym_decrypt(email::bytea, '#{@pg_secret_key}'), pgp_sym_decrypt(name::bytea, '#{@pg_secret_key}'), pgp_sym_decrypt(surname::bytea, '#{@pg_secret_key}'), created, updated FROM users WHERE email::bytea = pgp_sym_encrypt($1, '#{@pg_secret_key}')"
 
   @impl Getter
   def get(email) when is_binary(email) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
-        with query <- "SELECT id, email, name, surname, created, updated FROM users WHERE email = $1",
-             {:ok, result} <- Executor.execute(query, [email]),
+        with query <- @query,
+             {:ok, result} <- Executor.execute(connection, query, [email]),
              true <- result.num_rows > 0,
              [ row ] <- result.rows,
              [ id, email, name, surname, created, updated ] <- row do

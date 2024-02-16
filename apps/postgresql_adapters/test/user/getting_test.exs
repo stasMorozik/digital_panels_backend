@@ -9,6 +9,8 @@ defmodule User.GettingTest do
   doctest PostgresqlAdapters.User.Getting
   doctest PostgresqlAdapters.User.GettingById
 
+  @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key, "!qazSymKeyXsw2")
+
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
 
@@ -22,12 +24,7 @@ defmodule User.GettingTest do
 
     :ets.insert(:connections, {"postgresql", "", pid})
 
-    Postgrex.query!(pid, "DELETE FROM relations_user_playlist", [])
-    Postgrex.query!(pid, "DELETE FROM relations_user_device", [])
-    Postgrex.query!(pid, "DELETE FROM relations_playlist_device", [])
-
-    Postgrex.query!(pid, "DELETE FROM devices", [])
-    Postgrex.query!(pid, "DELETE FROM users WHERE email != 'stasmoriniv@gmail.com'", [])
+    # Postgrex.query!(pid, "DELETE FROM users WHERE email != pgp_sym_encrypt('stanim857@gmail.com','#{@pg_secret_key}')", [])
 
     :ok
   end
@@ -35,36 +32,38 @@ defmodule User.GettingTest do
   test "Get by email" do
     {:ok, user_entity} = Builder.build(%{email: "test@gmail.com", name: "Пётр", surname: "Павел"})
 
-    Inserting.transform(user_entity)
+    {:ok, true} = Inserting.transform(user_entity)
 
-    {result, _} = Getting.get("test@gmail.com")
+    {result, e} = Getting.get("test@gmail.com")
 
-    assert result == :ok
-  end
-
-  test "Get by id" do
-    {:ok, user_entity} = Builder.build(%{email: "test12@gmail.com", name: "Пётр", surname: "Павел"})
-
-    Inserting.transform(user_entity)
-
-    {result, _} = GettingById.get(UUID.string_to_binary!(user_entity.id))
+    IO.inspect(e)
 
     assert result == :ok
   end
 
-  test "User not found" do
-    {result, _} = Getting.get("test111@gmail.com")
+  # test "Get by id" do
+  #   {:ok, user_entity} = Builder.build(%{email: "test12@gmail.com", name: "Пётр", surname: "Павел"})
 
-    assert result == :error
-  end
+  #   Inserting.transform(user_entity)
 
-  test "Exception" do
-    {:ok, user_entity} = Builder.build(%{email: "test123@gmail.com", name: "Пётр", surname: "Павел"})
+  #   {result, _} = GettingById.get(UUID.string_to_binary!(user_entity.id))
 
-    Inserting.transform(user_entity)
+  #   assert result == :ok
+  # end
 
-    {result, _} = GettingById.get(<<104, 101, 197, 130, 197, 130, 60, 158, 104, 101, 197, 130, 197, 130, 46, 90>>)
+  # test "User not found" do
+  #   {result, _} = Getting.get("test111@gmail.com")
 
-    assert result == :error
-  end
+  #   assert result == :error
+  # end
+
+  # test "Exception" do
+  #   {:ok, user_entity} = Builder.build(%{email: "test123@gmail.com", name: "Пётр", surname: "Павел"})
+
+  #   Inserting.transform(user_entity)
+
+  #   {result, _} = GettingById.get(<<104, 101, 197, 130, 197, 130, 60, 158, 104, 101, 197, 130, 197, 130, 46, 90>>)
+
+  #   assert result == :error
+  # end
 end

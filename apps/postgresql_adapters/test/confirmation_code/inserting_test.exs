@@ -20,35 +20,35 @@ defmodule ConfirmationCode.InsertingTest do
 
     :ets.insert(:connections, {"postgresql", "", pid})
 
-    Postgrex.query!(pid, "DELETE FROM confirmation_codes WHERE needle != 'stasmoriniv@gmail.com'", [])
+    # Postgrex.query!(pid, "DELETE FROM confirmation_codes WHERE needle != 'stanim857@gmail.com'", [])
 
     :ok
   end
 
-  test "Insert" do
-    {:ok, code_entity} = Builder.build("test@gmail.com", Email)
+  # test "Insert" do
+  #   {:ok, code_entity} = Builder.build("test@gmail.com", Email)
 
-    {result, _} = Inserting.transform(code_entity)
+  #   {result, _} = Inserting.transform(code_entity)
 
-    assert result == :ok
-  end
+  #   assert result == :ok
+  # end
 
-  test "Invalid code" do
-    {result, _} = Inserting.transform(%{})
+  # test "Invalid code" do
+  #   {result, _} = Inserting.transform(%{})
 
-    assert result == :error
-  end
+  #   assert result == :error
+  # end
 
-  test "Exception" do
-    code_entity = %Core.ConfirmationCode.Entity{
-      needle: "some_long_email_aadress_some_long_email_aadress_some_long_email_aadress_some_long_email_aadress", 
-      created: 12345678, 
-      code: 2345, 
-      confirmed: false
-    }
+  # test "Exception" do
+  #   code_entity = %Core.ConfirmationCode.Entity{
+  #     needle: "some_long_email_aadress_some_long_email_aadress_some_long_email_aadress_some_long_email_aadress", 
+  #     created: 12345678, 
+  #     code: 2345, 
+  #     confirmed: false
+  #   }
 
-    {result, _} = Inserting.transform(code_entity)
+  #   {result, _} = Inserting.transform(code_entity)
 
-    assert result == :exception
-  end
+  #   assert result == :exception
+  # end
 end

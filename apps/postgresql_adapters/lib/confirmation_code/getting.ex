@@ -2,20 +2,21 @@ defmodule PostgresqlAdapters.ConfirmationCode.Getting do
   alias Core.ConfirmationCode.Ports.Getter
   alias Core.ConfirmationCode.Entity
 
-  alias PostgresqlAdapters.ConfirmationCode.Mapper
   alias PostgresqlAdapters.Executor
 
   @behaviour Getter
+
+  @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key, "!qazSymKeyXsw2")
+
+  @query "SELECT pgp_sym_decrypt(needle::bytea, '#{@pg_secret_key}'), code, confirmed, created FROM confirmation_codes WHERE needle = pgp_sym_encrypt($1,'#{@pg_secret_key}')"
 
   @impl Getter
   def get(needle) when is_binary(needle) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
-        query = "
-          SELECT needle, code, confirmed, created FROM confirmation_codes WHERE needle = $1
-        "
+        query = @query
 
-        with {:ok, result} <- Executor.execute(query, [needle]),
+        with {:ok, result} <- Executor.execute(connection, query, [needle]),
              true <- result.num_rows > 0,
              [ row ] <- result.rows,
              [needle, code, confirmed, created] <- row do
