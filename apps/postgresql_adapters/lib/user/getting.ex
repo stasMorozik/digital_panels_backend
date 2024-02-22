@@ -6,16 +6,15 @@ defmodule PostgresqlAdapters.User.Getting do
 
   @behaviour Getter
 
-  @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key, "!qazSymKeyXsw2")
+  @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key)
 
-  @query "SELECT id, pgp_sym_decrypt(email::bytea, '#{@pg_secret_key}'), pgp_sym_decrypt(name::bytea, '#{@pg_secret_key}'), pgp_sym_decrypt(surname::bytea, '#{@pg_secret_key}'), created, updated FROM users WHERE email::bytea = pgp_sym_encrypt($1, '#{@pg_secret_key}')"
+  @query "SELECT id, pgp_sym_decrypt(email::bytea, '#{@pg_secret_key}'), pgp_sym_decrypt(name::bytea, '#{@pg_secret_key}'), pgp_sym_decrypt(surname::bytea, '#{@pg_secret_key}'), created, updated FROM users WHERE pgp_sym_decrypt(email::bytea, '#{@pg_secret_key}') = $1"
 
   @impl Getter
   def get(email) when is_binary(email) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
-        with query <- @query,
-             {:ok, result} <- Executor.execute(connection, query, [email]),
+        with {:ok, result} <- Executor.execute(connection, @query, [email]),
              true <- result.num_rows > 0,
              [ row ] <- result.rows,
              [ id, email, name, surname, created, updated ] <- row do

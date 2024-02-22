@@ -6,7 +6,7 @@ defmodule PostgresqlAdapters.User.GettingById do
 
   @behaviour Getter
 
-  @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key, "!qazSymKeyXsw2")
+  @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key)
 
   @query "SELECT id, pgp_sym_decrypt(email::bytea, '#{@pg_secret_key}'), pgp_sym_decrypt(name::bytea, '#{@pg_secret_key}'), pgp_sym_decrypt(surname::bytea, '#{@pg_secret_key}'), created, updated FROM users WHERE id = $1"
 
@@ -15,8 +15,7 @@ defmodule PostgresqlAdapters.User.GettingById do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
 
-        with query <- @query,
-             {:ok, result} <- Executor.execute(connection, query, [id]),
+        with {:ok, result} <- Executor.execute(connection, @query, [id]),
              true <- result.num_rows > 0,
              [ row ] <- result.rows,
              [ id, email, name, surname, created, updated ] <- row do

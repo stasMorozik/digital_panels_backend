@@ -5,4 +5,5 @@ config :postgresql_adapters,
   username: "db_user",
   password: "12345",
   database: "system_content_manager",
-  port: 5437
+  port: 5437,
+  secret_key: "!qazSymKeyXsw2"

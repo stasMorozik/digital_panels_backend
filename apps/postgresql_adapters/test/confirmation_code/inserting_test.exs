@@ -7,6 +7,8 @@ defmodule ConfirmationCode.InsertingTest do
 
   doctest PostgresqlAdapters.ConfirmationCode.Inserting
 
+  @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key, "!qazSymKeyXsw2")
+
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
 
@@ -20,24 +22,24 @@ defmodule ConfirmationCode.InsertingTest do
 
     :ets.insert(:connections, {"postgresql", "", pid})
 
-    # Postgrex.query!(pid, "DELETE FROM confirmation_codes WHERE needle != 'stanim857@gmail.com'", [])
+    Postgrex.query!(pid, "DELETE FROM confirmation_codes WHERE pgp_sym_decrypt(needle::bytea, '#{@pg_secret_key}') != 'stanim857@gmail.com'", [])
 
     :ok
   end
 
-  # test "Insert" do
-  #   {:ok, code_entity} = Builder.build("test@gmail.com", Email)
+  test "Insert" do
+    {:ok, code_entity} = Builder.build(Email, "test@gmail.com")
 
-  #   {result, _} = Inserting.transform(code_entity)
+    {result, _} = Inserting.transform(code_entity)
 
-  #   assert result == :ok
-  # end
+    assert result == :ok
+  end
 
-  # test "Invalid code" do
-  #   {result, _} = Inserting.transform(%{})
+  test "Invalid code" do
+    {result, _} = Inserting.transform(%{})
 
-  #   assert result == :error
-  # end
+    assert result == :error
+  end
 
   # test "Exception" do
   #   code_entity = %Core.ConfirmationCode.Entity{

@@ -8,6 +8,8 @@ defmodule ConfirmationCode.GettingTest do
 
   doctest PostgresqlAdapters.ConfirmationCode.Getting
 
+  @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key, "!qazSymKeyXsw2")
+
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
 
@@ -21,24 +23,24 @@ defmodule ConfirmationCode.GettingTest do
 
     :ets.insert(:connections, {"postgresql", "", pid})
 
-    # Postgrex.query!(pid, "DELETE FROM confirmation_codes WHERE needle != 'stanim857@gmail.com'", [])
+    Postgrex.query!(pid, "DELETE FROM confirmation_codes WHERE pgp_sym_decrypt(needle::bytea, '#{@pg_secret_key}') != 'stanim857@gmail.com'", [])
 
     :ok
   end
 
-  # test "Get" do
-  #   {:ok, code_entity} = Builder.build("test@gmail.com", Email)
+  test "Get" do
+    {:ok, code_entity} = Builder.build(Email, "test@gmail.com")
 
-  #   Inserting.transform(code_entity)
+    {:ok, true} = Inserting.transform(code_entity)
 
-  #   {result, _} = Getting.get("test@gmail.com")
+    {result, _} = Getting.get("test@gmail.com")
 
-  #   assert result == :ok
-  # end
+    assert result == :ok
+  end
 
-  # test "Code not found" do
-  #   {result, _} = Getting.get("test111@gmail.com")
+  test "Code not found" do
+    {result, _} = Getting.get("test111@gmail.com")
 
-  #   assert result == :error
-  # end
+    assert result == :error
+  end
 end

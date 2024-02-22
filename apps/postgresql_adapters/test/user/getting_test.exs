@@ -24,7 +24,7 @@ defmodule User.GettingTest do
 
     :ets.insert(:connections, {"postgresql", "", pid})
 
-    # Postgrex.query!(pid, "DELETE FROM users WHERE email != pgp_sym_encrypt('stanim857@gmail.com','#{@pg_secret_key}')", [])
+    Postgrex.query!(pid, "DELETE FROM users WHERE pgp_sym_decrypt(email::bytea, '#{@pg_secret_key}') != 'stanim857@gmail.com'", [])
 
     :ok
   end
@@ -34,36 +34,34 @@ defmodule User.GettingTest do
 
     {:ok, true} = Inserting.transform(user_entity)
 
-    {result, e} = Getting.get("test@gmail.com")
-
-    IO.inspect(e)
+    {result, _} = Getting.get("test@gmail.com")
 
     assert result == :ok
   end
 
-  # test "Get by id" do
-  #   {:ok, user_entity} = Builder.build(%{email: "test12@gmail.com", name: "Пётр", surname: "Павел"})
+  test "Get by id" do
+    {:ok, user_entity} = Builder.build(%{email: "test12@gmail.com", name: "Пётр", surname: "Павел"})
 
-  #   Inserting.transform(user_entity)
+    Inserting.transform(user_entity)
 
-  #   {result, _} = GettingById.get(UUID.string_to_binary!(user_entity.id))
+    {result, _} = GettingById.get(UUID.string_to_binary!(user_entity.id))
 
-  #   assert result == :ok
-  # end
+    assert result == :ok
+  end
 
-  # test "User not found" do
-  #   {result, _} = Getting.get("test111@gmail.com")
+  test "User not found" do
+    {result, _} = Getting.get("test111@gmail.com")
 
-  #   assert result == :error
-  # end
+    assert result == :error
+  end
 
-  # test "Exception" do
-  #   {:ok, user_entity} = Builder.build(%{email: "test123@gmail.com", name: "Пётр", surname: "Павел"})
+  test "Exception" do
+    {:ok, user_entity} = Builder.build(%{email: "test123@gmail.com", name: "Пётр", surname: "Павел"})
 
-  #   Inserting.transform(user_entity)
+    Inserting.transform(user_entity)
 
-  #   {result, _} = GettingById.get(<<104, 101, 197, 130, 197, 130, 60, 158, 104, 101, 197, 130, 197, 130, 46, 90>>)
+    {result, _} = GettingById.get(<<104, 101, 197, 130, 197, 130, 60, 158, 104, 101, 197, 130, 197, 130, 46, 90>>)
 
-  #   assert result == :error
-  # end
+    assert result == :error
+  end
 end

@@ -6,9 +6,9 @@ defmodule PostgresqlAdapters.ConfirmationCode.Getting do
 
   @behaviour Getter
 
-  @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key, "!qazSymKeyXsw2")
+  @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key)
 
-  @query "SELECT pgp_sym_decrypt(needle::bytea, '#{@pg_secret_key}'), code, confirmed, created FROM confirmation_codes WHERE needle = pgp_sym_encrypt($1,'#{@pg_secret_key}')"
+  @query "SELECT pgp_sym_decrypt(needle::bytea, '#{@pg_secret_key}'), code, confirmed, created FROM confirmation_codes WHERE pgp_sym_decrypt(needle::bytea, '#{@pg_secret_key}') = $1"
 
   @impl Getter
   def get(needle) when is_binary(needle) do
