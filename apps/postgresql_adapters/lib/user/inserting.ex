@@ -42,8 +42,8 @@ defmodule PostgresqlAdapters.User.Inserting do
              {:ok, _, _} <- Postgrex.execute(connection, q, data) do
           {:ok, true}
         else
-          false -> {:error, "Пользователь уже существует"}
-          {:error, %Postgrex.Error{postgres: %{pg_code: "23505"}}} -> {:error, "Пользователь уже существует"}
+          false -> {:error, "Запись о пользователе в базе данных уже существует"}
+          {:error, %Postgrex.Error{postgres: %{pg_code: "23505"}}} -> {:error, "Запись о пользователе в базе данных уже существует"}
           {:error, e} -> {:exception, e}
         end
       [] -> {:exception, "Database connection error"}
@@ -52,6 +52,6 @@ defmodule PostgresqlAdapters.User.Inserting do
   end
 
   def transform(_) do
-    {:error, "Не валидные данные для занесения пользователя в базу данных"}
+    {:error, "Не валидные данные для занесения записи о пользователе в базу данных"}
   end
 end

@@ -1,4 +1,4 @@
-defmodule PostgresqlAdapters.User.Getting do
+defmodule PostgresqlAdapters.User.GettingByEmail do
   alias Core.User.Ports.Getter
   alias Core.User.Entity
 
@@ -27,7 +27,7 @@ defmodule PostgresqlAdapters.User.Getting do
             updated: updated
           }}
         else
-          false -> {:error, "Пользователь не найден"}
+          false -> {:error, "Запись о пользователе не найдена в базе данных"}
           {:exception, message} -> {:exception, message}
         end
       [] -> {:exception, "Database connection error"}
@@ -36,6 +36,6 @@ defmodule PostgresqlAdapters.User.Getting do
   end
 
   def get(_) do
-    {:error, "Не валидные данные для получения пользователя"}
+    {:error, "Не валидные данные для получения записи о пользователе из базы данных"}
   end
 end

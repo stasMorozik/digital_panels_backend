@@ -27,7 +27,7 @@ defmodule PostgresqlAdapters.ConfirmationCode.Getting do
             confirmed: confirmed
           }}
         else
-          false -> {:error, "Код подтверждения не найден"}
+          false -> {:error, "Запись о коде подтверждения не найдена в базе данных"}
           {:exception, message} -> {:exception, message}
         end
       [] -> {:exception, "Database connection error"}
@@ -36,6 +36,6 @@ defmodule PostgresqlAdapters.ConfirmationCode.Getting do
   end
 
   def get(_) do
-    {:error, "Не валидные данные для получения кода подтверждения"}
+    {:error, "Не валидные данные для получения записи о коде подтверждении из базы данных"}
   end
 end

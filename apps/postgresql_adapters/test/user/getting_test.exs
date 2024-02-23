@@ -2,11 +2,11 @@ defmodule User.GettingTest do
   use ExUnit.Case
 
   alias PostgresqlAdapters.User.Inserting
-  alias PostgresqlAdapters.User.Getting
+  alias PostgresqlAdapters.User.GettingByEmail
   alias PostgresqlAdapters.User.GettingById
   alias Core.User.Builder
 
-  doctest PostgresqlAdapters.User.Getting
+  doctest PostgresqlAdapters.User.GettingByEmail
   doctest PostgresqlAdapters.User.GettingById
 
   @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key, "!qazSymKeyXsw2")
@@ -34,7 +34,7 @@ defmodule User.GettingTest do
 
     {:ok, true} = Inserting.transform(user_entity)
 
-    {result, _} = Getting.get("test@gmail.com")
+    {result, _} = GettingByEmail.get("test@gmail.com")
 
     assert result == :ok
   end
@@ -50,7 +50,7 @@ defmodule User.GettingTest do
   end
 
   test "User not found" do
-    {result, _} = Getting.get("test111@gmail.com")
+    {result, _} = GettingByEmail.get("test111@gmail.com")
 
     assert result == :error
   end

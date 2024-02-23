@@ -27,12 +27,12 @@ defmodule PostgresqlAdapters.ConfirmationCode.Inserting do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
         
-        with {:ok, query_1} <- Postgrex.prepare(connection, "", @query_0),
-             {:ok, query_2} <- Postgrex.prepare(connection, "", @query_1),
+        with {:ok, query_0} <- Postgrex.prepare(connection, "", @query_0),
+             {:ok, query_1} <- Postgrex.prepare(connection, "", @query_1),
              data <- [entity.needle, entity.code, entity.confirmed, entity.created],
              fun <- fn(conn) ->
-                r_0 = Postgrex.execute(conn, query_1, [entity.needle])
-                r_1 = Postgrex.execute(conn, query_2, data)
+                r_0 = Postgrex.execute(conn, query_0, [entity.needle])
+                r_1 = Postgrex.execute(conn, query_1, data)
 
                 case {r_0, r_1} do
                   {{:ok, _, _}, {:ok, _, _}} -> {:ok, true}
@@ -52,6 +52,6 @@ defmodule PostgresqlAdapters.ConfirmationCode.Inserting do
   end
 
   def transform(_) do
-    {:error, "Не валидные данные для занесения кода подтверждения в базу данных"}
+    {:error, "Не валидные данные для занесения записи о коде подтверждении в базу данных"}
   end
 end
