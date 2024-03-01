@@ -8,7 +8,14 @@ defmodule PostgresqlAdapters.File.Inserting do
 
   @query_0 "
     INSERT INTO files (
-      id, path, url, extension, type, size, created, updated
+      id, 
+      path, 
+      url, 
+      extension, 
+      type, 
+      size, 
+      created, 
+      updated
     ) VALUES(
       $1,
       $2,
@@ -23,7 +30,8 @@ defmodule PostgresqlAdapters.File.Inserting do
 
   @query_1 "
     INSERT INTO relations_user_file (
-      user_id, file_id
+      user_id, 
+      file_id
     ) VALUES(
       $1,
       $2

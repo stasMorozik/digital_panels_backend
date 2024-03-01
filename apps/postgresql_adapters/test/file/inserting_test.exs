@@ -1,15 +1,16 @@
-defmodule User.InsertingTest do
+defmodule File.InsertingTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.User.Inserting
-  alias Core.User.Builder
+  alias PostgresqlAdapters.File.Inserting
+  alias Core.File.Builder
 
-  doctest PostgresqlAdapters.User.Inserting
-
-  @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key, "!qazSymKeyXsw2")
+  doctest PostgresqlAdapters.File.Inserting
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
+
+    File.touch("/tmp/not_emty_png.png", 1544519753)
+    File.write("/tmp/not_emty_png.png", "content")
 
     {:ok, pid} = Postgrex.start_link(
       hostname: Application.fetch_env!(:postgresql_adapters, :hostname),
@@ -21,31 +22,42 @@ defmodule User.InsertingTest do
 
     :ets.insert(:connections, {"postgresql", "", pid})
 
-    Postgrex.query!(pid, "DELETE FROM users WHERE pgp_sym_decrypt(email::bytea, '#{@pg_secret_key}') != 'stanim857@gmail.com'", [])
-
+    Postgrex.query!(pid, "DELETE FROM relations_user_file", [])
+    Postgrex.query!(pid, "DELETE FROM files", [])
+    
     :ok
   end
 
   test "Insert" do
-    {:ok, user_entity} = Builder.build(%{email: "test@gmail.com", name: "Пётр", surname: "Павел"})
+    {:ok, file_entity} = Builder.build(%{
+      path: "/tmp/not_emty_png.png",
+      name: Path.basename("/tmp/not_emty_png.png"),
+      extname: Path.extname("/tmp/not_emty_png.png"),
+      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
+    })
 
-    {result, _} = Inserting.transform(user_entity)
+    {result, _} = Inserting.transform(file_entity)
 
     assert result == :ok
   end
 
-  test "Invalid user" do
+  test "Invalid file" do
     {result, _} = Inserting.transform(%{})
 
     assert result == :error
   end
 
   test "Already exists" do
-    {:ok, user_entity} = Builder.build(%{email: "test11@gmail.com", name: "Пётр", surname: "Павел"})
+    {:ok, file_entity} = Builder.build(%{
+      path: "/tmp/not_emty_png.png",
+      name: Path.basename("/tmp/not_emty_png.png"),
+      extname: Path.extname("/tmp/not_emty_png.png"),
+      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
+    })
 
-    {_, _} = Inserting.transform(user_entity)
+    {:ok, true} = Inserting.transform(file_entity, )
 
-    {result, _} = Inserting.transform(user_entity)
+    {result, _} = Inserting.transform(file_entity)
 
     assert result == :error
   end

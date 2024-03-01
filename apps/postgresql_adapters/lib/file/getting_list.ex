@@ -41,7 +41,7 @@ defmodule PostgresqlAdapters.File.GettingList do
              list <- Enum.map(rows, fun) do
           {:ok, list}
         else
-           false -> {:ok, []}
+          false -> {:ok, []}
           {:exception, message} -> {:exception, message}
         end
       [] -> {:exception, "Database connection error"}
