@@ -14,8 +14,7 @@ defmodule PostgresqlAdapters.File.Inserting do
       extension, 
       type, 
       size, 
-      created, 
-      updated
+      created
     ) VALUES(
       $1,
       $2,
@@ -23,8 +22,7 @@ defmodule PostgresqlAdapters.File.Inserting do
       $4,
       $5,
       $6,
-      $7,
-      $8
+      $7
     )
   "
 
@@ -45,7 +43,7 @@ defmodule PostgresqlAdapters.File.Inserting do
         with {:ok, query_0} <- Postgrex.prepare(connection, "", @query_0),
              {:ok, query_1} <- Postgrex.prepare(connection, "", @query_1),
              data_0 <- [
-                file.id, 
+                UUID.string_to_binary!(file.id), 
                 file.path, 
                 file.url, 
                 file.extension,
@@ -54,8 +52,8 @@ defmodule PostgresqlAdapters.File.Inserting do
                 file.created
              ],
              data_1 <- [
-                file.id, 
-                user.id
+                UUID.string_to_binary!(user.id),
+                UUID.string_to_binary!(file.id)
              ],
              fun <- fn(conn) ->
                 r_0 = Postgrex.execute(conn, query_0, data_0)

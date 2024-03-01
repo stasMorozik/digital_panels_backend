@@ -1,10 +1,15 @@
-defmodule File.InsertingTest do
+defmodule File.GettingListTest do
   use ExUnit.Case
 
   alias PostgresqlAdapters.File.Inserting
+  alias PostgresqlAdapters.File.GettingList
   alias Core.File.Builder
 
-  doctest PostgresqlAdapters.File.Inserting
+  alias Core.Shared.Types.Pagination
+  alias Core.File.Types.Filter
+  alias Core.File.Types.Sort
+
+  doctest PostgresqlAdapters.File.GettingList
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -24,32 +29,11 @@ defmodule File.InsertingTest do
 
     Postgrex.query!(pid, "DELETE FROM relations_user_file", [])
     Postgrex.query!(pid, "DELETE FROM files", [])
-    
+
     :ok
   end
 
-  test "Insert" do
-    {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
-
-    {:ok, file} = Builder.build(%{
-      path: "/tmp/not_emty_png.png",
-      name: Path.basename("/tmp/not_emty_png.png"),
-      extname: Path.extname("/tmp/not_emty_png.png"),
-      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
-    })
-
-    {result, _} = Inserting.transform(file, user)
-
-    assert result == :ok
-  end
-
-  test "Invalid file" do
-    {result, _} = Inserting.transform(%{}, %{})
-
-    assert result == :error
-  end
-
-  test "Already exists" do
+  test "Get not empty list" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
     {:ok, file} = Builder.build(%{
@@ -61,23 +45,55 @@ defmodule File.InsertingTest do
 
     {:ok, true} = Inserting.transform(file, user)
 
-    {result, _} = Inserting.transform(file, user)
+    {:ok, file} = Builder.build(%{
+      path: "/tmp/not_emty_png.png",
+      name: Path.basename("/tmp/not_emty_png.png"),
+      extname: Path.extname("/tmp/not_emty_png.png"),
+      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
+    })
 
-    assert result == :error
+    {:ok, true} = Inserting.transform(file, user)
+
+    {result, list} = GettingList.get(
+      %Pagination{
+        page: 1,
+        limit: 10
+      }, 
+      %Filter{
+        type: "Изображение"
+      }, 
+      %Sort{
+        created: "ASC"
+      }, 
+      user
+    )
+
+    leng = length(list)
+
+    assert result == :ok
+    assert leng == 2
   end
 
-  # test "Exception: " do
-  #   user_entity = %Entity{
-  #     id: "cef89cb9-3d5a-4f2c-97b9-d047347f2e53",
-  #     email: "some_long_email@gmail.com",
-  #     name: "name",
-  #     surname: "surname",
-  #     created: ~D[2024-01-01],
-  #     updated: ~D[2024-01-01]
-  #   }
+  test "Get empty list" do
+    {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
+    
+    {result, list} = GettingList.get(
+      %Pagination{
+        page: 1,
+        limit: 10
+      }, 
+      %Filter{
+        type: "Видеозапись"
+      }, 
+      %Sort{
+        created: "ASC"
+      }, 
+      user
+    )
 
-  #   {result, _} = Inserting.transform(user_entity)
+    leng = length(list)
 
-  #   assert result == :exception
-  # end
+    assert result == :ok
+    assert leng == 0
+  end
 end

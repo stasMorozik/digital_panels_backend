@@ -42,7 +42,7 @@ defmodule User.GettingTest do
   test "Get by id" do
     {:ok, user_entity} = Builder.build(%{email: "test12@gmail.com", name: "Пётр", surname: "Павел"})
 
-    Inserting.transform(user_entity)
+    {:ok, true} = Inserting.transform(user_entity)
 
     {result, _} = GettingById.get(UUID.string_to_binary!(user_entity.id))
 
@@ -58,7 +58,7 @@ defmodule User.GettingTest do
   test "Exception" do
     {:ok, user_entity} = Builder.build(%{email: "test123@gmail.com", name: "Пётр", surname: "Павел"})
 
-    Inserting.transform(user_entity)
+    {:ok, true} = Inserting.transform(user_entity)
 
     {result, _} = GettingById.get(<<104, 101, 197, 130, 197, 130, 60, 158, 104, 101, 197, 130, 197, 130, 46, 90>>)
 

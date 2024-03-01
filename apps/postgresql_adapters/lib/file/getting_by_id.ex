@@ -33,7 +33,7 @@ defmodule PostgresqlAdapters.File.GettingById do
 
         with {:ok, result} <- Executor.execute(connection, @query, [
                 UUID.string_to_binary!(user.id), 
-                id
+                UUID.string_to_binary!(id)
              ]),
              true <- result.num_rows > 0,
              [ row ] <- result.rows,

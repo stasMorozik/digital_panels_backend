@@ -8,7 +8,18 @@ defmodule PostgresqlAdapters.User.GettingById do
 
   @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key)
 
-  @query "SELECT id, pgp_sym_decrypt(email::bytea, '#{@pg_secret_key}'), pgp_sym_decrypt(name::bytea, '#{@pg_secret_key}'), pgp_sym_decrypt(surname::bytea, '#{@pg_secret_key}'), created, updated FROM users WHERE id = $1"
+  @query "
+    SELECT 
+      id, 
+      pgp_sym_decrypt(email::bytea, '#{@pg_secret_key}'), 
+      pgp_sym_decrypt(name::bytea, '#{@pg_secret_key}'), 
+      pgp_sym_decrypt(surname::bytea, '#{@pg_secret_key}'), 
+      created, 
+      updated 
+    FROM 
+      users 
+    WHERE id = $1
+  "
 
   @impl Getter
   def get(id) when is_binary(id) do

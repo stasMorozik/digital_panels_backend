@@ -4,7 +4,12 @@ defmodule PostgresqlAdapters.ConfirmationCode.Inserting do
 
   @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key)
 
-  @query_0 "DELETE FROM confirmation_codes WHERE pgp_sym_decrypt(needle::bytea, '#{@pg_secret_key}') = $1"
+  @query_0 "
+    DELETE FROM 
+      confirmation_codes 
+    WHERE 
+      pgp_sym_decrypt(needle::bytea, '#{@pg_secret_key}') = $1
+    "
 
   @query_1 "
     INSERT INTO confirmation_codes (

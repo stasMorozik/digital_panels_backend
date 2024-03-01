@@ -40,7 +40,7 @@ defmodule PostgresqlAdapters.File.QueryBuilder do
   end
 
   defp where_user_id({query_string, data_list}, user) do
-    data_list = data_list ++ [UUID.binary_to_string!(user.id)]
+    data_list = data_list ++ [UUID.string_to_binary!(user.id)]
 
     query_string = query_string <> "WHERE relations_user_file.user_id = $#{length(data_list)}"
         
