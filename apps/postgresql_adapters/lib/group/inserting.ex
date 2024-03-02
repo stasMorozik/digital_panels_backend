@@ -1,35 +1,31 @@
-defmodule PostgresqlAdapters.File.Inserting do
+defmodule PostgresqlAdapters.Group.Inserting do
   
-  alias Core.File.Ports.Transformer
-  alias Core.File.Entity, as: File
+  alias Core.Group.Ports.Transformer
+  alias Core.Group.Entity, as: Group
   alias Core.User.Entity, as: User
 
   @behaviour Transformer
 
   @query_0 "
-    INSERT INTO files (
+    INSERT INTO groups (
       id, 
-      path, 
-      url, 
-      extension, 
-      type, 
-      size, 
-      created
+      name, 
+      sum, 
+      created,
+      updated
     ) VALUES(
       $1,
       $2,
       $3,
       $4,
-      $5,
-      $6,
-      $7
+      $5
     )
   "
 
   @query_1 "
-    INSERT INTO relations_user_file (
+    INSERT INTO relations_user_group (
       user_id, 
-      file_id
+      group_id
     ) VALUES(
       $1,
       $2
@@ -37,23 +33,21 @@ defmodule PostgresqlAdapters.File.Inserting do
   "
 
   @impl Transformer
-  def transform(%File{} = file, %User{} = user) do
+  def transform(%Group{} = group, %User{} = user) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
         with {:ok, query_0} <- Postgrex.prepare(connection, "", @query_0),
              {:ok, query_1} <- Postgrex.prepare(connection, "", @query_1),
              data_0 <- [
-                UUID.string_to_binary!(file.id), 
-                file.path, 
-                file.url, 
-                file.extension,
-                file.type,
-                file.size,
-                file.created
+                UUID.string_to_binary!(group.id),
+                group.name,
+                group.sum,
+                group.created,
+                group.updated
              ],
              data_1 <- [
                 UUID.string_to_binary!(user.id),
-                UUID.string_to_binary!(file.id)
+                UUID.string_to_binary!(group.id)
              ],
              fun <- fn(conn) ->
                 r_0 = Postgrex.execute(conn, query_0, data_0)
@@ -69,7 +63,7 @@ defmodule PostgresqlAdapters.File.Inserting do
              {:ok, _} <- Postgrex.transaction(connection, fun) do
           {:ok, true}
         else
-          {:error, %Postgrex.Error{postgres: %{pg_code: "23505"}}} -> {:error, "Запись о файле в базе данных уже существует"}
+          {:error, %Postgrex.Error{postgres: %{pg_code: "23505"}}} -> {:error, "Запись о группе в базе данных уже существует"}
           {:error, e} -> {:exception, e}
         end
       [] -> {:exception, "Database connection error"}
@@ -78,6 +72,6 @@ defmodule PostgresqlAdapters.File.Inserting do
   end
 
   def transform(_, _) do
-    {:error, "Не валидные данные для занесения записи о файле в базу данных"}
+    {:error, "Не валидные данные для занесения записи о группе в базу данных"}
   end
 end
