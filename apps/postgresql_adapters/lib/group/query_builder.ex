@@ -49,7 +49,7 @@ defmodule PostgresqlAdapters.Group.QueryBuilder do
     case Map.get(filter, :name) do
       nil -> {query_string, data_list}
       name -> 
-        data_list = data_list ++ ["%#{url}%"]
+        data_list = data_list ++ ["%#{name}%"]
 
         query_string = query_string <> " AND groups.name ILIKE $#{length(data_list)}"
 
