@@ -9,15 +9,23 @@ defmodule PostgresqlAdapters.Group.GettingById do
 
   @query "
     SELECT 
-      groups.id, 
-      groups.name, 
-      groups.sum,
-      groups.created,
-      groups.updated
+      groups.id AS gr_id, 
+      groups.name AS gr_name, 
+      groups.sum AS gr_sum,
+      groups.created AS gr_created,
+      groups.updated AS gr_updated,
+      devices.id AS dev_id,
+      devices.ip AS dev_ip,
+      devices.latitude AS dev_lat,
+      devices.longitude AS dev_long,
+      devices.description AS dev_desc,
+      devices.created AS dev_created
     FROM 
       relations_user_group 
     JOIN groups ON 
       relations_user_group.group_id = groups.id
+    JOIN devices ON
+      devices.group_id = groups.id
     WHERE
       relations_user_group.user_id = $1 
     AND
@@ -33,14 +41,25 @@ defmodule PostgresqlAdapters.Group.GettingById do
                 UUID.string_to_binary!(id)
              ]),
              true <- result.num_rows > 0,
-             [ row ] <- result.rows,
-             [ id, name, sum, created, updated ] <- row do
+             fun <- fn ([_, _, _, _, _, dev_id, dev_ip, dev_lat, dev_long, dev_desc, dev_created]) -> 
+                %Core.Device.Entity{
+                  id: UUID.binary_to_string!(dev_id),
+                  ip: dev_ip,
+                  latitude: dev_lat,
+                  longitude: dev_long,
+                  desc: dev_desc,
+                  created: dev_created,
+                }
+             end,
+             [row] <- result.rows,
+             [gr_id, gr_name, gr_sum, gr_created, gr_updated, _, _, _, _, _, _] <- row do
           {:ok, %Group{
-            id: UUID.binary_to_string!(id),
-            name: name,
-            sum: sum,
-            created: created,
-            updated: updated
+            id: UUID.binary_to_string!(gr_id),
+            name: gr_name,
+            sum: gr_sum,
+            devices: Enum.map(result.rows, fun),
+            created: gr_created,
+            updated: gr_updated
           }}
         else
           false -> {:error, "Запись о группе не найдена в базе данных"}

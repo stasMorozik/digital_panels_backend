@@ -14,6 +14,7 @@ defmodule Core.Device.Builders.Filter do
       |> ip(Map.get(args, :ip))
       |> latitude(Map.get(args, :latitude))
       |> longitude(Map.get(args, :longitude))
+      |> description(Map.get(args, :description))
       |> created_f(Map.get(args, :created_f))
       |> created_t(Map.get(args, :created_t))
   end
@@ -56,6 +57,17 @@ defmodule Core.Device.Builders.Filter do
   end
 
   defp longitude({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp description({:ok, filter}, description) do
+    case description do
+      nil -> {:ok, filter}
+      description -> Description.build({:ok, filter}, description)
+    end
+  end
+
+  defp description({:error, message}, _) do
     {:error, message}
   end
 

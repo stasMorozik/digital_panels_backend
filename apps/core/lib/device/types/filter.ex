@@ -4,6 +4,7 @@ defmodule Core.Device.Types.Filter do
     ip: binary(),
     latitude: float(),
     longitude: float(),
+    description: binary(),
     created_f: binary(),
     created_t: binary()
   }
@@ -11,6 +12,7 @@ defmodule Core.Device.Types.Filter do
   defstruct ip: nil,
             latitude: nil,
             longitude: nil,
+            description: nil,
             created_f: nil,
             created_t: nil
 end

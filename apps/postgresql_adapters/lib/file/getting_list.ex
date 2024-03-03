@@ -27,7 +27,6 @@ defmodule PostgresqlAdapters.File.GettingList do
         with {query, data_list} <- QueryBuilder.build(pagi, filter, sort, user),
              {:ok, result} <- Executor.execute(connection, query, data_list),
              true <- result.num_rows > 0,
-             rows <- result.rows,
              fun <- fn ([id, url, extension, type, size, created]) ->
                %File{
                   id: UUID.binary_to_string!(id),
@@ -38,7 +37,7 @@ defmodule PostgresqlAdapters.File.GettingList do
                   created: created
                }
              end,
-             list <- Enum.map(rows, fun) do
+             list <- Enum.map(result.rows, fun) do
           {:ok, list}
         else
           false -> {:ok, []}

@@ -31,9 +31,9 @@ defmodule PostgresqlAdapters.Group.Updating do
              fun <- fn(conn) ->
                 r_0 = Postgrex.execute(conn, query_0, data_0)
 
-                case {r_0} do
-                  {{:ok, _, _}} -> {:ok, true}
-                  {{:error, e}} -> DBConnection.rollback(conn, e)
+                case r_0 do
+                  {:ok, _, _} -> {:ok, true}
+                  {:error, e} -> DBConnection.rollback(conn, e)
                 end
              end,
              {:ok, _} <- Postgrex.transaction(connection, fun) do
