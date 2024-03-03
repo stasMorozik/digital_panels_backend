@@ -8,21 +8,26 @@ defmodule PostgresqlAdapters.Group.Updating do
 
   @query_0 "
     UPDATE 
-      groups 
+      groups AS g 
     SET
-      name = $2,
-      sum = $3,
-      updated = $4
+      name = $3,
+      sum = $4,
+      updated = $5
+    FROM 
+      relations_user_group AS r
     WHERE 
-      id = $1
+      r.user_id = $1
+    AND
+      g.id = $2
   "
 
   @impl Transformer
-  def transform(%Group{} = group, %User{} = _user) do
+  def transform(%Group{} = group, %User{} = user) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
         with {:ok, query_0} <- Postgrex.prepare(connection, "", @query_0),
              data_0 <- [
+                UUID.string_to_binary!(user.id),
                 UUID.string_to_binary!(group.id),
                 group.name,
                 group.sum,
@@ -39,7 +44,6 @@ defmodule PostgresqlAdapters.Group.Updating do
              {:ok, _} <- Postgrex.transaction(connection, fun) do
           {:ok, true}
         else
-          {:error, %Postgrex.Error{postgres: %{pg_code: "23505"}}} -> {:error, "Запись о группе в базе данных уже существует"}
           {:error, e} -> {:exception, e}
         end
       [] -> {:exception, "Database connection error"}

@@ -24,7 +24,7 @@ defmodule PostgresqlAdapters.Group.GettingById do
       relations_user_group 
     JOIN groups ON 
       relations_user_group.group_id = groups.id
-    JOIN devices ON
+    LEFT JOIN devices ON
       devices.group_id = groups.id
     WHERE
       relations_user_group.user_id = $1 
@@ -52,12 +52,15 @@ defmodule PostgresqlAdapters.Group.GettingById do
                 }
              end,
              [row] <- result.rows,
-             [gr_id, gr_name, gr_sum, gr_created, gr_updated, _, _, _, _, _, _] <- row do
+             [gr_id, gr_name, gr_sum, gr_created, gr_updated, dev_id, _, _, _, _, _] <- row do
           {:ok, %Group{
             id: UUID.binary_to_string!(gr_id),
             name: gr_name,
             sum: gr_sum,
-            devices: Enum.map(result.rows, fun),
+            devices: case dev_id == nil do
+              true -> nil
+              false -> Enum.map(result.rows, fun)
+            end,
             created: gr_created,
             updated: gr_updated
           }}
