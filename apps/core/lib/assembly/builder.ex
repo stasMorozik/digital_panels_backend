@@ -20,7 +20,8 @@ defmodule Core.Assembly.Builder do
   # Функция построения базового устройства
   defp entity do
     {:ok, %Core.Device.Entity{
-      id: UUID.uuid4(), 
+      id: UUID.uuid4(),
+      status: false, 
       created: Date.utc_today, 
       updated: Date.utc_today
     }}

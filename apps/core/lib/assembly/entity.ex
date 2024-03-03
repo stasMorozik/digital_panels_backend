@@ -19,7 +19,7 @@ defmodule Core.Assembly.Entity do
             group: nil,
             url: nil,
             type: nil,
-            status: false,
+            status: nil,
             created: nil,
             updated: nil
 end
