@@ -14,7 +14,7 @@ defmodule PostgresqlAdapters.Group.QueryBuilder do
       groups.updated
     FROM 
       relations_user_group 
-    JOIN files ON 
+    JOIN groups ON 
       relations_user_group.group_id = groups.id
   "
 

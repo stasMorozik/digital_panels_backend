@@ -27,7 +27,6 @@ defmodule PostgresqlAdapters.Group.GettingList do
         with {query, data_list} <- QueryBuilder.build(pagi, filter, sort, user),
              {:ok, result} <- Executor.execute(connection, query, data_list),
              true <- result.num_rows > 0,
-             rows <- result.rows,
              fun <- fn ([id, name, sum, created, updated]) ->
                %Group{
                   id: UUID.binary_to_string!(id),
@@ -37,7 +36,7 @@ defmodule PostgresqlAdapters.Group.GettingList do
                   updated: updated
                }
              end,
-             list <- Enum.map(rows, fun) do
+             list <- Enum.map(result.rows, fun) do
           {:ok, list}
         else
           false -> {:ok, []}
