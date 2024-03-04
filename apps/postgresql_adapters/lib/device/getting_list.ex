@@ -1,17 +1,17 @@
-defmodule PostgresqlAdapters.Group.GettingList do
+defmodule PostgresqlAdapters.Device.GettingList do
   
-  alias Core.Group.Ports.GetterList
+  alias Core.Device.Ports.GetterList
 
-  alias Core.Group.Entity, as: Group
+  alias Core.Device.Entity, as: Device
   alias Core.User.Entity, as: User
   
   alias PostgresqlAdapters.Executor
 
   alias Core.Shared.Types.Pagination
-  alias Core.Group.Types.Filter
-  alias Core.Group.Types.Sort
+  alias Core.Device.Types.Filter
+  alias Core.Device.Types.Sort
 
-  alias PostgresqlAdapters.Group.QueryBuilder
+  alias PostgresqlAdapters.Device.QueryBuilder
 
   @behaviour GetterList
 
@@ -27,14 +27,15 @@ defmodule PostgresqlAdapters.Group.GettingList do
         with {query, data_list} <- QueryBuilder.build(pagi, filter, sort, user),
              {:ok, result} <- Executor.execute(connection, query, data_list),
              true <- result.num_rows > 0,
-             fun <- fn ([id, name, sum, created, updated]) ->
-               %Group{
+             fun <- fn ([id, ip, lat, long, desc, created]) ->
+                %Device{
                   id: UUID.binary_to_string!(id),
-                  name: name,
-                  sum: sum,
-                  created: created,
-                  updated: updated
-               }
+                  ip: ip, 
+                  latitude: lat, 
+                  longitude: long, 
+                  desc: desc,
+                  created: created
+                }
              end,
              list <- Enum.map(result.rows, fun) do
           {:ok, list}
@@ -48,6 +49,6 @@ defmodule PostgresqlAdapters.Group.GettingList do
   end
 
   def get(_, _, _, _) do
-    {:error, "Не валидные данные для получения списка записей о группах из базы данных"}
+    {:error, "Не валидные данные для получения списка записей об устройствах из базы данных"}
   end
 end

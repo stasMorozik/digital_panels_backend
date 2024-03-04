@@ -1,12 +1,10 @@
-defmodule Group.UpdatingTest do
+defmodule Device.InsertingTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.Group.Inserting
-  alias PostgresqlAdapters.Group.Updating
-  alias PostgresqlAdapters.Group.GettingById
-  alias Core.Group.Builder
+  alias PostgresqlAdapters.Device.Inserting
+  alias Core.Device.Builder
 
-  doctest PostgresqlAdapters.Group.Updating
+  doctest PostgresqlAdapters.Device.Inserting
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -23,47 +21,61 @@ defmodule Group.UpdatingTest do
 
     Postgrex.query!(pid, "DELETE FROM relations_user_device", [])
     Postgrex.query!(pid, "DELETE FROM devices", [])
-
+    
     Postgrex.query!(pid, "DELETE FROM relations_user_group", [])
     Postgrex.query!(pid, "DELETE FROM groups", [])
     
     :ok
   end
 
-  test "Update 0" do
+  test "Insert" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, group} = Builder.build(%{
+    {:ok, group} = Core.Group.Builder.build(%{
       name: "Тест"
     })
 
-    {:ok, true} = Inserting.transform(group, user)
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
 
-    {result, _} = Updating.transform(group, user)
+    {:ok, device} = Builder.build(%{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454,
+      desc: "Описание",
+      group: group
+    })
+
+    {result, _} = Inserting.transform(device, user)
 
     assert result == :ok
   end
 
-  test "Update 1" do
+  test "Invalid device" do
+    {result, _} = Inserting.transform(%{}, %{})
+
+    assert result == :error
+  end
+
+  test "Already exists" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, group} = Builder.build(%{
+    {:ok, group} = Core.Group.Builder.build(%{
       name: "Тест"
     })
 
-    {:ok, true} = Inserting.transform(group, user)
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
 
-    {:ok, group} = Core.Group.Editor.edit(group, %{name: "Test"})
+    {:ok, device} = Builder.build(%{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454,
+      desc: "Описание",
+      group: group
+    })
 
-    {:ok, true} = Updating.transform(group, user)
+    {:ok, true} = Inserting.transform(device, user)
 
-    {:ok, group} = GettingById.get(group.id, user)
-
-    assert group.name == "Test"
-  end
-
-  test "Invalid group" do
-    {result, _} = Updating.transform(%{}, %{})
+    {result, _} = Inserting.transform(device, user)
 
     assert result == :error
   end

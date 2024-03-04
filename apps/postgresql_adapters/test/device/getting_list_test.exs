@@ -1,15 +1,15 @@
-defmodule Group.GettingListTest do
+defmodule Device.GettingListTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.Group.Inserting
-  alias PostgresqlAdapters.Group.GettingList
-  alias Core.Group.Builder
+  alias PostgresqlAdapters.Device.Inserting
+  alias PostgresqlAdapters.Device.GettingList
+  alias Core.Device.Builder
 
   alias Core.Shared.Types.Pagination
-  alias Core.Group.Types.Filter
-  alias Core.Group.Types.Sort
+  alias Core.Device.Types.Filter
+  alias Core.Device.Types.Sort
 
-  doctest PostgresqlAdapters.Group.GettingList
+  doctest PostgresqlAdapters.Device.GettingList
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -36,11 +36,21 @@ defmodule Group.GettingListTest do
   test "Get not empty list" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, group} = Builder.build(%{
+    {:ok, group} = Core.Group.Builder.build(%{
       name: "Тест"
     })
 
-    {:ok, true} = Inserting.transform(group, user)
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
+
+    {:ok, device} = Builder.build(%{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454,
+      desc: "Описание",
+      group: group
+    })
+
+    {:ok, true} = Inserting.transform(device, user)
 
     {result, list} = GettingList.get(
       %Pagination{
@@ -48,7 +58,7 @@ defmodule Group.GettingListTest do
         limit: 10
       }, 
       %Filter{
-        name: "Тест"
+        description: "Описание"
       }, 
       %Sort{
         created: "ASC"
@@ -64,14 +74,14 @@ defmodule Group.GettingListTest do
 
   test "Get empty list" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
-    
+
     {result, list} = GettingList.get(
       %Pagination{
         page: 1,
         limit: 10
       }, 
       %Filter{
-        name: "Test"
+        description: "Test"
       }, 
       %Sort{
         created: "ASC"

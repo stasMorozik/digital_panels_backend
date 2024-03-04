@@ -1,11 +1,11 @@
-defmodule Group.GettingTest do
+defmodule Device.GettingTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.Group.Inserting
-  alias PostgresqlAdapters.Group.GettingById
-  alias Core.Group.Builder
+  alias PostgresqlAdapters.Device.Inserting
+  alias PostgresqlAdapters.Device.GettingById
+  alias Core.Device.Builder
 
-  doctest PostgresqlAdapters.Group.GettingById
+  doctest PostgresqlAdapters.Device.GettingById
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -32,30 +32,48 @@ defmodule Group.GettingTest do
   test "Get by id" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, group} = Builder.build(%{
+    {:ok, group} = Core.Group.Builder.build(%{
       name: "Тест"
     })
 
-    {:ok, true} = Inserting.transform(group, user)
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
 
-    {result, _} = GettingById.get(group.id, user)
+    {:ok, device} = Builder.build(%{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454,
+      desc: "Описание",
+      group: group
+    })
+
+    {:ok, true} = Inserting.transform(device, user)
+
+    {result, _} = GettingById.get(device.id, user)
 
     assert result == :ok
   end
 
-  test "Group not found with id" do
+  test "Device not found with id" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, group} = Builder.build(%{
+    {:ok, group} = Core.Group.Builder.build(%{
       name: "Тест"
     })
 
-    {result, _} = GettingById.get(group.id, user)
+    {:ok, device} = Builder.build(%{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454,
+      desc: "Описание",
+      group: group
+    })
+
+    {result, _} = GettingById.get(device.id, user)
 
     assert result == :error
   end
 
-  test "Group not found with id of user" do
+  test "File not found with id of user" do
     {:ok, user_0} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
     {:ok, user_1} = Core.User.Builder.build(%{
@@ -64,13 +82,23 @@ defmodule Group.GettingTest do
       surname: "Павел"
     })
 
-    {:ok, group} = Builder.build(%{
+    {:ok, group} = Core.Group.Builder.build(%{
       name: "Тест"
     })
 
-    {:ok, true} = Inserting.transform(group, user_0)
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user_0)
 
-    {result, _} = GettingById.get(group.id, user_1)
+    {:ok, device} = Builder.build(%{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454,
+      desc: "Описание",
+      group: group
+    })
+
+    {:ok, true} = Inserting.transform(device, user_0)
+
+    {result, _} = GettingById.get(device.id, user_1)
 
     assert result == :error
   end

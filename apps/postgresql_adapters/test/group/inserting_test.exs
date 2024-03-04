@@ -19,6 +19,9 @@ defmodule Group.InsertingTest do
 
     :ets.insert(:connections, {"postgresql", "", pid})
 
+    Postgrex.query!(pid, "DELETE FROM relations_user_device", [])
+    Postgrex.query!(pid, "DELETE FROM devices", [])
+
     Postgrex.query!(pid, "DELETE FROM relations_user_group", [])
     Postgrex.query!(pid, "DELETE FROM groups", [])
     

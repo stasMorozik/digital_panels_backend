@@ -1,12 +1,12 @@
-defmodule Group.UpdatingTest do
+defmodule Device.UpdatingTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.Group.Inserting
-  alias PostgresqlAdapters.Group.Updating
-  alias PostgresqlAdapters.Group.GettingById
-  alias Core.Group.Builder
+  alias PostgresqlAdapters.Device.Inserting
+  alias PostgresqlAdapters.Device.Updating
+  # alias PostgresqlAdapters.Device.GettingById
+  alias Core.Device.Builder
 
-  doctest PostgresqlAdapters.Group.Updating
+  doctest PostgresqlAdapters.Device.Updating
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -33,13 +33,23 @@ defmodule Group.UpdatingTest do
   test "Update 0" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, group} = Builder.build(%{
+    {:ok, group} = Core.Group.Builder.build(%{
       name: "Тест"
     })
 
-    {:ok, true} = Inserting.transform(group, user)
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
 
-    {result, _} = Updating.transform(group, user)
+    {:ok, device} = Builder.build(%{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454,
+      desc: "Описание",
+      group: group
+    })
+
+    {:ok, true} = Inserting.transform(device, user)
+
+    {result, _} = Updating.transform(device, user)
 
     assert result == :ok
   end
@@ -47,19 +57,29 @@ defmodule Group.UpdatingTest do
   test "Update 1" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, group} = Builder.build(%{
+    {:ok, group} = Core.Group.Builder.build(%{
       name: "Тест"
     })
 
-    {:ok, true} = Inserting.transform(group, user)
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
 
-    {:ok, group} = Core.Group.Editor.edit(group, %{name: "Test"})
+    {:ok, device} = Builder.build(%{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454,
+      desc: "Описание",
+      group: group
+    })
 
-    {:ok, true} = Updating.transform(group, user)
+    {:ok, true} = Inserting.transform(device, user)
 
-    {:ok, group} = GettingById.get(group.id, user)
+    {:ok, device} = Core.Device.Editor.edit(device, %{ip: "192.168.1.101"})
+    
+    {:ok, true} = Updating.transform(device, user)
 
-    assert group.name == "Test"
+    {:ok, device} = PostgresqlAdapters.Device.GettingById.get(device.id, user)
+
+    assert device.ip == "192.168.1.101"
   end
 
   test "Invalid group" do

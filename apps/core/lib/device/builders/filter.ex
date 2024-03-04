@@ -3,6 +3,7 @@ defmodule Core.Device.Builders.Filter do
   alias Core.Device.Builders.Ip
   alias Core.Device.Builders.Latitude
   alias Core.Device.Builders.Longitude
+  alias Core.Device.Builders.Description
 
   alias Core.Device.Types.Filter
 
@@ -12,8 +13,10 @@ defmodule Core.Device.Builders.Filter do
   def build(%{} = args) do
     filter()
       |> ip(Map.get(args, :ip))
-      |> latitude(Map.get(args, :latitude))
-      |> longitude(Map.get(args, :longitude))
+      |> latitude_f(Map.get(args, :latitude_f))
+      |> latitude_t(Map.get(args, :latitude_t))
+      |> longitude_f(Map.get(args, :longitude_f))
+      |> longitude_t(Map.get(args, :longitude_t))
       |> description(Map.get(args, :description))
       |> created_f(Map.get(args, :created_f))
       |> created_t(Map.get(args, :created_t))
@@ -38,25 +41,47 @@ defmodule Core.Device.Builders.Filter do
     {:error, message}
   end
 
-  defp latitude({:ok, filter}, latitude) do
-    case latitude do
+  defp latitude_f({:ok, filter}, latitude_f) do
+    case latitude_f do
       nil -> {:ok, filter}
-      latitude -> Latitude.build({:ok, filter}, latitude)
+      latitude_f -> Latitude.build({:ok, filter}, latitude_f)
     end
   end
 
-  defp latitude({:error, message}, _) do
+  defp latitude_f({:error, message}, _) do
     {:error, message}
   end
 
-  defp longitude({:ok, filter}, longitude) do
-    case longitude do
+  defp latitude_t({:ok, filter}, latitude_t) do
+    case latitude_t do
       nil -> {:ok, filter}
-      longitude -> Longitude.build({:ok, filter}, longitude)
+      latitude_t -> Latitude.build({:ok, filter}, latitude_t)
     end
   end
 
-  defp longitude({:error, message}, _) do
+  defp latitude_t({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp longitude_f({:ok, filter}, longitude_f) do
+    case longitude_f do
+      nil -> {:ok, filter}
+      longitude_f -> Longitude.build({:ok, filter}, longitude_f)
+    end
+  end
+
+  defp longitude_f({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp longitude_t({:ok, filter}, longitude_t) do
+    case longitude_t do
+      nil -> {:ok, filter}
+      longitude_t -> Longitude.build({:ok, filter}, longitude_t)
+    end
+  end
+
+  defp longitude_t({:error, message}, _) do
     {:error, message}
   end
 
