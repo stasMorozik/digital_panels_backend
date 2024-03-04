@@ -38,9 +38,20 @@ defmodule Group.GettingTest do
 
     {:ok, true} = Inserting.transform(group, user)
 
-    {result, _} = GettingById.get(group.id, user)
+    {:ok, device} = Core.Device.Builder.build(%{
+      ip: "192.168.1.98",
+      latitude: 78.454567,
+      longitude: 98.3454,
+      desc: "Описание",
+      group: group
+    })
+
+    {:ok, true} = PostgresqlAdapters.Device.Inserting.transform(device, user)
+    
+    {result, g} = GettingById.get(group.id, user)
 
     assert result == :ok
+    assert length(g.devices) == 1
   end
 
   test "Group not found with id" do

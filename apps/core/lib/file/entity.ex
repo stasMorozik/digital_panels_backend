@@ -15,5 +15,11 @@ defmodule Core.File.Entity do
     created: binary()
   }
 
-  defstruct id: nil, path: nil, url: nil, extension: nil, type: nil, size: nil, created: nil
+  defstruct id: nil, 
+            path: nil, 
+            url: nil, 
+            extension: nil, 
+            type: nil, 
+            size: nil, 
+            created: nil
 end
