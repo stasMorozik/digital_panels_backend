@@ -37,14 +37,14 @@ defmodule Core.Task.UseCases.Creating do
          args <- Map.put(args, :playlist, playlist),
          args <- Map.put(args, :group, group),
          {:ok, task} <- Core.Task.Builder.build(args),
-         {:ok, pagi} <- Core.Shared.Builders.Pagi.build(Map.get(args, :pagi, %{page: 1, limit: 2})),
-         {:ok, filter} <- Core.Task.Builders.Filter.build(Map.get(args, :filter, %{
+         {:ok, pagi} <- Core.Shared.Builders.Pagi.build(%{page: 1, limit: 2}),
+         {:ok, filter} <- Core.Task.Builders.Filter.build(%{
             start_hour: task.start_hour,
             start_minute: task.start_minute,
             end_hour: task.end_hour,
             end_minute: task.end_minute
-         })),
-         {:ok, sort} <- Core.Task.Builders.Sort.build(Map.get(args, :sort, %{})),
+         }),
+         {:ok, sort} <- Core.Task.Builders.Sort.build(%{}),
          {:ok, list} <- getter_list_task.get(pagi, filter, sort, user),
          true <- length(list) == 0,
          {:ok, true} <- transformer_task.transform(task, user) do
