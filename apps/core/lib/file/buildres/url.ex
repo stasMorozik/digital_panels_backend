@@ -3,7 +3,7 @@ defmodule Core.File.Builders.Url do
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
 
-  @web_dav_url Application.compile_env(:core, :web_dav_url, "http://192.168.0.106:8100/upload")
+  @web_dav_url Application.compile_env(:core, :web_dav_url)
 
   @spec build(Success.t() | Error.t(), any()) :: Success.t() | Error.t()
   def build({:ok, entity}, name) when is_binary(name) do

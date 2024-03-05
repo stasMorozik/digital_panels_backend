@@ -13,7 +13,7 @@ defmodule Core.User.UseCases.Registration do
   alias Core.Shared.Types.Error
   alias Core.Shared.Types.Exception
 
-  @from Application.compile_env(:core, :email_address, "digital_panels@dev.org")
+  @from Application.compile_env(:core, :email_address)
 
   @spec reg(
     Transformer.t(),

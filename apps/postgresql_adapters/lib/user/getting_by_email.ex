@@ -8,7 +8,19 @@ defmodule PostgresqlAdapters.User.GettingByEmail do
 
   @pg_secret_key Application.compile_env(:postgresql_adapters, :secret_key)
 
-  @query "SELECT id, pgp_sym_decrypt(email::bytea, '#{@pg_secret_key}'), pgp_sym_decrypt(name::bytea, '#{@pg_secret_key}'), pgp_sym_decrypt(surname::bytea, '#{@pg_secret_key}'), created, updated FROM users WHERE pgp_sym_decrypt(email::bytea, '#{@pg_secret_key}') = $1"
+  @query "
+    SELECT 
+      id, 
+      pgp_sym_decrypt(email::bytea, '#{@pg_secret_key}'), 
+      pgp_sym_decrypt(name::bytea, '#{@pg_secret_key}'), 
+      pgp_sym_decrypt(surname::bytea, '#{@pg_secret_key}'), 
+      created, 
+      updated 
+    FROM 
+      users 
+    WHERE 
+      pgp_sym_decrypt(email::bytea, '#{@pg_secret_key}') = $1
+  "
 
   @impl Getter
   def get(email) when is_binary(email) do
