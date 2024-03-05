@@ -53,24 +53,9 @@ defmodule PostgresqlAdapters.Playlist.GettingById do
              ]),
              true <- result.num_rows > 0,
              fun <- fn ([
-                _,
-                _,
-                _,
-                _,
-                _,
-                cnt_id,
-                cnt_name,
-                cnt_dur,
-                cnt_num,
-                cnt_cr,
-                cnt_upd,
-                fl_id,
-                fl_path,
-                fl_url,
-                fl_ext,
-                fl_type,
-                fl_sz,
-                fl_cr
+                 _, _, _, _, _,
+                cnt_id, cnt_name, cnt_dur, cnt_num, cnt_cr, cnt_upd,
+                fl_id, fl_path, fl_url, fl_ext, fl_type, fl_sz, fl_cr
              ]) -> 
                 %Core.Content.Entity{
                   id: UUID.binary_to_string!(cnt_id),
@@ -90,32 +75,17 @@ defmodule PostgresqlAdapters.Playlist.GettingById do
                   updated: cnt_upd
                 }
              end,
-             [row] <- result.rows,
+             [row | _] <- result.rows,
              [  
-                pl_id, 
-                pl_name, 
-                pl_sum, 
-                pl_cr, 
-                pl_upd, 
-                _, 
-                _, 
-                _, 
-                _, 
-                _, 
-                _, 
-                _, 
-                fl_path, 
-                _, 
-                _,
-                _, 
-                _,
-                _
+                pl_id,  pl_name,  pl_sum,  pl_cr,  pl_upd, 
+                _,  _,  _,  _,  _,  _, 
+                fl_id, _,  _,  _, _,  _, _
              ] <- row do
           {:ok, %Playlist{
             id: UUID.binary_to_string!(pl_id),
             name: pl_name,
             sum: pl_sum,
-            contents: case fl_path == nil do
+            contents: case fl_id == nil do
               true -> nil
               false -> Enum.map(result.rows, fun)
             end,

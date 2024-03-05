@@ -96,7 +96,7 @@ defmodule PostgresqlAdapters.Task.GettingById do
                   updated: cnt_upd
                 }
              end,
-             [row] <- result.rows,
+             [row | _] <- result.rows,
              [
               task_id, task_nm, task_tp, task_day,
               task_start_h, task_end_h, task_start_m, task_end_m,

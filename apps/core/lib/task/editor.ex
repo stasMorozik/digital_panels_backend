@@ -35,7 +35,7 @@ defmodule Core.Task.Editor do
   end
 
   def edit(_, _) do
-    {:error, "Невалидные данные для редактирования плэйлиста"}
+    {:error, "Невалидные данные для редактирования задания"}
   end
 
   defp entity(%Entity{} = entity) do

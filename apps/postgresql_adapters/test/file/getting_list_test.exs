@@ -27,6 +27,9 @@ defmodule File.GettingListTest do
 
     :ets.insert(:connections, {"postgresql", "", pid})
 
+    Postgrex.query!(pid, "DELETE FROM relations_user_task", [])
+    Postgrex.query!(pid, "DELETE FROM tasks", [])
+
     Postgrex.query!(pid, "DELETE FROM relations_user_content", [])
     Postgrex.query!(pid, "DELETE FROM contents", [])
 

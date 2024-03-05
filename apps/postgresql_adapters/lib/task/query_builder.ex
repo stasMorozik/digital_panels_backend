@@ -15,15 +15,9 @@ defmodule PostgresqlAdapters.Task.QueryBuilder do
       tasks.end_hour AS task_end_h,
       tasks.start_minute AS task_start_m,
       tasks.end_minute AS task_end_m,
-      tasks.start_hm AS task_start_hm,
-      tasks.end_hm  AS task_end_hm,
-      tasks.sum  AS task_sum,
       tasks.created AS task_cr,
-      tasks.updated AS task_upd,
       groups.id AS gr_id,
-      groups.name AS gr_nm,
-      groups.created AS gr_cr,
-      groups.updated AS gr_upd
+      groups.name AS gr_nm
     FROM 
       relations_user_task 
     JOIN tasks ON 

@@ -27,6 +27,9 @@ defmodule Content.GettingListTest do
     File.touch("/tmp/not_emty_png.png", 1544519753)
     File.write("/tmp/not_emty_png.png", "content")
 
+    Postgrex.query!(pid, "DELETE FROM relations_user_task", [])
+    Postgrex.query!(pid, "DELETE FROM tasks", [])
+
     Postgrex.query!(pid, "DELETE FROM relations_user_content", [])
     Postgrex.query!(pid, "DELETE FROM contents", [])
 

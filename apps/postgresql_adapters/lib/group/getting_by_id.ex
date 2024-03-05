@@ -41,7 +41,9 @@ defmodule PostgresqlAdapters.Group.GettingById do
                 UUID.string_to_binary!(id)
              ]),
              true <- result.num_rows > 0,
-             fun <- fn ([_, _, _, _, _, dev_id, dev_ip, dev_lat, dev_long, dev_desc, dev_created]) -> 
+             fun <- fn ([
+                _, _, _, _, _, dev_id, dev_ip, dev_lat, dev_long, dev_desc, dev_created
+             ]) -> 
                 %Core.Device.Entity{
                   id: UUID.binary_to_string!(dev_id),
                   ip: dev_ip,
@@ -51,7 +53,7 @@ defmodule PostgresqlAdapters.Group.GettingById do
                   created: dev_created,
                 }
              end,
-             [row] <- result.rows,
+             [row | _] <- result.rows,
              [gr_id, gr_name, gr_sum, gr_created, gr_updated, dev_id, _, _, _, _, _] <- row do
           {:ok, %Group{
             id: UUID.binary_to_string!(gr_id),

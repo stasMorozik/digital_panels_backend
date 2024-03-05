@@ -17,7 +17,7 @@ defmodule Core.Task.Builder do
     start_minute: start_minute,
     end_minute: end_minute
   }) do
-    type()
+    entity()
       |> Core.Task.Builders.Name.build(name)
       |> Core.Task.Builders.Playlist.build(playlist)
       |> Core.Task.Builders.Group.build(group)
@@ -32,7 +32,11 @@ defmodule Core.Task.Builder do
       |> Core.Task.Builders.Sum.build({start_hour, start_minute}, {end_hour, end_minute})
   end
 
-  defp type do
+  def build(_) do
+    {:error, "Не валидные данные для создания задания"}
+  end
+
+  defp entity do
     {:ok, %Entity{
       id: UUID.uuid4(),
       created: Date.utc_today, 

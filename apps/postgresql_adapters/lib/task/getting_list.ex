@@ -28,27 +28,31 @@ defmodule PostgresqlAdapters.Task.GettingList do
              {:ok, result} <- Executor.execute(connection, query, data_list),
              true <- result.num_rows > 0,
              fun <- fn ([
-              id, nm, tp, day, start_h, end_h, start_m, end_m, start_hm, end_hm, sum, cr,
-              gr_id, gr_nm, gr_cr, gr_upd,
+              task_id,
+              task_nm,
+              task_tp,
+              task_day,
+              task_start_h,
+              task_end_h,
+              task_start_m,
+              task_end_m,
+              task_cr,
+              gr_id,
+              gr_nm
              ]) ->
                %Task{
-                  id: UUID.binary_to_string!(id),
-                  name: nm,
-                  type: tp,
-                  day: day,
-                  start_hour: start_h,
-                  end_hour: end_h,
-                  start_minute: start_m,
-                  end_minute: end_m,
-                  start: start_hm,
-                  end: end_hm,
-                  sum: sum,
-                  created: cr,
+                  id: UUID.binary_to_string!(task_id),
+                  name: task_nm,
+                  type: task_tp,
+                  day: task_day,
+                  start_hour: task_start_h,
+                  end_hour: task_end_h,
+                  start_minute: task_start_m,
+                  end_minute: task_end_m,
+                  created: task_cr,
                   group: %Core.Group.Entity{
                     id: UUID.binary_to_string!(gr_id),
-                    name: gr_nm,
-                    created: gr_cr, 
-                    updated: gr_upd
+                    name: gr_nm
                   },
                }
              end,

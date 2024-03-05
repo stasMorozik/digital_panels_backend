@@ -21,6 +21,18 @@ defmodule Device.UpdatingTest do
 
     :ets.insert(:connections, {"postgresql", "", pid})
 
+    Postgrex.query!(pid, "DELETE FROM relations_user_task", [])
+    Postgrex.query!(pid, "DELETE FROM tasks", [])
+
+    Postgrex.query!(pid, "DELETE FROM relations_user_content", [])
+    Postgrex.query!(pid, "DELETE FROM contents", [])
+
+    Postgrex.query!(pid, "DELETE FROM relations_user_file", [])
+    Postgrex.query!(pid, "DELETE FROM files", [])
+
+    Postgrex.query!(pid, "DELETE FROM relations_user_playlist", [])
+    Postgrex.query!(pid, "DELETE FROM playlists", [])
+
     Postgrex.query!(pid, "DELETE FROM relations_user_device", [])
     Postgrex.query!(pid, "DELETE FROM devices", [])
 

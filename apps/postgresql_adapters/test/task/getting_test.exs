@@ -1,11 +1,11 @@
-defmodule Content.GettingTest do
+defmodule Task.GettingTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.Content.Inserting
-  alias PostgresqlAdapters.Content.GettingById
-  alias Core.Content.Builder
+  alias PostgresqlAdapters.Task.Inserting
+  alias PostgresqlAdapters.Task.GettingById
+  alias Core.Task.Builder
 
-  doctest PostgresqlAdapters.Content.GettingById
+  doctest PostgresqlAdapters.Task.GettingById
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -35,11 +35,29 @@ defmodule Content.GettingTest do
     Postgrex.query!(pid, "DELETE FROM relations_user_playlist", [])
     Postgrex.query!(pid, "DELETE FROM playlists", [])
 
+    Postgrex.query!(pid, "DELETE FROM relations_user_device", [])
+    Postgrex.query!(pid, "DELETE FROM devices", [])
+
+    Postgrex.query!(pid, "DELETE FROM relations_user_group", [])
+    Postgrex.query!(pid, "DELETE FROM groups", [])
+
     :ok
   end
 
   test "Get by id" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
+
+    {:ok, group} = Core.Group.Builder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
+
+    {:ok, playlist} = Core.Playlist.Builder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user)
 
     {:ok, file} = Core.File.Builder.build(%{
       path: "/tmp/not_emty_png.png",
@@ -50,13 +68,7 @@ defmodule Content.GettingTest do
 
     {:ok, true} = PostgresqlAdapters.File.Inserting.transform(file, user)
 
-    {:ok, playlist} = Core.Playlist.Builder.build(%{
-      name: "Тест"
-    })
-
-    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user)
-
-    {:ok, content} = Builder.build(%{
+    {:ok, content} = Core.Content.Builder.build(%{
       name: "Тест_1234",
       duration: 15,
       file: file,
@@ -64,41 +76,46 @@ defmodule Content.GettingTest do
       serial_number: 1
     })
 
-    {:ok, true} = Inserting.transform(content, user)
-    
-    {result, _} = GettingById.get(content.id, user)
+    {:ok, true} = PostgresqlAdapters.Content.Inserting.transform(content, user)
 
+    {:ok, content} = Core.Content.Builder.build(%{
+      name: "Тест_1234",
+      duration: 15,
+      file: file,
+      playlist: playlist,
+      serial_number: 2
+    })
+
+    {:ok, true} = PostgresqlAdapters.Content.Inserting.transform(content, user)
+
+    {:ok, task} = Builder.build(%{
+      name: "Тест_1234",
+      playlist: playlist,
+      group: group,
+      type: "Каждый день",
+      day: nil, 
+      start_hour: 1,
+      end_hour: 5,
+      start_minute: 0,
+      end_minute: 30
+    })
+
+    {:ok, true} = Inserting.transform(task, user)
+
+    {result, _} = GettingById.get(task.id, user)
+    
     assert result == :ok
   end
 
-  test "Content not found with id" do
+  test "Task not found with id" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, file} = Core.File.Builder.build(%{
-      path: "/tmp/not_emty_png.png",
-      name: Path.basename("/tmp/not_emty_png.png"),
-      extname: Path.extname("/tmp/not_emty_png.png"),
-      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
-    })
-
-    {:ok, playlist} = Core.Playlist.Builder.build(%{
-      name: "Тест"
-    })
-
-    {:ok, content} = Builder.build(%{
-      name: "Тест_1234",
-      duration: 15,
-      file: file,
-      playlist: playlist,
-      serial_number: 1
-    })
-
-    {result, _} = GettingById.get(content.id, user)
+    {result, _} = GettingById.get(UUID.uuid4(), user)
 
     assert result == :error
   end
 
-  test "Content not found with id of user" do
+  test "Task not found with id of user" do
     {:ok, user_0} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
     {:ok, user_1} = Core.User.Builder.build(%{
@@ -106,6 +123,18 @@ defmodule Content.GettingTest do
       name: "Пётр", 
       surname: "Павел"
     })
+
+    {:ok, group} = Core.Group.Builder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user_0)
+
+    {:ok, playlist} = Core.Playlist.Builder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user_0)
 
     {:ok, file} = Core.File.Builder.build(%{
       path: "/tmp/not_emty_png.png",
@@ -116,13 +145,7 @@ defmodule Content.GettingTest do
 
     {:ok, true} = PostgresqlAdapters.File.Inserting.transform(file, user_0)
 
-    {:ok, playlist} = Core.Playlist.Builder.build(%{
-      name: "Тест"
-    })
-
-    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user_0)
-
-    {:ok, content} = Builder.build(%{
+    {:ok, content} = Core.Content.Builder.build(%{
       name: "Тест_1234",
       duration: 15,
       file: file,
@@ -130,9 +153,33 @@ defmodule Content.GettingTest do
       serial_number: 1
     })
 
-    {:ok, true} = Inserting.transform(content, user_0)
+    {:ok, true} = PostgresqlAdapters.Content.Inserting.transform(content, user_0)
 
-    {result, _} = GettingById.get(content.id, user_1)
+    {:ok, content} = Core.Content.Builder.build(%{
+      name: "Тест_1234",
+      duration: 15,
+      file: file,
+      playlist: playlist,
+      serial_number: 2
+    })
+
+    {:ok, true} = PostgresqlAdapters.Content.Inserting.transform(content, user_0)
+
+    {:ok, task} = Builder.build(%{
+      name: "Тест_1234",
+      playlist: playlist,
+      group: group,
+      type: "Каждый день",
+      day: nil, 
+      start_hour: 1,
+      end_hour: 5,
+      start_minute: 0,
+      end_minute: 30
+    })
+
+    {:ok, true} = Inserting.transform(task, user_0)
+
+    {result, _} = GettingById.get(task.id, user_1)
 
     assert result == :error
   end

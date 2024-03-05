@@ -1,10 +1,10 @@
-defmodule Content.InsertingTest do
+defmodule Task.InsertingTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.Content.Inserting
-  alias Core.Content.Builder
+  alias PostgresqlAdapters.Task.Inserting
+  alias Core.Task.Builder
 
-  doctest PostgresqlAdapters.Content.Inserting
+  doctest PostgresqlAdapters.Task.Inserting
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -33,12 +33,30 @@ defmodule Content.InsertingTest do
 
     Postgrex.query!(pid, "DELETE FROM relations_user_playlist", [])
     Postgrex.query!(pid, "DELETE FROM playlists", [])
+
+    Postgrex.query!(pid, "DELETE FROM relations_user_device", [])
+    Postgrex.query!(pid, "DELETE FROM devices", [])
+
+    Postgrex.query!(pid, "DELETE FROM relations_user_group", [])
+    Postgrex.query!(pid, "DELETE FROM groups", [])
     
     :ok
   end
 
   test "Insert" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
+
+    {:ok, group} = Core.Group.Builder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
+
+    {:ok, playlist} = Core.Playlist.Builder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user)
 
     {:ok, file} = Core.File.Builder.build(%{
       path: "/tmp/not_emty_png.png",
@@ -49,13 +67,7 @@ defmodule Content.InsertingTest do
 
     {:ok, true} = PostgresqlAdapters.File.Inserting.transform(file, user)
 
-    {:ok, playlist} = Core.Playlist.Builder.build(%{
-      name: "Тест"
-    })
-
-    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user)
-
-    {:ok, content} = Builder.build(%{
+    {:ok, content} = Core.Content.Builder.build(%{
       name: "Тест_1234",
       duration: 15,
       file: file,
@@ -63,8 +75,22 @@ defmodule Content.InsertingTest do
       serial_number: 1
     })
 
-    {result, _} = Inserting.transform(content, user)
+    {:ok, true} = PostgresqlAdapters.Content.Inserting.transform(content, user)
 
+    {:ok, task} = Builder.build(%{
+      name: "Тест_1234",
+      playlist: playlist,
+      group: group,
+      type: "Каждый день",
+      day: nil, 
+      start_hour: 1,
+      end_hour: 5,
+      start_minute: 0,
+      end_minute: 30
+    })
+
+    {result, _} = Inserting.transform(task, user)
+    
     assert result == :ok
   end
 
@@ -77,6 +103,18 @@ defmodule Content.InsertingTest do
   test "Already exists" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
+    {:ok, group} = Core.Group.Builder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
+
+    {:ok, playlist} = Core.Playlist.Builder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user)
+
     {:ok, file} = Core.File.Builder.build(%{
       path: "/tmp/not_emty_png.png",
       name: Path.basename("/tmp/not_emty_png.png"),
@@ -86,13 +124,7 @@ defmodule Content.InsertingTest do
 
     {:ok, true} = PostgresqlAdapters.File.Inserting.transform(file, user)
 
-    {:ok, playlist} = Core.Playlist.Builder.build(%{
-      name: "Тест"
-    })
-
-    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user)
-
-    {:ok, content} = Builder.build(%{
+    {:ok, content} = Core.Content.Builder.build(%{
       name: "Тест_1234",
       duration: 15,
       file: file,
@@ -100,10 +132,24 @@ defmodule Content.InsertingTest do
       serial_number: 1
     })
 
-    {:ok, true} = Inserting.transform(content, user)
+    {:ok, true} = PostgresqlAdapters.Content.Inserting.transform(content, user)
 
-    {result, _} = Inserting.transform(content, user)
+    {:ok, task} = Builder.build(%{
+      name: "Тест_1234",
+      playlist: playlist,
+      group: group,
+      type: "Каждый день",
+      day: nil, 
+      start_hour: 1,
+      end_hour: 5,
+      start_minute: 0,
+      end_minute: 30
+    })
 
+    {:ok, true} = Inserting.transform(task, user)
+
+    {result, _} = Inserting.transform(task, user)
+    
     assert result == :error
   end
 

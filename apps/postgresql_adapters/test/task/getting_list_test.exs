@@ -1,15 +1,15 @@
-defmodule Device.GettingListTest do
+defmodule Task.GettingListTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.Device.Inserting
-  alias PostgresqlAdapters.Device.GettingList
-  alias Core.Device.Builder
+  alias PostgresqlAdapters.Task.Inserting
+  alias PostgresqlAdapters.Task.GettingList
+  alias Core.Task.Builder
 
   alias Core.Shared.Types.Pagination
-  alias Core.Device.Types.Filter
-  alias Core.Device.Types.Sort
+  alias Core.Task.Types.Filter
+  alias Core.Task.Types.Sort
 
-  doctest PostgresqlAdapters.Device.GettingList
+  doctest PostgresqlAdapters.Task.GettingList
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -23,6 +23,9 @@ defmodule Device.GettingListTest do
     )
 
     :ets.insert(:connections, {"postgresql", "", pid})
+
+    File.touch("/tmp/not_emty_png.png", 1544519753)
+    File.write("/tmp/not_emty_png.png", "content")
 
     Postgrex.query!(pid, "DELETE FROM relations_user_task", [])
     Postgrex.query!(pid, "DELETE FROM tasks", [])
@@ -54,15 +57,54 @@ defmodule Device.GettingListTest do
 
     {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
 
-    {:ok, device} = Builder.build(%{
-      ip: "192.168.1.98",
-      latitude: 78.454567,
-      longitude: 98.3454,
-      desc: "Описание",
-      group: group
+    {:ok, playlist} = Core.Playlist.Builder.build(%{
+      name: "Тест"
     })
 
-    {:ok, true} = Inserting.transform(device, user)
+    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user)
+
+    {:ok, file} = Core.File.Builder.build(%{
+      path: "/tmp/not_emty_png.png",
+      name: Path.basename("/tmp/not_emty_png.png"),
+      extname: Path.extname("/tmp/not_emty_png.png"),
+      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
+    })
+
+    {:ok, true} = PostgresqlAdapters.File.Inserting.transform(file, user)
+
+    {:ok, content} = Core.Content.Builder.build(%{
+      name: "Тест_1234",
+      duration: 15,
+      file: file,
+      playlist: playlist,
+      serial_number: 1
+    })
+
+    {:ok, true} = PostgresqlAdapters.Content.Inserting.transform(content, user)
+
+    {:ok, content} = Core.Content.Builder.build(%{
+      name: "Тест_1234",
+      duration: 15,
+      file: file,
+      playlist: playlist,
+      serial_number: 2
+    })
+
+    {:ok, true} = PostgresqlAdapters.Content.Inserting.transform(content, user)
+
+    {:ok, task} = Builder.build(%{
+      name: "Тест_1234",
+      playlist: playlist,
+      group: group,
+      type: "Каждый день",
+      day: nil, 
+      start_hour: 1,
+      end_hour: 5,
+      start_minute: 0,
+      end_minute: 30
+    })
+
+    {:ok, true} = Inserting.transform(task, user)
 
     {result, list} = GettingList.get(
       %Pagination{
@@ -70,7 +112,7 @@ defmodule Device.GettingListTest do
         limit: 10
       }, 
       %Filter{
-        description: "Описание"
+        name: "Тест_1234"
       }, 
       %Sort{
         created: "ASC"
@@ -86,14 +128,14 @@ defmodule Device.GettingListTest do
 
   test "Get empty list" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
-
+    
     {result, list} = GettingList.get(
       %Pagination{
         page: 1,
         limit: 10
       }, 
       %Filter{
-        description: "Test"
+        name: "Test"
       }, 
       %Sort{
         created: "ASC"
