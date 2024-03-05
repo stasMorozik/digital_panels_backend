@@ -10,7 +10,8 @@ defmodule Core.Content.Builders.Filter do
   def build(%{} = args) do
     filter()
       |> name(Map.get(args, :name))
-      |> duration(Map.get(args, :duration))
+      |> duration_f(Map.get(args, :duration_f))
+      |> duration_t(Map.get(args, :duration_t))
       |> created_f(Map.get(args, :created_f))
       |> created_t(Map.get(args, :created_t))
   end
@@ -34,14 +35,25 @@ defmodule Core.Content.Builders.Filter do
     {:error, message}
   end
 
-  defp duration({:ok, filter}, duration) do
-    case duration do
+  defp duration_f({:ok, filter}, duration_f) do
+    case duration_f do
       nil -> {:ok, filter}
-      duration -> Duration.build({:ok, filter}, duration)
+      duration_f -> Duration.build({:ok, filter}, duration_f)
     end
   end
 
-  defp duration({:error, message}, _) do
+  defp duration_f({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp duration_t({:ok, filter}, duration_t) do
+    case duration_t do
+      nil -> {:ok, filter}
+      duration_t -> Duration.build({:ok, filter}, duration_t)
+    end
+  end
+
+  defp duration_t({:error, message}, _) do
     {:error, message}
   end
 
