@@ -9,11 +9,11 @@ defmodule PostgresqlAdapters.Playlist.GettingById do
 
   @query "
     SELECT 
-      playlist.id AS pl_id,
-      playlist.name AS pl_name,
-      playlist.sum AS pl_sum,
-      playlist.created AS pl_cr,
-      playlist.updated AS pl_upd,
+      playlists.id AS pl_id,
+      playlists.name AS pl_name,
+      playlists.sum AS pl_sum,
+      playlists.created AS pl_cr,
+      playlists.updated AS pl_upd,
       contents.id AS cnt_id,
       contents.name AS cnt_name,
       contents.duration AS cnt_dur,
@@ -28,19 +28,19 @@ defmodule PostgresqlAdapters.Playlist.GettingById do
       files.size AS fl_sz,
       files.created AS fl_cr
     FROM 
-      relations_user_playlist 
-    JOIN playlist ON 
-      relations_user_playlist.playlist_id = playlist.id
+      relations_user_playlist
+    JOIN playlists ON 
+      relations_user_playlist.playlist_id = playlists.id
     LEFT JOIN contents ON
-      contents.playlist_id = playlist.id
+      contents.playlist_id = playlists.id
     LEFT JOIN files ON
       contents.file_id = files.id
-    ORDER BY 
-      contents.serial_number
     WHERE
       relations_user_playlist.user_id = $1 
     AND
-      playlist.id = $2
+      playlists.id = $2
+    ORDER BY 
+      contents.serial_number 
   "
 
   @impl Getter
