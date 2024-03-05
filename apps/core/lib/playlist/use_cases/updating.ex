@@ -22,7 +22,7 @@ defmodule Core.Playlist.UseCases.Updating do
          is_map(args) do
     with {:ok, user} <- Authorization.auth(getter_user, args),
          {:ok, true} <- Core.Shared.Validators.Identifier.valid(Map.get(args, :id)),
-         {:ok, playlist} <- getter_playlist.get(UUID.string_to_binary!(args.id), user),
+         {:ok, playlist} <- getter_playlist.get(args.id, user),
          {:ok, playlist} <- Core.Playlist.Editor.edit(playlist, args),
          {:ok, _} <- transformer_playlist.transform(playlist, user) do
       {:ok, true}

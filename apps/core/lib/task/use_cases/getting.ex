@@ -20,7 +20,7 @@ defmodule Core.Task.UseCases.Getting do
          is_map(args) do
     with {:ok, user} <- Authorization.auth(getter_user, args),
          {:ok, true} <- Core.Shared.Validators.Identifier.valid(Map.get(args, :id)),
-         {:ok, task} <- getter_task.get(UUID.string_to_binary!(args.id), user) do
+         {:ok, task} <- getter_task.get(args.id, user) do
       {:ok, task}
     else
       {:error, message} -> {:error, message}

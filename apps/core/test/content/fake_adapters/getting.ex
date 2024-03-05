@@ -8,7 +8,7 @@ defmodule Content.FakeAdapters.Getting do
 
   @impl Getter
   def get(id, %UserEntity{} = _) do
-    case :mnesia.transaction (fn -> :mnesia.read({:contents, UUID.binary_to_string!(id)}) end) do
+    case :mnesia.transaction (fn -> :mnesia.read({:contents, id}) end) do
       {:atomic, list_contents} -> 
         case length(list_contents) > 0 do
           false -> {:error, "Контент не найден"}

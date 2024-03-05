@@ -8,7 +8,7 @@ defmodule Playlist.FakeAdapters.Getting do
 
   @impl Getter
   def get(id, %UserEntity{} = _) do
-    case :mnesia.transaction (fn -> :mnesia.read({:playlists, UUID.binary_to_string!(id)}) end) do
+    case :mnesia.transaction (fn -> :mnesia.read({:playlists, id}) end) do
       {:atomic, list_playlists} -> 
         case length(list_playlists) > 0 do
           false -> {:error, "Плэйлист не найден"}

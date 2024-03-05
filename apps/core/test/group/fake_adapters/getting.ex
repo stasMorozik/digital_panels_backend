@@ -8,7 +8,7 @@ defmodule Group.FakeAdapters.Getting do
 
   @impl Getter
   def get(id, %UserEntity{} = _) do
-    case :mnesia.transaction (fn -> :mnesia.read({:groups, UUID.binary_to_string!(id)}) end) do
+    case :mnesia.transaction (fn -> :mnesia.read({:groups, id}) end) do
       {:atomic, list_groups} -> 
         case length(list_groups) > 0 do
           false -> {:error, "Группа не найдена"}

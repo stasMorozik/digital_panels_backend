@@ -23,7 +23,7 @@ defmodule Core.Assembly.UseCases.Updating do
          is_map(args) do
     with {:ok, user} <- Authorization.auth(getter_user, args),
          {:ok, true} <- Core.Shared.Validators.Identifier.valid(Map.get(args, :id)),
-         {:ok, assembly} <- getter_assembly.get(UUID.string_to_binary!(args.id), user),
+         {:ok, assembly} <- getter_assembly.get(args.id, user),
          {:ok, assembly} <- Core.Assembly.Editor.edit(assembly),
          {:ok, true} <- transformer_assembly.transform(assembly, user) do
       {:ok, true}

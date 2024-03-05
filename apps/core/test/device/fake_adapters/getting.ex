@@ -8,7 +8,7 @@ defmodule Device.FakeAdapters.Getting do
 
   @impl Getter
   def get(id, %UserEntity{} = _) do
-    case :mnesia.transaction (fn -> :mnesia.read({:devices, UUID.binary_to_string!(id)}) end) do
+    case :mnesia.transaction (fn -> :mnesia.read({:devices, id}) end) do
       {:atomic, list_devices} -> 
         case length(list_devices) > 0 do
           false -> {:error, "Устройство не найдено"}

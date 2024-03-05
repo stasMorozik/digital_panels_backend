@@ -8,7 +8,7 @@ defmodule Task.FakeAdapters.Getting do
 
   @impl Getter
   def get(id, %UserEntity{} = _) do
-    case :mnesia.transaction (fn -> :mnesia.read({:tasks, UUID.binary_to_string!(id)}) end) do
+    case :mnesia.transaction (fn -> :mnesia.read({:tasks, id}) end) do
       {:atomic, list_tasks} -> 
         case length(list_tasks) > 0 do
           false -> {:error, "Задание не найдено"}

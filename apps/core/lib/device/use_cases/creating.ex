@@ -23,7 +23,7 @@ defmodule Core.Device.UseCases.Creating do
          is_map(args) do
     with {:ok, user} <- Authorization.auth(getter_user, args),
          {:ok, true} <- Core.Shared.Validators.Identifier.valid(Map.get(args, :group_id)),
-         {:ok, group} <- getter_group.get(UUID.string_to_binary!(args.group_id), user),
+         {:ok, group} <- getter_group.get(args.group_id, user),
          {:ok, group} <- Core.Group.Editor.edit(group, %{sum: group.sum + 1}),
          args <- Map.put(args, :group, group),
          {:ok, device} <- Core.Device.Builder.build(args),

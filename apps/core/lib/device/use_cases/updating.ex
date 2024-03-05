@@ -27,8 +27,8 @@ defmodule Core.Device.UseCases.Updating do
     with {:ok, user} <- Authorization.auth(getter_user, args),
          {:ok, true} <- Core.Shared.Validators.Identifier.valid(Map.get(args, :id)),
          {:ok, true} <- Core.Shared.Validators.Identifier.valid(Map.get(args, :group_id)),
-         {:ok, device} <- getter_device.get(UUID.string_to_binary!(args.id), user),
-         {:ok, group} <- getter_group.get(UUID.string_to_binary!(args.group_id), user),
+         {:ok, device} <- getter_device.get(args.id, user),
+         {:ok, group} <- getter_group.get(args.group_id, user),
          args <- Map.put(args, :group, case group.id == device.group.id do
             true -> nil
             false -> group

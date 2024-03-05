@@ -7,7 +7,7 @@ defmodule User.FakeAdapters.GettingById do
 
   @impl Getter
   def get(id) do
-    case :mnesia.transaction (fn -> :mnesia.read({:users, UUID.binary_to_string!(id)}) end) do
+    case :mnesia.transaction (fn -> :mnesia.read({:users, id}) end) do
       {:atomic, list_users} -> 
         case length(list_users) > 0 do
           false -> {:error, "Пользователь не найден"}

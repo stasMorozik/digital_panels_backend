@@ -23,7 +23,7 @@ defmodule Core.Group.UseCases.Updating do
          is_map(args) do
     with {:ok, user} <- Authorization.auth(getter_user, args),
          {:ok, true} <- Core.Shared.Validators.Identifier.valid(Map.get(args, :id)),
-         {:ok, group} <- getter_group.get(UUID.string_to_binary!(args.id), user),
+         {:ok, group} <- getter_group.get(args.id, user),
          {:ok, group} <- Core.Group.Editor.edit(group, args),
          {:ok, true} <- transformer_group.transform(group, user) do
       {:ok, true}

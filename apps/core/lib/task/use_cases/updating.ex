@@ -37,9 +37,9 @@ defmodule Core.Task.UseCases.Updating do
          {:ok, true} <- Core.Shared.Validators.Identifier.valid(id),
          {:ok, true} <- Core.Shared.Validators.Identifier.valid(playlist_id),
          {:ok, true} <- Core.Shared.Validators.Identifier.valid(group_id),
-         {:ok, task} <- getter_task.get(UUID.string_to_binary!(id), user),
-         {:ok, playlist} <- getter_playlist.get(UUID.string_to_binary!(playlist_id), user),
-         {:ok, group} <- getter_group.get(UUID.string_to_binary!(group_id), user),
+         {:ok, task} <- getter_task.get(id, user),
+         {:ok, playlist} <- getter_playlist.get(playlist_id, user),
+         {:ok, group} <- getter_group.get(group_id, user),
          args <- Map.put(args, :playlist, case playlist.id == task.playlist.id do
             true -> nil
             false -> playlist

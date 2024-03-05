@@ -20,7 +20,7 @@ defmodule Core.Device.UseCases.Getting do
          is_map(args) do
     with {:ok, user} <- Authorization.auth(getter_user, args),
          {:ok, true} <- Core.Shared.Validators.Identifier.valid(Map.get(args, :id)),
-         {:ok, device} <- getter_device.get(UUID.string_to_binary!(args.id), user) do
+         {:ok, device} <- getter_device.get(args.id, user) do
       {:ok, device}
     else
       {:error, message} -> {:error, message}

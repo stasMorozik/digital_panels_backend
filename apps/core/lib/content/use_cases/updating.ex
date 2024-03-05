@@ -29,14 +29,14 @@ defmodule Core.Content.UseCases.Updating do
          is_atom(transformer_content) and 
          is_map(args) do
     with {:ok, user} <- Authorization.auth(getter_user, args),
-         {:ok, true} <- Identifier.valid(Map.get(args, :id)),
-         {:ok, true} <- Identifier.valid(Map.get(args, :file_id)),
-         {:ok, true} <- Identifier.valid(Map.get(args, :playlist_id)),
-         id <- UUID.string_to_binary!(args.id),
+         id <- Map.get(args, :id),
+         file_id <- Map.get(args, :file_id),
+         playlist_id <- Map.get(args, :playlist_id),
+         {:ok, true} <- Identifier.valid(id),
+         {:ok, true} <- Identifier.valid(file_id),
+         {:ok, true} <- Identifier.valid(playlist_id),
          {:ok, content} <- getter_content.get(id, user),
-         file_id <- UUID.string_to_binary!(args.file_id),
          {:ok, file} <- getter_file.get(file_id, user),
-         playlist_id <- UUID.string_to_binary!(args.playlist_id),
          {:ok, playlist} <- getter_playlist.get(playlist_id, user),
          args <- Map.put(args, :file, case args.file_id == file.id do 
             true -> nil
