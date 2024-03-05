@@ -1,17 +1,14 @@
-defmodule File.GettingTest do
+defmodule Content.GettingTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.File.Inserting
-  alias PostgresqlAdapters.File.GettingById
-  alias Core.File.Builder
+  alias PostgresqlAdapters.Content.Inserting
+  alias PostgresqlAdapters.Content.GettingById
+  alias Core.Content.Builder
 
-  doctest PostgresqlAdapters.File.GettingById
+  doctest PostgresqlAdapters.Content.GettingById
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
-
-    File.touch("/tmp/not_emty_png.png", 1544519753)
-    File.write("/tmp/not_emty_png.png", "content")
 
     {:ok, pid} = Postgrex.start_link(
       hostname: Application.fetch_env!(:postgresql_adapters, :hostname),
@@ -22,6 +19,9 @@ defmodule File.GettingTest do
     )
 
     :ets.insert(:connections, {"postgresql", "", pid})
+
+    File.touch("/tmp/not_emty_png.png", 1544519753)
+    File.write("/tmp/not_emty_png.png", "content")
 
     Postgrex.query!(pid, "DELETE FROM relations_user_content", [])
     Postgrex.query!(pid, "DELETE FROM contents", [])
@@ -38,36 +38,64 @@ defmodule File.GettingTest do
   test "Get by id" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, file} = Builder.build(%{
+    {:ok, file} = Core.File.Builder.build(%{
       path: "/tmp/not_emty_png.png",
       name: Path.basename("/tmp/not_emty_png.png"),
       extname: Path.extname("/tmp/not_emty_png.png"),
       size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
     })
 
-    {:ok, true} = Inserting.transform(file, user)
+    {:ok, true} = PostgresqlAdapters.File.Inserting.transform(file, user)
 
-    {result, _} = GettingById.get(file.id, user)
+    {:ok, playlist} = Core.Playlist.Builder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user)
+
+    {:ok, content} = Builder.build(%{
+      name: "Тест_1234",
+      duration: 15,
+      file: file,
+      playlist: playlist,
+      serial_number: 1
+    })
+
+    {:ok, true} = Inserting.transform(content, user)
+    
+    {result, _} = GettingById.get(content.id, user)
 
     assert result == :ok
   end
 
-  test "File not found with id" do
+  test "Content not found with id" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, file} = Builder.build(%{
+    {:ok, file} = Core.File.Builder.build(%{
       path: "/tmp/not_emty_png.png",
       name: Path.basename("/tmp/not_emty_png.png"),
       extname: Path.extname("/tmp/not_emty_png.png"),
       size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
     })
 
-    {result, _} = GettingById.get(file.id, user)
+    {:ok, playlist} = Core.Playlist.Builder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, content} = Builder.build(%{
+      name: "Тест_1234",
+      duration: 15,
+      file: file,
+      playlist: playlist,
+      serial_number: 1
+    })
+
+    {result, _} = GettingById.get(content.id, user)
 
     assert result == :error
   end
 
-  test "File not found with id of user" do
+  test "Content not found with id of user" do
     {:ok, user_0} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
     {:ok, user_1} = Core.User.Builder.build(%{
@@ -76,16 +104,32 @@ defmodule File.GettingTest do
       surname: "Павел"
     })
 
-    {:ok, file} = Builder.build(%{
+    {:ok, file} = Core.File.Builder.build(%{
       path: "/tmp/not_emty_png.png",
       name: Path.basename("/tmp/not_emty_png.png"),
       extname: Path.extname("/tmp/not_emty_png.png"),
       size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
     })
 
-    {:ok, true} = Inserting.transform(file, user_0)
+    {:ok, true} = PostgresqlAdapters.File.Inserting.transform(file, user_0)
 
-    {result, _} = GettingById.get(file.id, user_1)
+    {:ok, playlist} = Core.Playlist.Builder.build(%{
+      name: "Тест"
+    })
+
+    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user_0)
+
+    {:ok, content} = Builder.build(%{
+      name: "Тест_1234",
+      duration: 15,
+      file: file,
+      playlist: playlist,
+      serial_number: 1
+    })
+
+    {:ok, true} = Inserting.transform(content, user_0)
+
+    {result, _} = GettingById.get(content.id, user_1)
 
     assert result == :error
   end

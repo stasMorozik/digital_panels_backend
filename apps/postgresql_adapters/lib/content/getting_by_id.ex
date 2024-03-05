@@ -25,7 +25,7 @@ defmodule PostgresqlAdapters.Content.GettingById do
       playlists.id AS pl_id,
       playlists.name AS pl_name,
       playlists.created AS pl_cr,
-      playlists.updated AS pl_upd,
+      playlists.updated AS pl_upd
     FROM 
       relations_user_content 
     JOIN contents ON 

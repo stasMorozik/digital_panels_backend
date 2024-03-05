@@ -1,21 +1,18 @@
-defmodule File.GettingListTest do
+defmodule Content.GettingListTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.File.Inserting
-  alias PostgresqlAdapters.File.GettingList
-  alias Core.File.Builder
+  alias PostgresqlAdapters.Content.Inserting
+  alias PostgresqlAdapters.Content.GettingList
+  alias Core.Content.Builder
 
   alias Core.Shared.Types.Pagination
-  alias Core.File.Types.Filter
-  alias Core.File.Types.Sort
+  alias Core.Content.Types.Filter
+  alias Core.Content.Types.Sort
 
-  doctest PostgresqlAdapters.File.GettingList
+  doctest PostgresqlAdapters.Content.GettingList
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
-
-    File.touch("/tmp/not_emty_png.png", 1544519753)
-    File.write("/tmp/not_emty_png.png", "content")
 
     {:ok, pid} = Postgrex.start_link(
       hostname: Application.fetch_env!(:postgresql_adapters, :hostname),
@@ -26,6 +23,9 @@ defmodule File.GettingListTest do
     )
 
     :ets.insert(:connections, {"postgresql", "", pid})
+
+    File.touch("/tmp/not_emty_png.png", 1544519753)
+    File.write("/tmp/not_emty_png.png", "content")
 
     Postgrex.query!(pid, "DELETE FROM relations_user_content", [])
     Postgrex.query!(pid, "DELETE FROM contents", [])
@@ -42,23 +42,30 @@ defmodule File.GettingListTest do
   test "Get not empty list" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, file} = Builder.build(%{
+    {:ok, file} = Core.File.Builder.build(%{
       path: "/tmp/not_emty_png.png",
       name: Path.basename("/tmp/not_emty_png.png"),
       extname: Path.extname("/tmp/not_emty_png.png"),
       size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
     })
 
-    {:ok, true} = Inserting.transform(file, user)
+    {:ok, true} = PostgresqlAdapters.File.Inserting.transform(file, user)
 
-    {:ok, file} = Builder.build(%{
-      path: "/tmp/not_emty_png.png",
-      name: Path.basename("/tmp/not_emty_png.png"),
-      extname: Path.extname("/tmp/not_emty_png.png"),
-      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
+    {:ok, playlist} = Core.Playlist.Builder.build(%{
+      name: "Тест"
     })
 
-    {:ok, true} = Inserting.transform(file, user)
+    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user)
+
+    {:ok, content} = Builder.build(%{
+      name: "Тест_1234",
+      duration: 15,
+      file: file,
+      playlist: playlist,
+      serial_number: 1
+    })
+
+    {:ok, true} = Inserting.transform(content, user)
 
     {result, list} = GettingList.get(
       %Pagination{
@@ -66,7 +73,7 @@ defmodule File.GettingListTest do
         limit: 10
       }, 
       %Filter{
-        type: "Изображение"
+        name: "Тест_1234"
       }, 
       %Sort{
         created: "ASC"
@@ -77,7 +84,7 @@ defmodule File.GettingListTest do
     leng = length(list)
 
     assert result == :ok
-    assert leng == 2
+    assert leng == 1
   end
 
   test "Get empty list" do
@@ -89,7 +96,7 @@ defmodule File.GettingListTest do
         limit: 10
       }, 
       %Filter{
-        type: "Видеозапись"
+        name: "Test"
       }, 
       %Sort{
         created: "ASC"

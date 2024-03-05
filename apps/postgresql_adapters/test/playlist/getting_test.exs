@@ -20,6 +20,12 @@ defmodule Playlist.GettingTest do
 
     :ets.insert(:connections, {"postgresql", "", pid})
 
+    Postgrex.query!(pid, "DELETE FROM relations_user_content", [])
+    Postgrex.query!(pid, "DELETE FROM contents", [])
+
+    Postgrex.query!(pid, "DELETE FROM relations_user_file", [])
+    Postgrex.query!(pid, "DELETE FROM files", [])
+
     Postgrex.query!(pid, "DELETE FROM relations_user_playlist", [])
     Postgrex.query!(pid, "DELETE FROM playlists", [])
 

@@ -15,7 +15,7 @@ defmodule PostgresqlAdapters.Content.Inserting do
       playlist_id,
       serial_number,
       created,
-      updated,
+      updated
     ) VALUES(
       $1,
       $2,

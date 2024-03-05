@@ -33,6 +33,7 @@ defmodule PostgresqlAdapters.Content.Updating do
                 UUID.string_to_binary!(user.id),
                 UUID.string_to_binary!(content.id),
                 content.name,
+                content.duration,
                 UUID.string_to_binary!(content.file.id),
                 UUID.string_to_binary!(content.playlist.id),
                 content.serial_number,

@@ -1,10 +1,10 @@
-defmodule Playlist.InsertingTest do
+defmodule Content.InsertingTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.Playlist.Inserting
-  alias Core.Playlist.Builder
+  alias PostgresqlAdapters.Content.Inserting
+  alias Core.Content.Builder
 
-  doctest PostgresqlAdapters.Playlist.Inserting
+  doctest PostgresqlAdapters.Content.Inserting
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -18,6 +18,9 @@ defmodule Playlist.InsertingTest do
     )
 
     :ets.insert(:connections, {"postgresql", "", pid})
+
+    File.touch("/tmp/not_emty_png.png", 1544519753)
+    File.write("/tmp/not_emty_png.png", "content")
 
     Postgrex.query!(pid, "DELETE FROM relations_user_content", [])
     Postgrex.query!(pid, "DELETE FROM contents", [])
@@ -34,16 +37,35 @@ defmodule Playlist.InsertingTest do
   test "Insert" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, playlist} = Builder.build(%{
+    {:ok, file} = Core.File.Builder.build(%{
+      path: "/tmp/not_emty_png.png",
+      name: Path.basename("/tmp/not_emty_png.png"),
+      extname: Path.extname("/tmp/not_emty_png.png"),
+      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
+    })
+
+    {:ok, true} = PostgresqlAdapters.File.Inserting.transform(file, user)
+
+    {:ok, playlist} = Core.Playlist.Builder.build(%{
       name: "Тест"
     })
 
-    {result, _} = Inserting.transform(playlist, user)
+    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user)
+
+    {:ok, content} = Builder.build(%{
+      name: "Тест_1234",
+      duration: 15,
+      file: file,
+      playlist: playlist,
+      serial_number: 1
+    })
+
+    {result, _} = Inserting.transform(content, user)
 
     assert result == :ok
   end
 
-  test "Invalid playlist" do
+  test "Invalid group" do
     {result, _} = Inserting.transform(%{}, %{})
 
     assert result == :error
@@ -52,13 +74,32 @@ defmodule Playlist.InsertingTest do
   test "Already exists" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, playlist} = Builder.build(%{
+    {:ok, file} = Core.File.Builder.build(%{
+      path: "/tmp/not_emty_png.png",
+      name: Path.basename("/tmp/not_emty_png.png"),
+      extname: Path.extname("/tmp/not_emty_png.png"),
+      size: FileSize.from_file("/tmp/not_emty_png.png", :mb)
+    })
+
+    {:ok, true} = PostgresqlAdapters.File.Inserting.transform(file, user)
+
+    {:ok, playlist} = Core.Playlist.Builder.build(%{
       name: "Тест"
     })
 
-    {:ok, true} = Inserting.transform(playlist, user)
+    {:ok, true} = PostgresqlAdapters.Playlist.Inserting.transform(playlist, user)
 
-    {result, _} = Inserting.transform(playlist, user)
+    {:ok, content} = Builder.build(%{
+      name: "Тест_1234",
+      duration: 15,
+      file: file,
+      playlist: playlist,
+      serial_number: 1
+    })
+
+    {:ok, true} = Inserting.transform(content, user)
+
+    {result, _} = Inserting.transform(content, user)
 
     assert result == :error
   end
