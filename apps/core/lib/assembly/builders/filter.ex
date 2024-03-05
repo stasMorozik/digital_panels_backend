@@ -3,12 +3,15 @@ defmodule Core.Assembly.Builders.Filter do
   alias Core.Assembly.Builders.Type
 
   alias Core.Shared.Validators.Date
+  alias Core.Shared.Validators.Identifier
 
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(%{} = args) do
     filter()
       |> type(Map.get(args, :type))
       |> url(Map.get(args, :url))
+      |> group(Map.get(args, :group))
+      |> status(Map.get(args, :status))
       |> created_f(Map.get(args, :created_f))
       |> created_t(Map.get(args, :created_t))
   end
@@ -43,6 +46,34 @@ defmodule Core.Assembly.Builders.Filter do
   end
 
   defp url({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp group({:ok, filter}, group) do
+    with false <- group == nil,
+         {:ok, _} <- Identifier.valid(group) do
+      {:ok, Map.put(filter, :group, group)}
+    else
+      true -> {:ok, filter}
+      {:error, message} -> {:error, message}
+    end
+  end
+
+  defp group({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp status({:ok, filter}, status) do
+    with false <- status == nil,
+         true <- is_boolean(status) do
+      {:ok, Map.put(filter, :status, status)}
+    else
+      true -> {:ok, filter}
+      false -> {:error, "Не валидный статус"}
+    end
+  end
+
+  defp status({:error, message}, _) do
     {:error, message}
   end
 
