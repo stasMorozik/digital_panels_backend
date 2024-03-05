@@ -39,6 +39,8 @@ defmodule Core.Task.UseCases.Creating do
          {:ok, task} <- Core.Task.Builder.build(args),
          {:ok, pagi} <- Core.Shared.Builders.Pagi.build(%{page: 1, limit: 2}),
          {:ok, filter} <- Core.Task.Builders.Filter.build(%{
+            type: task.type,
+            day: task.day,
             start_hour: task.start_hour,
             start_minute: task.start_minute,
             end_hour: task.end_hour,

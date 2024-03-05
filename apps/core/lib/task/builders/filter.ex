@@ -4,6 +4,7 @@ defmodule Core.Task.Builders.Filter do
   alias Core.Task.Builders.Type
   alias Core.Task.Builders.Start
   alias Core.Task.Builders.End
+  alias Core.Task.Builders.Day
   alias Core.Shared.Validators.Date
   alias Core.Shared.Validators.Identifier
 
@@ -12,6 +13,7 @@ defmodule Core.Task.Builders.Filter do
     filter()
       |> name(Map.get(args, :name))
       |> type(Map.get(args, :type))
+      |> day({Map.get(args, :type), Map.get(args, :day)})
       |> group(Map.get(args, :group))
       |> start_hm({Map.get(args, :start_hour), Map.get(args, :start_minute)})
       |> end_hm({Map.get(args, :end_hour), Map.get(args, :end_minute)})
@@ -46,6 +48,21 @@ defmodule Core.Task.Builders.Filter do
   end
 
   defp type({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp day({:ok, filter}, {type, day}) do
+    with false <- type == nil,
+         false <- day == nil,
+         {:ok, filter} <- Day.build({:ok, filter}, type, day) do
+      {:ok, filter}
+    else
+      true -> {:ok, filter}
+      {:error, message} -> {:error, message}
+    end
+  end
+
+  defp day({:error, message}, _) do
     {:error, message}
   end
 
