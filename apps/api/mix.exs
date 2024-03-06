@@ -40,8 +40,7 @@ defmodule Api.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:core, in_umbrella: true},
       {:postgresql_adapters, in_umbrella: true},
-      {:http_adapters, in_umbrella: true},
-      {:smtp_adapters, in_umbrella: true},
+      {:http_adapters, in_umbrella: true}
     ]
   end
 

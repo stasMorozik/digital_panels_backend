@@ -26,8 +26,8 @@ defmodule Core.ConfirmationCode.UseCases.Creating do
   ) when is_atom(transformer_code_store) and is_atom(notifier) do
       with needle <- Map.get(args, :needle), 
            {:ok, entity} <- Builder.build(Email, needle),
-           {:ok, _} <- transformer_code_store.transform(entity),
-           {:ok, _} <- notifier.notify(%Core.Shared.Types.Notification{
+           {:ok, true} <- transformer_code_store.transform(entity),
+           {:ok, true} <- notifier.notify(%Core.Shared.Types.Notification{
               to: needle,
               from: @from,
               subject: "Подтвердите адрес электронной почты",
