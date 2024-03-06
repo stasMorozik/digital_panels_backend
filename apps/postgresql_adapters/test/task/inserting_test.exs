@@ -22,6 +22,9 @@ defmodule Task.InsertingTest do
     File.touch("/tmp/not_emty_png.png", 1544519753)
     File.write("/tmp/not_emty_png.png", "content")
 
+    Postgrex.query!(pid, "DELETE FROM relations_user_assembly", [])
+    Postgrex.query!(pid, "DELETE FROM assemblies", [])
+
     Postgrex.query!(pid, "DELETE FROM relations_user_task", [])
     Postgrex.query!(pid, "DELETE FROM tasks", [])
 

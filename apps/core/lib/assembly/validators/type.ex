@@ -1,11 +1,12 @@
 defmodule Core.Assembly.Validators.Type do
   @moduledoc """
-    Валидирует тип сборки(для windows или для linux)
+    Валидирует тип сборки(для windows или для linux или для Android)
   """
 
   @types [
     "Windows",
-    "Linux"
+    "Linux",
+    "Android"
   ]
 
   @spec valid(any()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()

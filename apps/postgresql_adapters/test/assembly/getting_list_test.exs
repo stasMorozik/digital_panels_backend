@@ -1,10 +1,15 @@
-defmodule Group.InsertingTest do
+defmodule Assembly.GettingListTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.Group.Inserting
-  alias Core.Group.Builder
+  alias PostgresqlAdapters.Assembly.Inserting
+  alias PostgresqlAdapters.Assembly.GettingList
+  alias Core.Assembly.Builder
 
-  doctest PostgresqlAdapters.Group.Inserting
+  alias Core.Shared.Types.Pagination
+  alias Core.Assembly.Types.Filter
+  alias Core.Assembly.Types.Sort
+
+  doctest PostgresqlAdapters.Assembly.GettingList
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -30,54 +35,63 @@ defmodule Group.InsertingTest do
 
     Postgrex.query!(pid, "DELETE FROM relations_user_group", [])
     Postgrex.query!(pid, "DELETE FROM groups", [])
-    
+
     :ok
   end
 
-  test "Insert" do
+  test "Get not empty list" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, group} = Builder.build(%{
+    {:ok, group} = Core.Group.Builder.build(%{
       name: "Тест"
     })
 
-    {result, _} = Inserting.transform(group, user)
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
+
+    {:ok, assembly} = Builder.build(%{group: group, type: "Linux"})
+
+    {:ok, true} = Inserting.transform(assembly, user)
+
+    {result, list} = GettingList.get(
+      %Pagination{
+        page: 1,
+        limit: 10
+      }, 
+      %Filter{
+        type: "Linux"
+      }, 
+      %Sort{
+        created: "ASC"
+      }, 
+      user
+    )
+
+    leng = length(list)
 
     assert result == :ok
+    assert leng == 1
   end
 
-  test "Invalid group" do
-    {result, _} = Inserting.transform(%{}, %{})
-
-    assert result == :error
-  end
-
-  test "Already exists" do
+  test "Get empty list" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
+    
+    {result, list} = GettingList.get(
+      %Pagination{
+        page: 1,
+        limit: 10
+      }, 
+      %Filter{
+        type: "Windows"
+      }, 
+      %Sort{
+        created: "ASC"
+      }, 
+      user
+    )
 
-    {:ok, group} = Builder.build(%{
-      name: "Тест"
-    })
+    leng = length(list)
 
-    {:ok, true} = Inserting.transform(group, user)
-
-    {result, _} = Inserting.transform(group, user)
-
-    assert result == :error
+    assert result == :ok
+    assert leng == 0
   end
-
-  # test "Exception: " do
-  #   user_entity = %Entity{
-  #     id: "cef89cb9-3d5a-4f2c-97b9-d047347f2e53",
-  #     email: "some_long_email@gmail.com",
-  #     name: "name",
-  #     surname: "surname",
-  #     created: ~D[2024-01-01],
-  #     updated: ~D[2024-01-01]
-  #   }
-
-  #   {result, _} = Inserting.transform(user_entity)
-
-  #   assert result == :exception
-  # end
 end

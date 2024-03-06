@@ -17,7 +17,7 @@ defmodule Core.Assembly.Editor do
   # Функция построения базового устройства
   defp entity(entity) do
     {:ok, %Entity{
-      id: UUID.uuid4(), 
+      id: entity.id, 
       group: entity.group,
       url: entity.url,
       type: entity.type,

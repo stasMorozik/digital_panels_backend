@@ -1,10 +1,10 @@
-defmodule Group.InsertingTest do
+defmodule Assembly.InsertingTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.Group.Inserting
-  alias Core.Group.Builder
+  alias PostgresqlAdapters.Assembly.Inserting
+  alias Core.Assembly.Builder
 
-  doctest PostgresqlAdapters.Group.Inserting
+  doctest PostgresqlAdapters.Assembly.Inserting
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -37,11 +37,15 @@ defmodule Group.InsertingTest do
   test "Insert" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, group} = Builder.build(%{
+    {:ok, group} = Core.Group.Builder.build(%{
       name: "Тест"
     })
 
-    {result, _} = Inserting.transform(group, user)
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
+
+    {:ok, assembly} = Builder.build(%{group: group, type: "Linux"})
+
+    {result, _} = Inserting.transform(assembly, user)
 
     assert result == :ok
   end
@@ -52,19 +56,19 @@ defmodule Group.InsertingTest do
     assert result == :error
   end
 
-  test "Already exists" do
-    {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
+  # test "Already exists" do
+  #   {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, group} = Builder.build(%{
-      name: "Тест"
-    })
+  #   {:ok, group} = Builder.build(%{
+  #     name: "Тест"
+  #   })
 
-    {:ok, true} = Inserting.transform(group, user)
+  #   {:ok, true} = Inserting.transform(group, user)
 
-    {result, _} = Inserting.transform(group, user)
+  #   {result, _} = Inserting.transform(group, user)
 
-    assert result == :error
-  end
+  #   assert result == :error
+  # end
 
   # test "Exception: " do
   #   user_entity = %Entity{

@@ -1,10 +1,12 @@
-defmodule Group.InsertingTest do
+defmodule Assembly.UpdatingTest do
   use ExUnit.Case
 
-  alias PostgresqlAdapters.Group.Inserting
-  alias Core.Group.Builder
+  alias PostgresqlAdapters.Assembly.Inserting
+  alias PostgresqlAdapters.Assembly.Updating
+  alias PostgresqlAdapters.Assembly.GettingById
+  alias Core.Assembly.Builder
 
-  doctest PostgresqlAdapters.Group.Inserting
+  doctest PostgresqlAdapters.Assembly.Updating
 
   setup_all do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -34,34 +36,48 @@ defmodule Group.InsertingTest do
     :ok
   end
 
-  test "Insert" do
+  test "Update 0" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, group} = Builder.build(%{
+    {:ok, group} = Core.Group.Builder.build(%{
       name: "Тест"
     })
 
-    {result, _} = Inserting.transform(group, user)
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
+
+    {:ok, assembly} = Builder.build(%{group: group, type: "Linux"})
+
+    {:ok, true} = Inserting.transform(assembly, user)
+
+    {result, _} = Updating.transform(assembly, user)
 
     assert result == :ok
   end
 
-  test "Invalid group" do
-    {result, _} = Inserting.transform(%{}, %{})
-
-    assert result == :error
-  end
-
-  test "Already exists" do
+  test "Update 1" do
     {:ok, user} = PostgresqlAdapters.User.GettingByEmail.get("stanim857@gmail.com")
 
-    {:ok, group} = Builder.build(%{
+    {:ok, group} = Core.Group.Builder.build(%{
       name: "Тест"
     })
 
-    {:ok, true} = Inserting.transform(group, user)
+    {:ok, true} = PostgresqlAdapters.Group.Inserting.transform(group, user)
 
-    {result, _} = Inserting.transform(group, user)
+    {:ok, assembly} = Builder.build(%{group: group, type: "Linux"})
+
+    {:ok, true} = Inserting.transform(assembly, user)
+
+    {:ok, assembly} = Core.Assembly.Editor.edit(assembly)
+
+    {:ok, true} = Updating.transform(assembly, user)
+
+    {:ok, assembly} = GettingById.get(assembly.id, user)
+
+    assert assembly.status == true
+  end
+
+  test "Invalid group" do
+    {result, _} = Updating.transform(%{}, %{})
 
     assert result == :error
   end
