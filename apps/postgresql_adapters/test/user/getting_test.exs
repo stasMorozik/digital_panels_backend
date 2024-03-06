@@ -44,7 +44,7 @@ defmodule User.GettingTest do
 
     {:ok, true} = Inserting.transform(user_entity)
 
-    {result, _} = GettingById.get(UUID.string_to_binary!(user_entity.id))
+    {result, _} = GettingById.get(user_entity.id)
 
     assert result == :ok
   end

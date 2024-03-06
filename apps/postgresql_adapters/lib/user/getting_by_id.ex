@@ -26,7 +26,7 @@ defmodule PostgresqlAdapters.User.GettingById do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
 
-        with {:ok, result} <- Executor.execute(connection, @query, [id]),
+        with {:ok, result} <- Executor.execute(connection, @query, [UUID.string_to_binary!(id)]),
              true <- result.num_rows > 0,
              [ row ] <- result.rows,
              [ id, email, name, surname, created, updated ] <- row do

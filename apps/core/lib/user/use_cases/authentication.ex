@@ -23,9 +23,11 @@ defmodule Core.User.UseCases.Authentication do
   ) when is_atom(getter_confiramtion_code)
     and is_atom(getter_user)
     and is_map(args) do
-    with {:ok, code_entity} <- getter_confiramtion_code.get(Map.get(args, :email)),
+    with email <- Map.get(args, :email),
+         {:ok, true} <- Core.Shared.Validators.Email.valid(email),
+         {:ok, code_entity} <- getter_confiramtion_code.get(email),
          {:ok, _} <- Confirmatory.confirm(code_entity, Map.get(args, :code)),
-         {:ok, user_entity} <- getter_user.get(Map.get(args, :email)),
+         {:ok, user_entity} <- getter_user.get(email),
          r_token <- Core.RefreshToken.Entity.generate_and_sign!(%{id: user_entity.id}),
          a_token <- Core.AccessToken.Entity.generate_and_sign!(%{id: user_entity.id}) do
       {:ok, %{

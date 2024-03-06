@@ -37,7 +37,7 @@ defmodule Api.MixProject do
   defp deps do
     [
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"},
+      {:plug_cowboy, "~> 2.7"},
       {:core, in_umbrella: true},
       {:postgresql_adapters, in_umbrella: true},
       {:http_adapters, in_umbrella: true}

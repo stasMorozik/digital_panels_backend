@@ -24,7 +24,8 @@ config :api,
   node_logger: String.to_atom("node_logger@debian"),
   name_logger: NodeLogger.Logger,
   node_notifier: String.to_atom("node_notifier@debian"),
-  name_notifier: NodeNotifier.Notifier
+  name_notifier: NodeNotifier.Notifier,
+  developer_telegram_login: "@Stanm858"
 
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
