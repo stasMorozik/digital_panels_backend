@@ -12,10 +12,10 @@ defmodule HttpAdapters.File.Uploading do
   @impl Transformer
   def transform(%File{} = file, %User{} = user) do
     header_content = "Basic " <> Base.encode64("#{@user_web_dav}:#{@password_web_dav}")
-
+    
     case HTTPoison.put(
-      entity.url,
-      {:file, entity.path},
+      file.url,
+      {:file, file.path},
       [{"Authorization", header_content}]
     ) do
       {:ok, %HTTPoison.Response{
