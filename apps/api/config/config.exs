@@ -1,14 +1,27 @@
 import Config
 
-config :api, ApiWeb.Endpoint,
-  url: [host: "localhost"],
-  render_errors: [
-    view: ApiWeb.ErrorView,
-    accepts: ~w(json),
-    layout: false
-  ],
-  pubsub_server: Api.PubSub,
-  live_view: [signing_salt: "xgSq32lf"]
+
+config :joken, 
+  default_signer: "secret"
+
+config :core, 
+  email_address: "digital_panels@dev.org",
+  url_web_dav: "http://192.168.0.161:8100/upload"
+
+config :http_adapters,
+  user_web_dav: "user",
+  password_web_dav: "12345"
+
+config :postgresql_adapters,
+  hostname: "192.168.0.161",
+  username: "db_user",
+  password: "12345",
+  database: "system_content_manager",
+  port: 5437,
+  secret_key: "!qazSymKeyXsw2"
+
+config :api, 
+  cowboy_port: 8080
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -16,7 +29,7 @@ config :logger, :console,
   metadata: [:request_id]
 
 # Use Jason for JSON parsing in Phoenix
-config :phoenix, :json_library, Jason
+# config :phoenix, :json_library, Jason
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

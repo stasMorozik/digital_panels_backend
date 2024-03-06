@@ -2,4 +2,4 @@
 
 cd /app/apps/api/;
 
-mix phx.server
+mix run --no-halt

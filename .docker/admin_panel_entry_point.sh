@@ -2,4 +2,4 @@
 
 cd /app/apps/admin_panel/;
 
-mix phx.server
+mix run --no-halt

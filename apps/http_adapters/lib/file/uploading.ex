@@ -10,7 +10,7 @@ defmodule HttpAdapters.File.Uploading do
   @password_web_dav Application.compile_env(:http_adapters, :password_web_dav)
 
   @impl Transformer
-  def transform(%File{} = file, %User{} = user) do
+  def transform(%File{} = file, %User{} = _user) do
     header_content = "Basic " <> Base.encode64("#{@user_web_dav}:#{@password_web_dav}")
     
     case HTTPoison.put(

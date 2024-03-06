@@ -20,8 +20,6 @@ RUN mix deps.get
 
 RUN mix local.hex
 
-RUN mix archive.install hex phx_new
-
-EXPOSE 4000
+EXPOSE 8080
 
 ENTRYPOINT ["api_entry_point.sh"]
