@@ -22,7 +22,9 @@ config :postgresql_adapters,
 config :api, 
   cowboy_port: 8080,
   node_logger: String.to_atom("node_logger@debian"),
-  name_logger: NodeLogger.Logger
+  name_logger: NodeLogger.Logger,
+  node_notifier: String.to_atom("node_notifier@debian"),
+  name_notifier: NodeNotifier.Notifier
 
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

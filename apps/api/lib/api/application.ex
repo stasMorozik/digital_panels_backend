@@ -2,10 +2,15 @@ defmodule Api.Application do
   use Application
   require Logger
 
+  @node_logger Application.compile_env(:api, :node_logger)
+  @node_notifier Application.compile_env(:api, :node_notifier)
+
   def start(_type, _args) do
     :ets.new(:connections, [:set, :public, :named_table])
 
-    :pong = :net_adm.ping(String.to_atom("node_logger@debian"))
+    :pong = :net_adm.ping(@node_logger)
+
+    :pong = :net_adm.ping(@node_notifier)
 
     children = [
       {
