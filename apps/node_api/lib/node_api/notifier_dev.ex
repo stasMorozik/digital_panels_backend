@@ -1,9 +1,11 @@
-defmodule Api.NotifierDev do
+defmodule NodeApi.NotifierDev do
   require Logger
   alias Core.Shared.Ports.Notifier
 
-  @node_notifier Application.compile_env(:api, :node_notifier)
-  @name_notifier Application.compile_env(:api, :name_notifier)
+  @where {
+    Application.compile_env(:node_api, :name_process_notifier), 
+    Application.compile_env(:node_api, :name_node_notifier)
+  }
 
   @behaviour Notifier
 
@@ -14,7 +16,7 @@ defmodule Api.NotifierDev do
     subject: subject,
     message: message
   }) do
-    Process.send({@node_notifier, @name_notifier}, {:for_developer, %{
+    Process.send(@where, {:for_developer, %{
       to: to,
       from: from,
       subject: subject,

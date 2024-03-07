@@ -1,4 +1,4 @@
-defmodule Api.Postgres do
+defmodule NodeApi.Postgres do
   def start_link do
     {:ok, pid} = Postgrex.start_link(
       hostname: Application.fetch_env!(:postgresql_adapters, :hostname),

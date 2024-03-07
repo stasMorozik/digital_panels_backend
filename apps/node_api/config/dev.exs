@@ -19,13 +19,14 @@ config :postgresql_adapters,
   port: 5437,
   secret_key: "!qazSymKeyXsw2"
 
-config :api, 
+config :node_api, 
   cowboy_port: 8080,
-  node_logger: String.to_atom("node_logger@debian"),
-  name_logger: NodeLogger.Logger,
-  node_notifier: String.to_atom("node_notifier@debian"),
-  name_notifier: NodeNotifier.Notifier,
-  developer_telegram_login: "@Stanm858"
+  name_node_logger: String.to_atom("node_logger@debian"),
+  name_process_logger: NodeLogger.Logger,
+  name_node_notifier: String.to_atom("node_notifier@debian"),
+  name_process_notifier: NodeNotifier.Notifier,
+  developer_telegram_login: "@Stanm858",
+  name_node_api: String.to_atom("node_api@debian")
 
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

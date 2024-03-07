@@ -1,9 +1,9 @@
-defmodule Api.MixProject do
+defmodule NodeApi.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :api,
+      app: :node_api,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "./config/config.exs",
@@ -22,7 +22,7 @@ defmodule Api.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Api.Application, []},
+      mod: {NodeApi.Application, []},
       extra_applications: [:logger]
     ]
   end
