@@ -60,8 +60,8 @@ defmodule PostgresqlAdapters.Device.GettingById do
           {:ok, %Device{
             id: UUID.binary_to_string!(dev_id),
             ip: dev_ip, 
-            latitude: dev_lat, 
-            longitude: dev_long, 
+            latitude: Decimal.to_float(dev_lat), 
+            longitude: Decimal.to_float(dev_long), 
             desc: dev_desc,
             group: %Core.Group.Entity{
               id: UUID.binary_to_string!(gr_id), 

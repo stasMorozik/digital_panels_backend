@@ -65,6 +65,35 @@ defmodule NodeApi.Router do
       |> NodeApi.Group.Controller.get(id)
   end
 
+  put "/api/v1/device/" do
+    conn 
+      |> fetch_cookies()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Device.Controller.create()
+  end
+
+  post "/api/v1/device/:id" do
+    conn 
+      |> fetch_cookies()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Device.Controller.update(id)
+  end
+
+  get "/api/v1/device/" do
+    conn 
+      |> fetch_cookies()
+      |> fetch_query_params()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Device.Controller.list()
+  end
+
+  get "/api/v1/device/:id" do
+    conn 
+      |> fetch_cookies()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Device.Controller.get(id)
+  end
+
   match _ do
     conn
       |> put_resp_content_type("application/json")

@@ -20,7 +20,7 @@ defmodule NodeApi.Group.Controller do
     try do
       case Creating.create(UserGettingById, GroupInserting, args) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Созданна группа устройств")
+          NodeApi.Logger.info("Создана группа устройств")
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
 
@@ -64,37 +64,13 @@ defmodule NodeApi.Group.Controller do
     args = %{
       token: Map.get(conn.cookies, "access_token"),
       pagi: %{
-        page: case Map.get(pagi, "page") do
-          nil -> nil
-          page -> case Integer.parse(page) do
-            :error -> nil
-            {page, _} -> page 
-          end
-        end,
-        limit: case Map.get(pagi, "limit") do
-          nil -> nil
-          limit -> case Integer.parse(limit) do
-            :error -> nil
-            {limit, _} -> limit 
-          end
-        end,
+        page: NodeApi.Utils.integer_parse(pagi, "page"),
+        limit: NodeApi.Utils.integer_parse(pagi, "limit"),
       },
       filter: %{
         name: Map.get(filter, "name"), 
-        sum_f: case Map.get(pagi, "sum_f") do
-          nil -> nil
-          sum_f -> case Integer.parse(sum_f) do
-            :error -> nil
-            {sum_f, _} -> sum_f 
-          end
-        end, 
-        sum_t: case Map.get(pagi, "sum_t") do
-          nil -> nil
-          sum_t -> case Integer.parse(sum_t) do
-            :error -> nil
-            {sum_t, _} -> sum_t 
-          end
-        end, 
+        sum_f: NodeApi.Utils.integer_parse(filter, "sum_f"), 
+        sum_t: NodeApi.Utils.integer_parse(filter, "sum_t"), 
         created_f: Map.get(filter, "created_f"), 
         created_t: Map.get(filter, "created_t")
       },

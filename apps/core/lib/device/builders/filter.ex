@@ -44,7 +44,7 @@ defmodule Core.Device.Builders.Filter do
   defp latitude_f({:ok, filter}, latitude_f) do
     case latitude_f do
       nil -> {:ok, filter}
-      latitude_f -> Latitude.build({:ok, filter}, latitude_f)
+      latitude_f -> Latitude.build({:ok, filter}, {:latitude_f, latitude_f})
     end
   end
 
@@ -55,7 +55,7 @@ defmodule Core.Device.Builders.Filter do
   defp latitude_t({:ok, filter}, latitude_t) do
     case latitude_t do
       nil -> {:ok, filter}
-      latitude_t -> Latitude.build({:ok, filter}, latitude_t)
+      latitude_t -> Latitude.build({:ok, filter}, {:latitude_t, latitude_t})
     end
   end
 
@@ -66,7 +66,7 @@ defmodule Core.Device.Builders.Filter do
   defp longitude_f({:ok, filter}, longitude_f) do
     case longitude_f do
       nil -> {:ok, filter}
-      longitude_f -> Longitude.build({:ok, filter}, longitude_f)
+      longitude_f -> Longitude.build({:ok, filter}, {:longitude_f, longitude_f})
     end
   end
 
@@ -77,7 +77,7 @@ defmodule Core.Device.Builders.Filter do
   defp longitude_t({:ok, filter}, longitude_t) do
     case longitude_t do
       nil -> {:ok, filter}
-      longitude_t -> Longitude.build({:ok, filter}, longitude_t)
+      longitude_t -> Longitude.build({:ok, filter}, {:longitude_t, longitude_t})
     end
   end
 

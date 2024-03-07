@@ -47,8 +47,8 @@ defmodule PostgresqlAdapters.Group.GettingById do
                 %Core.Device.Entity{
                   id: UUID.binary_to_string!(dev_id),
                   ip: dev_ip,
-                  latitude: dev_lat,
-                  longitude: dev_long,
+                  latitude: Decimal.to_float(dev_lat),
+                  longitude: Decimal.to_float(dev_long),
                   desc: dev_desc,
                   created: dev_created,
                 }

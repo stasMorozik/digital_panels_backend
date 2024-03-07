@@ -31,8 +31,8 @@ defmodule PostgresqlAdapters.Device.GettingList do
                 %Device{
                   id: UUID.binary_to_string!(id),
                   ip: ip, 
-                  latitude: lat, 
-                  longitude: long, 
+                  latitude: Decimal.to_float(lat), 
+                  longitude: Decimal.to_float(long), 
                   desc: desc,
                   created: created
                 }

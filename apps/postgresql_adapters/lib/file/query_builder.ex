@@ -117,30 +117,6 @@ defmodule PostgresqlAdapters.File.QueryBuilder do
     end
   end
 
-  defp order_by_size({query_string, data_list}, sort) do
-    with order <- Map.get(sort, :size),
-         false <- order == nil do
-
-      query_string = query_string <> " ORDER BY files.size #{order}"
-
-      {query_string, data_list}
-    else
-      true -> {query_string, data_list}
-    end
-  end
-
-  defp order_by_type({query_string, data_list}, sort) do
-    with order <- Map.get(sort, :type),
-         false <- order == nil do
-
-      query_string = query_string <> " ORDER BY files.type #{order}"
-
-      {query_string, data_list}
-    else
-      true -> {query_string, data_list}
-    end
-  end
-
   defp order_by({query_string, data_list}, sort) do
     map = Map.from_struct(sort)
     list = Map.to_list(map)
