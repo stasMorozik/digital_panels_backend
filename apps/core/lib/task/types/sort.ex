@@ -6,5 +6,5 @@ defmodule Core.Task.Types.Sort do
     created: binary()
   }
 
-  defstruct name: nil, type: nil, created: "ASC"
+  defstruct name: nil, type: nil, created: nil
 end

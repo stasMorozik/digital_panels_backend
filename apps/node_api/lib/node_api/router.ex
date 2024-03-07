@@ -16,12 +16,6 @@ defmodule NodeApi.Router do
       |> NodeApi.ConfirmationCode.Controller.create()
   end
 
-  # put "/api/v1/user/" do
-  #   conn
-  #   |> put_resp_content_type("text/plain")
-  #   |> send_resp(200, "Привет Мир!\n")
-  # end
-
   post "/api/v1/user/" do
     conn
       |> put_resp_content_type("application/json")
@@ -33,6 +27,42 @@ defmodule NodeApi.Router do
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
       |> NodeApi.User.Controller.authorization()
+  end
+
+  get "/api/v1/token/" do
+    conn 
+      |> fetch_cookies()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.RefreshToken.Controller.refresh()
+  end
+
+  put "/api/v1/group/" do
+    conn 
+      |> fetch_cookies()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Group.Controller.create()
+  end
+
+  post "/api/v1/group/:id" do
+    conn 
+      |> fetch_cookies()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Group.Controller.update(id)
+  end
+
+  get "/api/v1/group/" do
+    conn 
+      |> fetch_cookies()
+      |> fetch_query_params()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Group.Controller.list()
+  end
+
+  get "/api/v1/group/:id" do
+    conn 
+      |> fetch_cookies()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Group.Controller.get(id)
   end
 
   match _ do

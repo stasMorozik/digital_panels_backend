@@ -10,7 +10,7 @@ defmodule NodeApi.ConfirmationCode.Controller do
     try do
       case Creating.create(Inserting, NotifierUser, args) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Успешное создание кода подтверждения")
+          NodeApi.Logger.info("Создан код подтверждения")
           
           conn 
             |> Plug.Conn.send_resp(200, Jason.encode!(true))

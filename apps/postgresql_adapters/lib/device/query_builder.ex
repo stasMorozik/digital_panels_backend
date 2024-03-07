@@ -35,10 +35,7 @@ defmodule PostgresqlAdapters.Device.QueryBuilder do
       |> and_where_description(filter)
       |> and_where_created_f(filter)
       |> and_where_created_t(filter)
-      |> order_by_ip(sort)
-      |> order_by_latitude(sort)
-      |> order_by_longitude(sort)
-      |> order_by_created(sort)
+      |> order_by(sort)
       |> PostgresqlAdapters.Shared.Pagination.limit_offset(pagi)
   end
 
@@ -146,51 +143,25 @@ defmodule PostgresqlAdapters.Device.QueryBuilder do
     end
   end
 
-  defp order_by_ip({query_string, data_list}, sort) do
-    with order <- Map.get(sort, :ip),
-         false <- order == nil do
+  defp order_by({query_string, data_list}, sort) do
+    map = Map.from_struct(sort)
+    list = Map.to_list(map)
+    
+    found = Enum.find(list, fn (tuple) -> 
+      value = elem(tuple, 1)
+      value != nil
+    end)
+    
+    case found do
+      nil -> {query_string, data_list}
+      tuple -> 
+        key = elem(tuple, 0)
+        value = elem(tuple, 1)
 
-      query_string = query_string <> " ORDER BY devices.ip #{order}"
-
-      {query_string, data_list}
-    else
-      true -> {query_string, data_list}
-    end
-  end
-
-  defp order_by_latitude({query_string, data_list}, sort) do
-    with order <- Map.get(sort, :latitude),
-         false <- order == nil do
-
-      query_string = query_string <> " ORDER BY devices.latitude #{order}"
-
-      {query_string, data_list}
-    else
-      true -> {query_string, data_list}
-    end
-  end
-
-  defp order_by_longitude({query_string, data_list}, sort) do
-    with order <- Map.get(sort, :longitude),
-         false <- order == nil do
-
-      query_string = query_string <> " ORDER BY devices.longitude #{order}"
-
-      {query_string, data_list}
-    else
-      true -> {query_string, data_list}
-    end
-  end
-
-  defp order_by_created({query_string, data_list}, sort) do
-    with order <- Map.get(sort, :created),
-         false <- order == nil do
-
-      query_string = query_string <> " ORDER BY devices.created #{order}"
-
-      {query_string, data_list}
-    else
-      true -> {query_string, data_list}
+        case value do
+          nil -> {query_string, data_list}
+          value -> {query_string <> " ORDER BY devices.#{key} #{value}", data_list}
+        end
     end
   end
 end

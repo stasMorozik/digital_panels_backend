@@ -86,7 +86,7 @@ defmodule PostgresqlAdapters.Playlist.GettingById do
             name: pl_name,
             sum: pl_sum,
             contents: case fl_id == nil do
-              true -> nil
+              true -> []
               false -> Enum.map(result.rows, fun)
             end,
             created: pl_cr,

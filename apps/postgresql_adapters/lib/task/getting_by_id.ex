@@ -125,7 +125,7 @@ defmodule PostgresqlAdapters.Task.GettingById do
               id: UUID.binary_to_string!(pl_id), 
               name: pl_nm,
               contents: case fl_id == nil do
-                true -> nil
+                true -> []
                 false -> Enum.map(result.rows, fun)
               end,
               created: pl_cr,

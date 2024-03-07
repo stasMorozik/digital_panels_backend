@@ -6,5 +6,5 @@ defmodule Core.Group.Types.Sort do
     created: binary()
   }
 
-  defstruct name: nil, sum: nil, created: "ASC"
+  defstruct name: nil, sum: nil, created: nil
 end

@@ -6,5 +6,5 @@ defmodule Core.File.Types.Sort do
     created: binary()
   }
 
-  defstruct size: nil, type: nil, created: "ASC"
+  defstruct size: nil, type: nil, created: nil
 end

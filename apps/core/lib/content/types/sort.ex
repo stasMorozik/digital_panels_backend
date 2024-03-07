@@ -6,5 +6,5 @@ defmodule Core.Content.Types.Sort do
     created: binary()
   }
 
-  defstruct name: nil, duration: nil, created: "ASC"
+  defstruct name: nil, duration: nil, created: nil
 end

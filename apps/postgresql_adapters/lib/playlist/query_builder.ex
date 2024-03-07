@@ -31,9 +31,7 @@ defmodule PostgresqlAdapters.Playlist.QueryBuilder do
       |> and_where_sum_t(filter)
       |> and_where_created_f(filter)
       |> and_where_created_t(filter)
-      |> order_by_name(sort)
-      |> order_by_sum(sort)
-      |> order_by_created(sort)
+      |> order_by(sort)
       |> PostgresqlAdapters.Shared.Pagination.limit_offset(pagi)
   end
 
@@ -105,39 +103,25 @@ defmodule PostgresqlAdapters.Playlist.QueryBuilder do
     end
   end
 
-  defp order_by_name({query_string, data_list}, sort) do
-    with order <- Map.get(sort, :name),
-         false <- order == nil do
+  defp order_by({query_string, data_list}, sort) do
+    map = Map.from_struct(sort)
+    list = Map.to_list(map)
+    
+    found = Enum.find(list, fn (tuple) -> 
+      value = elem(tuple, 1)
+      value != nil
+    end)
+    
+    case found do
+      nil -> {query_string, data_list}
+      tuple -> 
+        key = elem(tuple, 0)
+        value = elem(tuple, 1)
 
-      query_string = query_string <> " ORDER BY playlists.name #{order}"
-
-      {query_string, data_list}
-    else
-      true -> {query_string, data_list}
-    end
-  end
-
-  defp order_by_sum({query_string, data_list}, sort) do
-    with order <- Map.get(sort, :sum),
-         false <- order == nil do
-
-      query_string = query_string <> " ORDER BY playlists.sum #{order}"
-
-      {query_string, data_list}
-    else
-      true -> {query_string, data_list}
-    end
-  end
-
-  defp order_by_created({query_string, data_list}, sort) do
-    with order <- Map.get(sort, :created),
-         false <- order == nil do
-
-      query_string = query_string <> " ORDER BY playlists.created #{order}"
-
-      {query_string, data_list}
-    else
-      true -> {query_string, data_list}
+        case value do
+          nil -> {query_string, data_list}
+          value -> {query_string <> " ORDER BY playlists.#{key} #{value}", data_list}
+        end
     end
   end
 end

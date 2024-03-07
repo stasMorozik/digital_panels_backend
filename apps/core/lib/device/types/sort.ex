@@ -7,5 +7,5 @@ defmodule Core.Device.Types.Sort do
     created: binary()
   }
 
-  defstruct ip: nil, latitude: nil, longitude: nil, created: "ASC"
+  defstruct ip: nil, latitude: nil, longitude: nil, created: nil
 end

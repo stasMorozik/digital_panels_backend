@@ -36,8 +36,7 @@ defmodule PostgresqlAdapters.Assembly.QueryBuilder do
       |> and_where_status(filter)
       |> and_where_created_f(filter)
       |> and_where_created_t(filter)
-      |> order_by_type(sort)
-      |> order_by_created(sort)
+      |> order_by(sort)
       |> PostgresqlAdapters.Shared.Pagination.limit_offset(pagi)
   end
 
@@ -121,27 +120,25 @@ defmodule PostgresqlAdapters.Assembly.QueryBuilder do
     end
   end
 
-  defp order_by_type({query_string, data_list}, sort) do
-    with order <- Map.get(sort, :type),
-         false <- order == nil do
+  defp order_by({query_string, data_list}, sort) do
+    map = Map.from_struct(sort)
+    list = Map.to_list(map)
+    
+    found = Enum.find(list, fn (tuple) -> 
+      value = elem(tuple, 1)
+      value != nil
+    end)
+    
+    case found do
+      nil -> {query_string, data_list}
+      tuple -> 
+        key = elem(tuple, 0)
+        value = elem(tuple, 1)
 
-      query_string = query_string <> " ORDER BY assemblies.type #{order}"
-
-      {query_string, data_list}
-    else
-      true -> {query_string, data_list}
-    end
-  end
-
-  defp order_by_created({query_string, data_list}, sort) do
-    with order <- Map.get(sort, :created),
-         false <- order == nil do
-
-      query_string = query_string <> " ORDER BY assemblies.created #{order}"
-
-      {query_string, data_list}
-    else
-      true -> {query_string, data_list}
+        case value do
+          nil -> {query_string, data_list}
+          value -> {query_string <> " ORDER BY assemblies.#{key} #{value}", data_list}
+        end
     end
   end
 end

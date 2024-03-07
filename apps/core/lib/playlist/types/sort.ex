@@ -5,5 +5,5 @@ defmodule Core.Playlist.Types.Sort do
     created: binary()
   }
 
-  defstruct name: nil, created: "ASC"
+  defstruct name: nil, created: nil
 end

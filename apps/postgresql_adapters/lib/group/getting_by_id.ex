@@ -60,7 +60,7 @@ defmodule PostgresqlAdapters.Group.GettingById do
             name: gr_name,
             sum: gr_sum,
             devices: case dev_id == nil do
-              true -> nil
+              true -> []
               false -> Enum.map(result.rows, fun)
             end,
             created: gr_created,

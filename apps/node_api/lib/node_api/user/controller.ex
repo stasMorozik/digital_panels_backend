@@ -16,7 +16,7 @@ defmodule NodeApi.User.Controller do
     try do
       case Authentication.auth(ConfirmationCodeGetting, UserGettingByEmail, args) do
         {:ok, tokens} -> 
-          NodeApi.Logger.info("Успешная аутентификация пользователя")
+          NodeApi.Logger.info("Пользователь аутентифицирован")
 
           conn 
             |> Plug.Conn.put_resp_cookie("access_token", tokens.access_token)
@@ -40,16 +40,17 @@ defmodule NodeApi.User.Controller do
     try do
       case Authorization.auth(UserGettingById, args) do
         {:ok, user} ->
-          NodeApi.Logger.info("Успешная авторизация пользователя")
+          NodeApi.Logger.info("Пользователь авторизован")
           
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            surname: user.surname,
-            created: user.created,
-            updated: user.updated
-          }))
+          conn |> 
+            Plug.Conn.send_resp(200, Jason.encode!(%{
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              surname: user.surname,
+              created: user.created,
+              updated: user.updated
+            }))
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 401)
 
