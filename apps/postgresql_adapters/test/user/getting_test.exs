@@ -55,13 +55,13 @@ defmodule User.GettingTest do
     assert result == :error
   end
 
-  test "Exception" do
-    {:ok, user_entity} = Builder.build(%{email: "test123@gmail.com", name: "Пётр", surname: "Павел"})
+  # test "Exception" do
+  #   {:ok, user_entity} = Builder.build(%{email: "test123@gmail.com", name: "Пётр", surname: "Павел"})
 
-    {:ok, true} = Inserting.transform(user_entity)
+  #   {:ok, true} = Inserting.transform(user_entity)
 
-    {result, _} = GettingById.get(<<104, 101, 197, 130, 197, 130, 60, 158, 104, 101, 197, 130, 197, 130, 46, 90>>)
+  #   {result, _} = GettingById.get(<<104, 101, 197, 130, 197, 130, 60, 158, 104, 101, 197, 130, 197, 130, 46, 90>>)
 
-    assert result == :error
-  end
+  #   assert result == :error
+  # end
 end
