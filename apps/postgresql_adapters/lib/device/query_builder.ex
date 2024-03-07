@@ -53,7 +53,7 @@ defmodule PostgresqlAdapters.Device.QueryBuilder do
       ip -> 
         data_list = data_list ++ ["%#{ip}%"]
 
-        query_string = query_string <> " AND devices.ip = $#{length(data_list)}"
+        query_string = query_string <> " AND devices.ip ILIKE $#{length(data_list)}"
 
         {query_string, data_list}
     end
