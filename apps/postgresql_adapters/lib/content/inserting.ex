@@ -38,12 +38,22 @@ defmodule PostgresqlAdapters.Content.Inserting do
     )
   "
 
+  @query_2 "
+    UPDATE 
+      playlists
+    SET 
+      sum = $2
+    WHERE
+      id = $1
+  "
+
   @impl Transformer
   def transform(%Content{} = content, %User{} = user) do
     case :ets.lookup(:connections, "postgresql") do
       [{"postgresql", "", connection}] ->
         with {:ok, query_0} <- Postgrex.prepare(connection, "", @query_0),
              {:ok, query_1} <- Postgrex.prepare(connection, "", @query_1),
+             {:ok, query_2} <- Postgrex.prepare(connection, "", @query_2),
              data_0 <- [
                 UUID.string_to_binary!(content.id),
                 content.name,
@@ -58,15 +68,24 @@ defmodule PostgresqlAdapters.Content.Inserting do
                 UUID.string_to_binary!(user.id),
                 UUID.string_to_binary!(content.id)
              ],
+             data_2 <- [
+                UUID.string_to_binary!(content.playlist.id),
+                content.playlist.sum
+             ],
              fun <- fn(conn) ->
                 r_0 = Postgrex.execute(conn, query_0, data_0)
                 r_1 = Postgrex.execute(conn, query_1, data_1)
+                r_2 = Postgrex.execute(conn, query_2, data_2)
 
-                case {r_0, r_1} do
-                  {{:ok, _, _}, {:ok, _, _}} -> {:ok, true}
-                  {{:error, e}, {:ok, _, _}} -> DBConnection.rollback(conn, e)
-                  {{:ok, _, _}, {:error, e}} -> DBConnection.rollback(conn, e)
-                  {{:error, e}, {:error, _}} -> DBConnection.rollback(conn, e)
+                case {r_0, r_1, r_2} do
+                  {{:ok, _, _}, {:ok, _, _}, {:ok, _, _}} -> {:ok, true}
+                  {{:error, e}, {:ok, _, _}, {:ok, _, _}} -> DBConnection.rollback(conn, e)
+                  {{:ok, _, _}, {:error, e}, {:ok, _, _}} -> DBConnection.rollback(conn, e)
+                  {{:ok, _, _}, {:ok, _, _}, {:error, e}} -> DBConnection.rollback(conn, e)
+                  {{:ok, _, _}, {:error, e}, {:error, _}} -> DBConnection.rollback(conn, e)
+                  {{:error, e}, {:ok, _, _}, {:error, _}} -> DBConnection.rollback(conn, e)
+                  {{:error, e}, {:error, _}, {:ok, _, _}} -> DBConnection.rollback(conn, e)
+                  {{:error, e}, {:error, _}, {:error, _}} -> DBConnection.rollback(conn, e)
                 end
              end,
              {:ok, _} <- Postgrex.transaction(connection, fun) do
