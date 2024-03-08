@@ -36,9 +36,12 @@ defmodule Core.Content.Builders.Filter do
   end
 
   defp duration_f({:ok, filter}, duration_f) do
-    case duration_f do
-      nil -> {:ok, filter}
-      duration_f -> Duration.build({:ok, filter}, duration_f)
+    with false <- duration_f == nil,
+         {:ok, _} <- Core.Content.Validators.Duration.valid(duration_f) do
+      {:ok, Map.put(filter, :duration_f, duration_f)}
+    else
+      true -> {:ok, filter}
+      {:error, message} -> {:error, message}
     end
   end
 
@@ -47,9 +50,12 @@ defmodule Core.Content.Builders.Filter do
   end
 
   defp duration_t({:ok, filter}, duration_t) do
-    case duration_t do
-      nil -> {:ok, filter}
-      duration_t -> Duration.build({:ok, filter}, duration_t)
+    with false <- duration_t == nil,
+         {:ok, _} <- Core.Content.Validators.Duration.valid(duration_t) do
+      {:ok, Map.put(filter, :duration_t, duration_t)}
+    else
+      true -> {:ok, filter}
+      {:error, message} -> {:error, message}
     end
   end
 

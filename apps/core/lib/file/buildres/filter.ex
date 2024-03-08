@@ -26,9 +26,12 @@ defmodule Core.File.Builders.Filter do
   end
 
   defp type({:ok, filter}, type) do
-    case type do
-      nil -> {:ok, filter}
-      type -> Type.build({:ok, filter}, type)
+    with false <- type == nil,
+         {:ok, _} <- Core.File.Validators.Type.valid(type) do
+      {:ok, Map.put(filter, :type, type)}
+    else
+      true -> {:ok, filter}
+      {:error, message} -> {:error, message}
     end
   end
 
