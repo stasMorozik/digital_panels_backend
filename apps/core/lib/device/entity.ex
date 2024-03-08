@@ -12,6 +12,7 @@ defmodule Core.Device.Entity do
     longitude: float(),
     desc: binary(),
     group: Core.Group.Entity.t(),
+    is_active: boolean(),
     created: binary(),
     updated: binary()
   }
@@ -22,6 +23,7 @@ defmodule Core.Device.Entity do
             longitude: nil, 
             desc: nil,
             group: nil,
+            is_active: nil,
             created: nil, 
             updated: nil
 end

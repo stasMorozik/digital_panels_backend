@@ -12,6 +12,7 @@ defmodule PostgresqlAdapters.Device.QueryBuilder do
       devices.latitude AS lat,
       devices.longitude AS long,
       devices.description AS desc,
+      devices.is_active AS act,
       devices.created AS created
     FROM 
       relations_user_device 
@@ -33,6 +34,7 @@ defmodule PostgresqlAdapters.Device.QueryBuilder do
       |> and_where_longitude_f(filter)
       |> and_where_longitude_t(filter)
       |> and_where_description(filter)
+      |> and_where_is_active(filter)
       |> and_where_created_f(filter)
       |> and_where_created_t(filter)
       |> order_by(sort)
@@ -114,6 +116,18 @@ defmodule PostgresqlAdapters.Device.QueryBuilder do
         data_list = data_list ++ ["%#{description}%"]
 
         query_string = query_string <> " AND devices.description ILIKE $#{length(data_list)}"
+
+        {query_string, data_list}
+    end
+  end
+
+  defp and_where_is_active({query_string, data_list}, filter) do
+    case Map.get(filter, :is_active) do
+      nil -> {query_string, data_list}
+      is_active -> 
+        data_list = data_list ++ [is_active]
+
+        query_string = query_string <> " AND devices.is_active = $#{length(data_list)}"
 
         {query_string, data_list}
     end

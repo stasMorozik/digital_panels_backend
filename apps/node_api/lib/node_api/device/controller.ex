@@ -19,6 +19,7 @@ defmodule NodeApi.Device.Controller do
       longitude: NodeApi.Utils.float_parse(conn.body_params, "longitude"),
       desc: Map.get(conn.body_params, "desc"),
       group_id: Map.get(conn.body_params, "group_id"),
+      is_active: Map.get(conn.body_params, "is_active"),
       token: Map.get(conn.cookies, "access_token")
     }
 
@@ -44,6 +45,7 @@ defmodule NodeApi.Device.Controller do
       latitude: NodeApi.Utils.float_parse(conn.body_params, "latitude"), 
       longitude: NodeApi.Utils.float_parse(conn.body_params, "longitude"),
       desc: Map.get(conn.body_params, "desc"),
+      is_active: Map.get(conn.body_params, "is_active"),
       group_id: Map.get(conn.body_params, "group_id"),
       token: Map.get(conn.cookies, "access_token"),
       id: id
@@ -83,13 +85,15 @@ defmodule NodeApi.Device.Controller do
         longitude_f: NodeApi.Utils.float_parse(filter, "longitude_f"),
         longitude_t: NodeApi.Utils.float_parse(filter, "longitude_t"),
         description: Map.get(filter, "description"),
-        created_f: Map.get(filter, "created_f"), 
+        is_active: NodeApi.Utils.boolen_parse(filter, "is_active"),
+        created_f: Map.get(filter, "created_f"),
         created_t: Map.get(filter, "created_t")
       },
       sort: %{
         ip: Map.get(sort, "ip"), 
         latitude: Map.get(sort, "latitude"), 
-        longitude: Map.get(sort, "longitude"), 
+        longitude: Map.get(sort, "longitude"),
+        is_active: Map.get(sort, "is_active"),
         created: Map.get(sort, "created")
       }
     }
@@ -107,6 +111,7 @@ defmodule NodeApi.Device.Controller do
                 latitude: device.latitude, 
                 longitude: device.longitude, 
                 desc: device.desc,
+                is_active: device.is_active,
                 created: device.created, 
               }
             end)
@@ -138,6 +143,7 @@ defmodule NodeApi.Device.Controller do
             latitude: device.latitude, 
             longitude: device.longitude, 
             desc: device.desc,
+            is_active: device.is_active,
             created: device.created,
             updated: device.updated,
             group: %{

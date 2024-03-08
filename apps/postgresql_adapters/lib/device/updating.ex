@@ -14,8 +14,9 @@ defmodule PostgresqlAdapters.Device.Updating do
       latitude = $4,
       longitude = $5,
       description = $6,
-      group_id = $7,
-      updated = $8
+      is_active = $7,
+      group_id = $8,
+      updated = $9
     FROM 
       relations_user_device AS r
     WHERE 
@@ -36,6 +37,7 @@ defmodule PostgresqlAdapters.Device.Updating do
                 device.latitude,
                 device.longitude,
                 device.desc,
+                device.is_active,
                 UUID.string_to_binary!(device.group.id),
                 device.updated
              ],

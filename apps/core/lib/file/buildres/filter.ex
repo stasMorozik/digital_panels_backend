@@ -1,6 +1,5 @@
 defmodule Core.File.Builders.Filter do
   
-  alias Core.File.Builders.Type
   alias Core.File.Builders.Extension
   alias Core.File.Builders.Size
 

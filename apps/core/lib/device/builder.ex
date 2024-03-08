@@ -23,6 +23,7 @@ defmodule Core.Device.Builder do
   defp entity do
     {:ok, %Core.Device.Entity{
       id: UUID.uuid4(), 
+      is_active: false,
       created: Date.utc_today, 
       updated: Date.utc_today
     }}

@@ -27,13 +27,14 @@ defmodule PostgresqlAdapters.Device.GettingList do
         with {query, data_list} <- QueryBuilder.build(pagi, filter, sort, user),
              {:ok, result} <- Executor.execute(connection, query, data_list),
              true <- result.num_rows > 0,
-             fun <- fn ([id, ip, lat, long, desc, created]) ->
+             fun <- fn ([id, ip, lat, long, desc, act, created]) ->
                 %Device{
                   id: UUID.binary_to_string!(id),
                   ip: ip, 
                   latitude: Decimal.to_float(lat), 
                   longitude: Decimal.to_float(long), 
                   desc: desc,
+                  is_active: act,
                   created: created
                 }
              end,

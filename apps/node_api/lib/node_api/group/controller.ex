@@ -130,6 +130,7 @@ defmodule NodeApi.Group.Controller do
                 latitude: device.latitude,
                 longitude: device.longitude,
                 desc: device.desc,
+                is_active: device.is_active,
                 created: device.created,
               }
             end)

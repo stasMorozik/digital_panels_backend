@@ -7,6 +7,7 @@ defmodule Core.Device.Types.Filter do
     longitude_f: float(),
     longitude_t: float(),
     description: binary(),
+    is_active: boolean(),
     created_f: binary(),
     created_t: binary()
   }
@@ -17,6 +18,7 @@ defmodule Core.Device.Types.Filter do
             longitude_f: nil,
             longitude_t: nil,
             description: nil,
+            is_active: nil,
             created_f: nil,
             created_t: nil
 end

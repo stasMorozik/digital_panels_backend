@@ -1,7 +1,6 @@
 defmodule Core.Content.Builders.Filter do
   
   alias Core.Content.Builders.Name
-  alias Core.Content.Builders.Duration
   alias Core.Shared.Validators.Date
 
   alias UUID

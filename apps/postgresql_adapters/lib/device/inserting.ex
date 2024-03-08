@@ -13,6 +13,7 @@ defmodule PostgresqlAdapters.Device.Inserting do
       latitude,
       longitude,
       description,
+      is_active,
       group_id ,
       created,
       updated
@@ -24,7 +25,8 @@ defmodule PostgresqlAdapters.Device.Inserting do
       $5,
       $6,
       $7,
-      $8
+      $8,
+      $9
     )
   "
 
@@ -60,6 +62,7 @@ defmodule PostgresqlAdapters.Device.Inserting do
                 device.latitude,
                 device.longitude,
                 device.desc,
+                device.is_active,
                 UUID.string_to_binary!(device.group.id),
                 device.created,
                 device.updated

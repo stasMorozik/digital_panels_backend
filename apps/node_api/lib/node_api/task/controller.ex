@@ -139,6 +139,8 @@ defmodule NodeApi.Task.Controller do
                 end_hour: task.end_hour,
                 start_minute: task.start_minute,
                 end_minute: task.end_minute,
+                start: task.start,
+                end: task.end,
                 created: task.created,
                 group: %{
                   id: task.group.id,

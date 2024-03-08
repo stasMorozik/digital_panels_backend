@@ -19,6 +19,7 @@ defmodule PostgresqlAdapters.Device.GettingById do
       devices.latitude AS dev_lat,
       devices.longitude AS dev_long,
       devices.description AS dev_desc,
+      devices.is_active AS desc_act,
       devices.created AS dev_created,
       devices.updated AS dev_updated
     FROM 
@@ -54,6 +55,7 @@ defmodule PostgresqlAdapters.Device.GettingById do
                 dev_lat,
                 dev_long,
                 dev_desc,
+                desc_act,
                 dev_created,
                 dev_updated
              ] <- row do
@@ -63,6 +65,7 @@ defmodule PostgresqlAdapters.Device.GettingById do
             latitude: Decimal.to_float(dev_lat), 
             longitude: Decimal.to_float(dev_long), 
             desc: dev_desc,
+            is_active: desc_act,
             group: %Core.Group.Entity{
               id: UUID.binary_to_string!(gr_id), 
               name: gr_name,

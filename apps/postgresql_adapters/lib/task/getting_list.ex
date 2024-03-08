@@ -37,6 +37,8 @@ defmodule PostgresqlAdapters.Task.GettingList do
               task_start_m,
               task_end_m,
               task_cr,
+              task_shm,
+              task_ehm,
               gr_id,
               gr_nm
              ]) ->
@@ -50,6 +52,8 @@ defmodule PostgresqlAdapters.Task.GettingList do
                   start_minute: task_start_m,
                   end_minute: task_end_m,
                   created: task_cr,
+                  start: task_shm,
+                  end: task_ehm,
                   group: %Core.Group.Entity{
                     id: UUID.binary_to_string!(gr_id),
                     name: gr_nm

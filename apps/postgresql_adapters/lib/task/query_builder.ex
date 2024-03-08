@@ -16,6 +16,8 @@ defmodule PostgresqlAdapters.Task.QueryBuilder do
       tasks.start_minute AS task_start_m,
       tasks.end_minute AS task_end_m,
       tasks.created AS task_cr,
+      tasks.start_hm AS task_shm,
+      tasks.end_hm AS task_ehm,
       groups.id AS gr_id,
       groups.name AS gr_nm
     FROM 

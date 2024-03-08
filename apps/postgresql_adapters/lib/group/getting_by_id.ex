@@ -19,6 +19,7 @@ defmodule PostgresqlAdapters.Group.GettingById do
       devices.latitude AS dev_lat,
       devices.longitude AS dev_long,
       devices.description AS dev_desc,
+      devices.is_active AS dev_is_active,
       devices.created AS dev_created
     FROM 
       relations_user_group 
@@ -42,7 +43,9 @@ defmodule PostgresqlAdapters.Group.GettingById do
              ]),
              true <- result.num_rows > 0,
              fun <- fn ([
-                _, _, _, _, _, dev_id, dev_ip, dev_lat, dev_long, dev_desc, dev_created
+                _, _, _, _, _, 
+                dev_id, dev_ip, dev_lat, 
+                dev_long, dev_desc, dev_is_active, dev_created
              ]) -> 
                 %Core.Device.Entity{
                   id: UUID.binary_to_string!(dev_id),
@@ -50,11 +53,12 @@ defmodule PostgresqlAdapters.Group.GettingById do
                   latitude: Decimal.to_float(dev_lat),
                   longitude: Decimal.to_float(dev_long),
                   desc: dev_desc,
+                  is_active: dev_is_active,
                   created: dev_created,
                 }
              end,
              [row | _] <- result.rows,
-             [gr_id, gr_name, gr_sum, gr_created, gr_updated, dev_id, _, _, _, _, _] <- row do
+             [gr_id, gr_name, gr_sum, gr_created, gr_updated, dev_id, _, _, _, _, _, _] <- row do
           {:ok, %Group{
             id: UUID.binary_to_string!(gr_id),
             name: gr_name,

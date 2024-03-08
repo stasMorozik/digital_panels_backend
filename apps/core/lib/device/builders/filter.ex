@@ -18,6 +18,7 @@ defmodule Core.Device.Builders.Filter do
       |> longitude_f(Map.get(args, :longitude_f))
       |> longitude_t(Map.get(args, :longitude_t))
       |> description(Map.get(args, :description))
+      |> is_active(Map.get(args, :is_active))
       |> created_f(Map.get(args, :created_f))
       |> created_t(Map.get(args, :created_t))
   end
@@ -93,6 +94,20 @@ defmodule Core.Device.Builders.Filter do
   end
 
   defp description({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp is_active({:ok, filter}, is_active) do
+    with false <- is_active == nil,
+         true <- is_boolean(is_active) do
+      {:ok, Map.put(filter, :is_active, is_active)}
+    else
+      true -> {:ok, filter}
+      false -> {:error, "Не валидная активность"}
+    end
+  end
+
+  defp is_active({:error, message}, _) do
     {:error, message}
   end
 

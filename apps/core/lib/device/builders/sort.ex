@@ -8,6 +8,7 @@ defmodule Core.Device.Builders.Sort do
       |> ip(Map.get(args, :ip))
       |> latitude(Map.get(args, :latitude))
       |> longitude(Map.get(args, :longitude))
+      |> is_active(Map.get(args, :is_active))
       |> created(Map.get(args, :created))
   end
 
@@ -55,6 +56,19 @@ defmodule Core.Device.Builders.Sort do
   end
 
   defp longitude({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp is_active({:ok, sort}, order) do
+    with false <- order == nil,
+         {:ok, _} <- Sort.valid(order) do
+      {:ok, Map.put(sort, :is_active, String.upcase(order))}
+    else
+      true -> {:ok, sort}
+    end
+  end
+
+  defp is_active({:error, message}, _) do
     {:error, message}
   end
 

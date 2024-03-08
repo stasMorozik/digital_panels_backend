@@ -21,6 +21,7 @@ defmodule Core.Device.Editor do
       |> latitude(Map.get(args, :latitude))
       |> desc(Map.get(args, :desc))
       |> group(Map.get(args, :group))
+      |> is_active(Map.get(args, :is_active))
   end
 
   def edit(_, _) do
@@ -35,6 +36,7 @@ defmodule Core.Device.Editor do
       longitude: entity.longitude,
       desc: entity.desc,
       group: entity.group,
+      is_active: entity.is_active,
       created: entity.created, 
       updated: Date.utc_today
     }}
@@ -92,6 +94,20 @@ defmodule Core.Device.Editor do
   end
 
   defp group({:error, message}, _) do
+    {:error, message}
+  end
+
+  defp is_active({:ok, entity}, is_active) do
+    with false <- is_active == nil,
+         true <- is_boolean(is_active) do
+      {:ok, Map.put(entity, :is_active, is_active)}
+    else
+      true -> {:ok, entity}
+      false -> {:error, "Не валидная активность"}
+    end
+  end
+
+  defp is_active({:error, message}, _) do
     {:error, message}
   end
 end
