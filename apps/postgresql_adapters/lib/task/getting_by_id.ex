@@ -28,6 +28,7 @@ defmodule PostgresqlAdapters.Task.GettingById do
       groups.updated AS gr_upd,
       playlists.id AS pl_id,
       playlists.name AS pl_nm,
+      playlists.sum AS pl_sum,
       playlists.created AS pl_cr,
       playlists.updated AS pl_upd,
       contents.id AS cnt_id,
@@ -74,7 +75,7 @@ defmodule PostgresqlAdapters.Task.GettingById do
              fun <- fn ([
               _, _, _, _, _, _, _, _, _, _, _, _, _,
               _, _, _, _,
-              _, _, _, _,
+              _, _, _, _, _,
               cnt_id, cnt_nm, cnt_dur, cnt_num, cnt_cr, cnt_upd,
               fl_id, fl_pt, fl_url, fl_ext, fl_tp, fl_s, fl_cr
              ]) -> 
@@ -103,7 +104,7 @@ defmodule PostgresqlAdapters.Task.GettingById do
               task_start_hm, task_end_hm, task_sum, task_cr, task_upd,
 
               gr_id, gr_nm, gr_cr, gr_upd,
-              pl_id, pl_nm, pl_cr, pl_upd,
+              pl_id, pl_nm, pl_sum, pl_cr, pl_upd,
               _, _, _, _, _, _,
               fl_id, _, _, _, _, _, _
              ] <- row do
@@ -124,6 +125,7 @@ defmodule PostgresqlAdapters.Task.GettingById do
             playlist: %Core.Playlist.Entity{
               id: UUID.binary_to_string!(pl_id), 
               name: pl_nm,
+              sum: pl_sum,
               contents: case fl_id == nil do
                 true -> []
                 false -> Enum.map(result.rows, fun)

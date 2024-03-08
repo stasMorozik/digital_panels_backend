@@ -174,6 +174,35 @@ defmodule NodeApi.Router do
       |> NodeApi.Content.Controller.get(id)
   end
 
+  put "/api/v1/task/" do
+    conn 
+      |> fetch_cookies()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Task.Controller.create()
+  end
+
+  post "/api/v1/task/:id" do
+    conn 
+      |> fetch_cookies()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Task.Controller.update(id)
+  end
+
+  get "/api/v1/task/" do
+    conn 
+      |> fetch_cookies()
+      |> fetch_query_params()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Task.Controller.list()
+  end
+
+  get "/api/v1/task/:id" do
+    conn 
+      |> fetch_cookies()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Task.Controller.get(id)
+  end
+
   match _ do
     conn
       |> put_resp_content_type("application/json")
