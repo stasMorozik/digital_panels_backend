@@ -1,4 +1,5 @@
 defmodule NodeApi.Application do
+
   use Application
 
   @name_node_logger Application.compile_env(:node_api, :name_node_logger)
@@ -14,11 +15,21 @@ defmodule NodeApi.Application do
 
     children = [
       {
-        Plug.Cowboy, scheme: :http, plug: NodeApi.Router, options: [port: cowboy_port()]
+        Plug.Cowboy, 
+        scheme: :http, 
+        plug: NodeApi.Router, 
+        options: [
+          port: cowboy_port(),
+          dispatch: dispatch()
+        ]
       },
       %{
         id: NodeApi.Postgres,
         start: {NodeApi.Postgres, :start_link, []}
+      },
+      %{
+        id: NodeApi.WebsocketServer,
+        start: {NodeApi.WebsocketServer, :start_link, []}
       }
     ]
 
@@ -28,4 +39,13 @@ defmodule NodeApi.Application do
   end
 
   defp cowboy_port, do: Application.get_env(:example, :cowboy_port, 8080)
+
+  defp dispatch do
+    [
+      {:_, [
+        {"/ws", NodeApi.WebsocketHandler, []},
+        {:_, Plug.Cowboy.Handler, {NodeApi.Router, []}}
+      ]}
+    ]
+  end
 end
