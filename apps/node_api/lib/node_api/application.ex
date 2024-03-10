@@ -3,13 +3,14 @@ defmodule NodeApi.Application do
 
   @name_node_logger Application.compile_env(:node_api, :name_node_logger)
   @name_node_notifier Application.compile_env(:node_api, :name_node_notifier)
+  @name_node_assembly_maker Application.compile_env(:node_api, :name_node_assembly_maker)
 
   def start(_type, _args) do
     :ets.new(:connections, [:set, :public, :named_table])
 
     :pong = :net_adm.ping(@name_node_logger)
-
     :pong = :net_adm.ping(@name_node_notifier)
+    :pong = :net_adm.ping(@name_node_assembly_maker)
 
     children = [
       {

@@ -18,6 +18,10 @@ build_dev_node_notifier:
 	docker build -f Dockerfile.dev_node_notifier ./  -t dev_node_notifier
 run_dev_node_notifier:
 	docker run --network host --rm --name dev_node_notifier -v $(CURDIR)/apps/node_notifier/test:/app/apps/node_notifier/test -v $(CURDIR)/apps/node_notifier/lib:/app/apps/node_notifier/lib -v $(CURDIR)/apps/node_notifier/config:/app/apps/node_notifier/config dev_node_notifier
+build_dev_node_assembly_maker:
+	docker build -f Dockerfile.dev_node_assembly_maker ./  -t dev_node_assembly_maker
+run_dev_node_assembly_maker:
+	docker run --network host --rm --name dev_node_assembly_maker -v $(CURDIR)/apps/node_assembly_maker/test:/app/apps/node_assembly_maker/test -v $(CURDIR)/apps/node_assembly_maker/lib:/app/apps/node_assembly_maker/lib -v $(CURDIR)/apps/node_assembly_maker/config:/app/apps/node_assembly_maker/config dev_node_assembly_maker
 build_dev_node_api:
 	docker build -f Dockerfile.dev_node_api ./  -t dev_node_api
 run_dev_node_api:

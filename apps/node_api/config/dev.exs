@@ -26,7 +26,9 @@ config :node_api,
   name_node_notifier: String.to_atom("node_notifier@debian"),
   name_process_notifier: NodeNotifier.Notifier,
   developer_telegram_login: "@Stanm858",
-  name_node_api: String.to_atom("node_api@debian")
+  name_node_api: String.to_atom("node_api@debian"),
+  name_node_assembly_maker: String.to_atom("node_assembly_maker@debian"),
+  name_process_assembly_maker: NodeAssemblyMaker.Maker
 
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
