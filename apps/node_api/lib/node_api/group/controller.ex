@@ -11,6 +11,8 @@ defmodule NodeApi.Group.Controller do
   alias PostgresqlAdapters.Group.Updating, as: GroupUpdating
   alias PostgresqlAdapters.Group.GettingList, as: GroupGettingList
 
+  @name_node Application.compile_env(:node_api, :name_node)
+
   def create(conn) do
     args = %{
       name: Map.get(conn.body_params, "name"),
@@ -20,7 +22,10 @@ defmodule NodeApi.Group.Controller do
     try do
       case Creating.create(UserGettingById, GroupInserting, args) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Создана группа устройств")
+          ModLogger.Logger.info(%{
+            message: "Создана группа устройств", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
 
@@ -43,7 +48,10 @@ defmodule NodeApi.Group.Controller do
     try do
       case Updating.update(UserGettingById, GroupGettingById, GroupUpdating, args) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Обновлена группа устройств")
+          ModLogger.Logger.info(%{
+            message: "Обновлена группа устройств", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
 
@@ -84,7 +92,10 @@ defmodule NodeApi.Group.Controller do
     try do
       case GettingList.get(UserGettingById, GroupGettingList, args) do
         {:ok, list} -> 
-          NodeApi.Logger.info("Получен список групп устройств")
+          ModLogger.Logger.info(%{
+            message: "Получен список групп устройств", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(
             Enum.map(list, fn (group) -> 
@@ -115,7 +126,10 @@ defmodule NodeApi.Group.Controller do
     try do
       case Getting.get(UserGettingById, GroupGettingById, args) do
         {:ok, group} -> 
-          NodeApi.Logger.info("Получена группа устройств")
+          ModLogger.Logger.info(%{
+            message: "Получена группа устройств",
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
             id: group.id,

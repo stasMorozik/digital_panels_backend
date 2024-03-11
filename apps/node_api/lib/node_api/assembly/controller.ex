@@ -10,6 +10,8 @@ defmodule NodeApi.Assembly.Controller do
   alias PostgresqlAdapters.Group.GettingById, as: GroupGettingById
   alias PostgresqlAdapters.Assembly.GettingList, as: AssemblyGettingList
 
+  @name_node Application.compile_env(:node_api, :name_node)
+
   def create(conn) do
     args = %{
       group_id: Map.get(conn.body_params, "group_id"),
@@ -26,7 +28,10 @@ defmodule NodeApi.Assembly.Controller do
         args
       ) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Создана сборка")
+          ModLogger.Logger.info(%{
+            message: "Создана сборка", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
 
@@ -67,7 +72,10 @@ defmodule NodeApi.Assembly.Controller do
     try do
       case GettingList.get(UserGettingById, AssemblyGettingList, args) do
         {:ok, list} -> 
-          NodeApi.Logger.info("Получен список сборок")
+          ModLogger.Logger.info(%{
+            message: "Получен список сборок", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(
             Enum.map(list, fn (assembly) -> 
@@ -104,7 +112,10 @@ defmodule NodeApi.Assembly.Controller do
     try do
       case Getting.get(UserGettingById, AssemblyGettingById, args) do
         {:ok, assembly} -> 
-          NodeApi.Logger.info("Получена группа устройств")
+          ModLogger.Logger.info(%{
+            message: "Получена группа устройств", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
             id: assembly.id,

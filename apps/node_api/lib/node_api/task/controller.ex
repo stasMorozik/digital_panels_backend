@@ -13,6 +13,8 @@ defmodule NodeApi.Task.Controller do
   alias PostgresqlAdapters.Playlist.GettingById, as: PlaylistGettingById
   alias PostgresqlAdapters.Group.GettingById, as: GroupGettingById
 
+  @name_node Application.compile_env(:node_api, :name_node)
+
   def create(conn) do
     args = %{
       group_id: Map.get(conn.body_params, "group_id"),
@@ -37,7 +39,10 @@ defmodule NodeApi.Task.Controller do
         args
       ) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Создано задание")
+          ModLogger.Logger.info(%{
+            message: "Создано задание",
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
 
@@ -78,7 +83,10 @@ defmodule NodeApi.Task.Controller do
         args
       ) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Обновлено задание")
+          ModLogger.Logger.info(%{
+            message: "Обновлено задание", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
 
@@ -126,7 +134,10 @@ defmodule NodeApi.Task.Controller do
     try do
       case GettingList.get(UserGettingById, TaskGettingList, args) do
         {:ok, list} -> 
-          NodeApi.Logger.info("Получен список заданий")
+          ModLogger.Logger.info(%{
+            message: "Получен список заданий", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(
             Enum.map(list, fn (task) -> 
@@ -170,7 +181,10 @@ defmodule NodeApi.Task.Controller do
     try do
       case Getting.get(UserGettingById, TaskGettingById, args) do
         {:ok, task} -> 
-          NodeApi.Logger.info("Получено задание")
+          ModLogger.Logger.info(%{
+            message: "Получено задание", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
               id: task.id,

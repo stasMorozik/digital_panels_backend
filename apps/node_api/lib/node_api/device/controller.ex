@@ -12,6 +12,8 @@ defmodule NodeApi.Device.Controller do
   alias PostgresqlAdapters.Device.GettingList, as: DeviceGettingList
   alias PostgresqlAdapters.Group.GettingById, as: GroupGettingById
 
+  @name_node Application.compile_env(:node_api, :name_node)
+
   def create(conn) do
     args = %{
       ip: Map.get(conn.body_params, "ip"), 
@@ -26,7 +28,10 @@ defmodule NodeApi.Device.Controller do
     try do
       case Creating.create(UserGettingById, GroupGettingById, DeviceInserting, args) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Создано устройство")
+          ModLogger.Logger.info(%{
+            message: "Создано устройство", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
 
@@ -54,7 +59,10 @@ defmodule NodeApi.Device.Controller do
     try do
       case Updating.update(UserGettingById, GroupGettingById, DeviceGettingById, DeviceUpdating, args) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Обновлено устройство")
+          ModLogger.Logger.info(%{
+            message: "Обновлено устройство", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
 
@@ -101,7 +109,10 @@ defmodule NodeApi.Device.Controller do
     try do
       case GettingList.get(UserGettingById, DeviceGettingList, args) do
         {:ok, list} -> 
-          NodeApi.Logger.info("Получен список устройств")
+          ModLogger.Logger.info(%{
+            message: "Получен список устройств", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(
             Enum.map(list, fn (device) -> 
@@ -135,7 +146,10 @@ defmodule NodeApi.Device.Controller do
     try do
       case Getting.get(UserGettingById, DeviceGettingById, args) do
         {:ok, device} -> 
-          NodeApi.Logger.info("Получено устройство")
+          ModLogger.Logger.info(%{
+            message: "Получено устройство", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
             id: device.id, 

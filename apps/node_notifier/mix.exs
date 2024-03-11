@@ -36,7 +36,8 @@ defmodule NodeNotifier.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:smtp_adapters, in_umbrella: true}
+      {:smtp_adapters, in_umbrella: true},
+      {:mod_logger, in_umbrella: true},
     ]
   end
 

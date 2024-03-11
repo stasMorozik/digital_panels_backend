@@ -28,7 +28,9 @@ defmodule NodeAssemblyMaker.MixProject do
   defp elixirc_paths(_), do: ["lib"]
 
   defp deps do
-    []
+    [
+      {:mod_logger, in_umbrella: true},
+    ]
   end
 
   defp aliases do

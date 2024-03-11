@@ -7,6 +7,8 @@ defmodule NodeApi.User.Controller do
   alias PostgresqlAdapters.User.GettingByEmail, as: UserGettingByEmail
   alias PostgresqlAdapters.User.GettingById, as: UserGettingById
 
+  @name_node Application.compile_env(:node_api, :name_node)
+
   def authentication(conn) do
     args = %{
       email: Map.get(conn.body_params, "email"),
@@ -16,7 +18,10 @@ defmodule NodeApi.User.Controller do
     try do
       case Authentication.auth(ConfirmationCodeGetting, UserGettingByEmail, args) do
         {:ok, tokens} -> 
-          NodeApi.Logger.info("Пользователь аутентифицирован")
+          ModLogger.Logger.info(%{
+            message: "Пользователь аутентифицирован", 
+            node: @name_node
+          })
 
           conn 
             |> Plug.Conn.put_resp_cookie("access_token", tokens.access_token)
@@ -40,7 +45,10 @@ defmodule NodeApi.User.Controller do
     try do
       case Authorization.auth(UserGettingById, args) do
         {:ok, user} ->
-          NodeApi.Logger.info("Пользователь авторизован")
+          ModLogger.Logger.info(%{
+            message: "Пользователь авторизован",
+            node: @name_node
+          })
           
           conn |> 
             Plug.Conn.send_resp(200, Jason.encode!(%{

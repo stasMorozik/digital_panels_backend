@@ -40,7 +40,8 @@ defmodule NodeApi.MixProject do
       {:plug_cowboy, "~> 2.7"},
       {:core, in_umbrella: true},
       {:postgresql_adapters, in_umbrella: true},
-      {:http_adapters, in_umbrella: true}
+      {:http_adapters, in_umbrella: true},
+      {:mod_logger, in_umbrella: true},
     ]
   end
 

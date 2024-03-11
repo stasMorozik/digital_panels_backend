@@ -13,6 +13,8 @@ defmodule NodeApi.Content.Controller do
   alias PostgresqlAdapters.Playlist.GettingById, as: PlaylistGettingById
   alias PostgresqlAdapters.File.GettingById, as: FileGettingById
 
+  @name_node Application.compile_env(:node_api, :name_node)
+
   def create(conn) do
     args = %{
       file_id: Map.get(conn.body_params, "file_id"),
@@ -32,7 +34,10 @@ defmodule NodeApi.Content.Controller do
         args
       ) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Создан контент")
+          ModLogger.Logger.info(%{
+            message: "Создан контент", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
 
@@ -68,7 +73,10 @@ defmodule NodeApi.Content.Controller do
         args
       ) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Обновлено устройство")
+          ModLogger.Logger.info(%{
+            message: "Обновлено устройство", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
 
@@ -111,7 +119,10 @@ defmodule NodeApi.Content.Controller do
     try do
       case GettingList.get(UserGettingById, ContentGettingList, args) do
         {:ok, list} -> 
-          NodeApi.Logger.info("Получен список контента")
+          ModLogger.Logger.info(%{
+            message: "Получен список контента", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(
             Enum.map(list, fn (content) -> 
@@ -145,7 +156,10 @@ defmodule NodeApi.Content.Controller do
     try do
       case Getting.get(UserGettingById, ContentGettingById, args) do
         {:ok, content} -> 
-          NodeApi.Logger.info("Получен контент")
+          ModLogger.Logger.info(%{
+            message: "Получен контент", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
               id: content.id,

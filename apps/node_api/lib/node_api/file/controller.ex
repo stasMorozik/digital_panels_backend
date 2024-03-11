@@ -10,6 +10,8 @@ defmodule NodeApi.File.Controller do
   alias PostgresqlAdapters.File.GettingById, as: FileGettingById
   alias PostgresqlAdapters.File.GettingList, as: FileGettingList
 
+  @name_node Application.compile_env(:node_api, :name_node)
+
   def create(conn) do
     file = Map.get(conn.body_params, "file")
     try do
@@ -23,7 +25,12 @@ defmodule NodeApi.File.Controller do
               token: Map.get(conn.cookies, "access_token")
            },
            {:ok ,true} <- Creating.create(UserGettingById, FileInserting, FileUploading, args) do
-        NodeApi.Logger.info("Создан файл")
+
+        ModLogger.Logger.info(%{
+          message: "Создан файл", 
+          node: @name_node
+        })
+
         conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
       else
         true -> 
@@ -67,7 +74,10 @@ defmodule NodeApi.File.Controller do
     try do
       case GettingList.get(UserGettingById, FileGettingList, args) do
         {:ok, list} -> 
-          NodeApi.Logger.info("Получен список файлов")
+          ModLogger.Logger.info(%{
+            message: "Получен список файлов", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(
             Enum.map(list, fn (file) -> 
@@ -102,7 +112,10 @@ defmodule NodeApi.File.Controller do
     try do
       case Getting.get(UserGettingById, FileGettingById, args) do
         {:ok, file} -> 
-          NodeApi.Logger.info("Получен файл")
+          ModLogger.Logger.info(%{
+            message: "Получен файл", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
             id: file.id,

@@ -4,13 +4,18 @@ defmodule NodeApi.ConfirmationCode.Controller do
   alias PostgresqlAdapters.ConfirmationCode.Inserting
   alias NodeApi.NotifierUser
 
+  @name_node Application.compile_env(:node_api, :name_node)
+
   def create(conn) do
     args = %{needle: Map.get(conn.body_params, "needle")}
 
     try do
       case Creating.create(Inserting, NotifierUser, args) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Создан код подтверждения")
+          ModLogger.Logger.info(%{
+            message: "Создан код подтверждения", 
+            node: @name_node
+          })
           
           conn 
             |> Plug.Conn.send_resp(200, Jason.encode!(true))

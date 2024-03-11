@@ -26,7 +26,6 @@ defmodule NodeLogger.Logger do
     {:noreply, state}
   end
 
-  @impl true
   def handle_info(_info, state) do
     {:noreply, state}
   end

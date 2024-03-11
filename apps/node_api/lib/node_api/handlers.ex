@@ -1,17 +1,18 @@
 defmodule NodeApi.Handlers do
 
-  alias NodeApi.Logger
   alias NodeApi.NotifierDev
 
-  @from Application.compile_env(:core, :email_address)
-  @developer_telegram_login Application.compile_env(:node_api, :developer_telegram_login)
+  @name_node Application.compile_env(:node_api, :name_node)
 
   def handle_exception(conn, error) do
-    Logger.exception(error)
+    ModLogger.Logger.exception(%{
+      message: error, 
+      node: @name_node
+    })
 
     NotifierDev.notify(%{
-      to: @developer_telegram_login,
-      from: @from,
+      to: Application.compile_env(:node_api, :developer_telegram_login),
+      from: Application.compile_env(:core, :email_address),
       subject: "Exception",
       message: error
     })
@@ -21,9 +22,13 @@ defmodule NodeApi.Handlers do
   end
 
   def handle_error(conn, message, code) do
-    Logger.info(message)
+    ModLogger.Logger.info(%{
+      message: message, 
+      node: @name_node
+    })
 
     conn 
-      |> Plug.Conn.send_resp(code, Jason.encode!(%{message: message}))
+      |> 
+      Plug.Conn.send_resp(code, Jason.encode!(%{message: message}))
   end
 end

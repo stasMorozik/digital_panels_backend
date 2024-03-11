@@ -2,11 +2,16 @@ defmodule NodeApi.RefreshToken.Controller do
 
   alias Core.RefreshToken.UseCases.Refreshing
 
+  @name_node Application.compile_env(:node_api, :name_node)
+
   def refresh(conn) do
     try do
       case Refreshing.refresh(Map.get(conn.cookies, "refresh_token")) do
         {:ok, tokens} ->
-          NodeApi.Logger.info("Токен обновлен")
+          ModLogger.Logger.info(%{
+            message: "Токен обновлен", 
+            node: @name_node
+          })
           
           conn 
             |> Plug.Conn.put_resp_cookie("access_token", tokens.access_token)

@@ -11,6 +11,8 @@ defmodule NodeApi.Playlist.Controller do
   alias PostgresqlAdapters.Playlist.Updating, as: PlaylistUpdating
   alias PostgresqlAdapters.Playlist.GettingList, as: PlaylistGettingList
 
+  @name_node Application.compile_env(:node_api, :name_node)
+
   def create(conn) do
     args = %{
       name: Map.get(conn.body_params, "name"),
@@ -20,7 +22,10 @@ defmodule NodeApi.Playlist.Controller do
     try do
       case Creating.create(UserGettingById, PlaylistInserting, args) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Создан плэйлист")
+          ModLogger.Logger.info(%{
+            message: "Создан плэйлист", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
 
@@ -43,7 +48,10 @@ defmodule NodeApi.Playlist.Controller do
     try do
       case Updating.update(UserGettingById, PlaylistGettingById, PlaylistUpdating, args) do
         {:ok, true} -> 
-          NodeApi.Logger.info("Обновлен плэйлист")
+          ModLogger.Logger.info(%{
+            message: "Обновлен плэйлист", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
 
@@ -84,7 +92,10 @@ defmodule NodeApi.Playlist.Controller do
     try do
       case GettingList.get(UserGettingById, PlaylistGettingList, args) do
         {:ok, list} -> 
-          NodeApi.Logger.info("Получен список плэйлистов")
+          ModLogger.Logger.info(%{
+            message: "Получен список плэйлистов", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(
             Enum.map(list, fn (playlist) -> 
@@ -115,7 +126,10 @@ defmodule NodeApi.Playlist.Controller do
     try do
       case Getting.get(UserGettingById, PlaylistGettingById, args) do
         {:ok, playlist} -> 
-          NodeApi.Logger.info("Получен плэйлист")
+          ModLogger.Logger.info(%{
+            message: "Получен плэйлист", 
+            node: @name_node
+          })
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
             id: playlist.id,
