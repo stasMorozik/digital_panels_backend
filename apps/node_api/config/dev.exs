@@ -24,13 +24,18 @@ config :mod_logger,
   name_node: String.to_atom("node_logger@debian"),
   name_process: NodeLogger.Logger
 
+config :notifier_adapters, 
+  name_node: String.to_atom("node_notifier@debian"),
+  name_process: NodeNotifier.Notifier
+
+config :assembly_pipe,
+  name_node: String.to_atom("node_assembly_maker@debian"),
+  name_process: NodeAssemblyMaker.Maker
+
 config :node_api, 
-  cowboy_port: 8080,
   name_node: String.to_atom("node_api@debian"),
-  name_node_notifier: String.to_atom("node_notifier@debian"),
-  name_process_notifier: NodeNotifier.Notifier,
-  name_node_assembly_maker: String.to_atom("node_assembly_maker@debian"),
-  name_process_assembly_maker: NodeAssemblyMaker.Maker,
+  name_process: NodeApi.WebsocketServer,
+  cowboy_port: 8080,
   developer_telegram_login: "@Stanm858"
 
 config :logger, :console,

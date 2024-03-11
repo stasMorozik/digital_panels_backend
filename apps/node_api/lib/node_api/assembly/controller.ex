@@ -12,6 +12,31 @@ defmodule NodeApi.Assembly.Controller do
 
   @name_node Application.compile_env(:node_api, :name_node)
 
+  defmodule AssemblyPipe do
+    
+    alias Core.Shared.Ports.Pipe
+
+    @where {
+      Application.compile_env(:assembly_pipe, :name_process), 
+      Application.compile_env(:assembly_pipe, :name_node)
+    }
+
+    @behaviour Pipe
+
+    @impl Pipe
+    def emit(%{
+      id: id,
+      type: type
+    }) do
+      Process.send(@where, {:make, %{
+        id: id,
+        type: type
+      }}, [:noconnect])
+
+      {:ok, true}
+    end
+  end
+
   def create(conn) do
     args = %{
       group_id: Map.get(conn.body_params, "group_id"),
@@ -24,12 +49,12 @@ defmodule NodeApi.Assembly.Controller do
         UserGettingById, 
         GroupGettingById, 
         AssemblyInserting, 
-        NodeApi.NotifierAssemblyMaker, 
+        AssemblyPipe, 
         args
       ) do
         {:ok, true} -> 
           ModLogger.Logger.info(%{
-            message: "Создана сборка", 
+            message: "Создана сборка и отправлена на компиляцию", 
             node: @name_node
           })
 

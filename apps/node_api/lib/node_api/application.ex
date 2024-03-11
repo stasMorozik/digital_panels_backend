@@ -3,8 +3,8 @@ defmodule NodeApi.Application do
   use Application
 
   @name_node_logger Application.compile_env(:mod_logger, :name_node)
-  @name_node_notifier Application.compile_env(:node_api, :name_node_notifier)
-  @name_node_assembly_maker Application.compile_env(:node_api, :name_node_assembly_maker)
+  @name_node_notifier Application.compile_env(:notifier_adapters, :name_node)
+  @name_node_assembly_maker Application.compile_env(:assembly_pipe, :name_node)
 
   def start(_type, _args) do
     :ets.new(:connections, [:set, :public, :named_table])

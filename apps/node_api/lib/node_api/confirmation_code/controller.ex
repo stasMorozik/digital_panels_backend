@@ -2,7 +2,6 @@ defmodule NodeApi.ConfirmationCode.Controller do
 
   alias Core.ConfirmationCode.UseCases.Creating
   alias PostgresqlAdapters.ConfirmationCode.Inserting
-  alias NodeApi.NotifierUser
 
   @name_node Application.compile_env(:node_api, :name_node)
 
@@ -10,7 +9,7 @@ defmodule NodeApi.ConfirmationCode.Controller do
     args = %{needle: Map.get(conn.body_params, "needle")}
 
     try do
-      case Creating.create(Inserting, NotifierUser, args) do
+      case Creating.create(Inserting, NotifierAdapters.SenderToUser, args) do
         {:ok, true} -> 
           ModLogger.Logger.info(%{
             message: "Создан код подтверждения", 

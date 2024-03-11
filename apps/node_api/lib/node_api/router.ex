@@ -16,10 +16,17 @@ defmodule NodeApi.Router do
       |> NodeApi.ConfirmationCode.Controller.create()
   end
 
-  post "/api/v1/user/" do
+  put "/api/v1/token/" do
     conn
       |> put_resp_content_type("application/json")
-      |> NodeApi.User.Controller.authentication()
+      |> NodeApi.Token.Controller.create()
+  end
+
+  post "/api/v1/token/" do
+    conn 
+      |> fetch_cookies()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Token.Controller.refresh()
   end
 
   get "/api/v1/user/" do
@@ -27,13 +34,6 @@ defmodule NodeApi.Router do
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
       |> NodeApi.User.Controller.authorization()
-  end
-
-  get "/api/v1/token/" do
-    conn 
-      |> fetch_cookies()
-      |> put_resp_content_type("application/json")
-      |> NodeApi.RefreshToken.Controller.refresh()
   end
 
   put "/api/v1/group/" do

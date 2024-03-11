@@ -1,10 +1,9 @@
-defmodule NodeApi.NotifierDev do
-  require Logger
+defmodule NotifierAdapters.SenderToDeveloper do
   alias Core.Shared.Ports.Notifier
 
   @where {
-    Application.compile_env(:node_api, :name_process_notifier), 
-    Application.compile_env(:node_api, :name_node_notifier)
+    Application.compile_env(:notifier_adapters, :name_process), 
+    Application.compile_env(:notifier_adapters, :name_node)
   }
 
   @behaviour Notifier
@@ -27,6 +26,6 @@ defmodule NodeApi.NotifierDev do
   end
 
   def notify(_) do
-    {:error, "Не валидные данные для отправки сообщение на электронную почту"}
+    {:error, "Не валидные данные для отправки сообщения для ноды"}
   end
 end

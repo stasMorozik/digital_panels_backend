@@ -10,14 +10,14 @@ defmodule Core.Assembly.UseCases.Creating do
     Core.User.Ports.Getter.t(),
     Core.Group.Ports.Getter.t(),
     Core.Assembly.Ports.Transformer.t(),
-    Core.Shared.Ports.Notifier.t(),
+    Core.Shared.Ports.Pipe.t(),
     map()
   ) :: Success.t() | Error.t() | Exception.t()
   def create(
     getter_user,
     getter_group,
     transformer_assembly,
-    notifier,
+    pipe,
     args
   ) when is_atom(getter_user) and
          is_atom(transformer_assembly) and
@@ -28,12 +28,7 @@ defmodule Core.Assembly.UseCases.Creating do
          args <- Map.put(args, :group, group),
          {:ok, assembly} <- Core.Assembly.Builder.build(args),
          {:ok, true} <- transformer_assembly.transform(assembly, user),
-         {:ok, true} <- notifier.notify(%{
-            to: "node_assembly_maker",
-            from: "Core.Assembly.UseCases.Creating",
-            subject: assembly.type,
-            message: assembly.id
-         }) do
+         {:ok, true} <- pipe.emit(%{id: assembly.id, type: assembly.type}) do
       {:ok, true}
     else
       {:error, message} -> {:error, message}

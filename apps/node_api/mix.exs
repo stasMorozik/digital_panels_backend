@@ -42,6 +42,7 @@ defmodule NodeApi.MixProject do
       {:postgresql_adapters, in_umbrella: true},
       {:http_adapters, in_umbrella: true},
       {:mod_logger, in_umbrella: true},
+      {:notifier_adapters, in_umbrella: true}
     ]
   end
 
