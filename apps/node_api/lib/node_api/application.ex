@@ -2,7 +2,7 @@ defmodule NodeApi.Application do
 
   use Application
 
-  @name_node_logger Application.compile_env(:node_api, :name_node_logger)
+  @name_node_logger Application.compile_env(:mod_logger, :name_node)
   @name_node_notifier Application.compile_env(:node_api, :name_node_notifier)
   @name_node_assembly_maker Application.compile_env(:node_api, :name_node_assembly_maker)
 

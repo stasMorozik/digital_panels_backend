@@ -13,6 +13,8 @@ defmodule NodeNotifier.Notifier do
 
   def handle_info({:for_user, message}, state) do
     {:ok, true} = SmtpAdapters.Notifier.notify(message)
+
+    Logger.info(message)
     
     ModLogger.Logger.info(%{
       message: "Отправлено собщение пользователю на электронную почту", 

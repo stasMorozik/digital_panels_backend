@@ -31,7 +31,7 @@ config :node_api,
   name_process_notifier: NodeNotifier.Notifier,
   name_node_assembly_maker: String.to_atom("node_assembly_maker@debian"),
   name_process_assembly_maker: NodeAssemblyMaker.Maker,
-  developer_telegram_login: "@Stanm858",
+  developer_telegram_login: "@Stanm858"
 
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

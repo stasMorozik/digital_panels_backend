@@ -1,7 +1,9 @@
 defmodule NodeApi.Handlers do
 
   alias NodeApi.NotifierDev
-
+  
+  @to Application.compile_env(:node_api, :developer_telegram_login)
+  @from Application.compile_env(:core, :email_address)
   @name_node Application.compile_env(:node_api, :name_node)
 
   def handle_exception(conn, error) do
@@ -11,8 +13,8 @@ defmodule NodeApi.Handlers do
     })
 
     NotifierDev.notify(%{
-      to: Application.compile_env(:node_api, :developer_telegram_login),
-      from: Application.compile_env(:core, :email_address),
+      to: @to,
+      from: @from,
       subject: "Exception",
       message: error
     })
