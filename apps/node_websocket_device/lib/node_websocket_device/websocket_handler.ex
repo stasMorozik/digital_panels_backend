@@ -1,11 +1,11 @@
-defmodule NodeApi.WebsocketHandler do
+defmodule NodeWebsocketDevice.WebsocketHandler do
 
   alias Core.User.UseCases.Authorization
   alias PostgresqlAdapters.User.GettingById, as: UserGettingById
 
   @name_node Application.compile_env(:node_api, :name_node)
 
-  alias NodeApi.WebsocketServer
+  alias NodeWebsocketDevice.WebsocketServer
 
   @behaviour :cowboy_websocket
 
@@ -22,7 +22,7 @@ defmodule NodeApi.WebsocketHandler do
          args <- %{token: access_token},
          {:ok, _} <- Authorization.auth(UserGettingById, args) do
       ModLogger.Logger.info(%{
-        message: "Пользователь авторизован и подключен к websocket серверу",
+        message: "Устройство авторизовано и подключено к websocket серверу",
         node: @name_node
       })
 

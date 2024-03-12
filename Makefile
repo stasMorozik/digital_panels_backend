@@ -26,3 +26,7 @@ build_dev_node_api:
 	docker build -f Dockerfile.dev_node_api ./  -t dev_node_api
 run_dev_node_api:
 	docker run --network host --rm --name dev_node_api -v $(CURDIR)/apps/node_api/test:/app/apps/node_api/test -v $(CURDIR)/apps/node_api/lib:/app/apps/node_api/lib -v $(CURDIR)/apps/node_api/config:/app/apps/node_api/config dev_node_api
+build_dev_node_websocket_device:
+	docker build -f Dockerfile.dev_node_websocket_device ./  -t dev_node_websocket_device
+run_dev_node_websocket_device:
+	docker run --network host --rm --name dev_node_websocket_device -v $(CURDIR)/apps/node_websocket_device/test:/app/apps/node_websocket_device/test -v $(CURDIR)/apps/node_websocket_device/lib:/app/apps/node_websocket_device/lib -v $(CURDIR)/apps/node_websocket_device/config:/app/apps/node_websocket_device/config dev_node_websocket_device
