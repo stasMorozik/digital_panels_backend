@@ -13,6 +13,8 @@ defmodule PostgresqlAdapters.Assembly.Inserting do
       url,
       type,
       status,
+      access_token,
+      refresh_token,
       created,
       updated
     ) VALUES(
@@ -22,7 +24,9 @@ defmodule PostgresqlAdapters.Assembly.Inserting do
       $4,
       $5,
       $6,
-      $7
+      $7,
+      $8,
+      $9
     )
   "
 
@@ -48,6 +52,8 @@ defmodule PostgresqlAdapters.Assembly.Inserting do
                 assembly.url,
                 assembly.type,
                 assembly.status,
+                assembly.access_token,
+                assembly.refresh_token,
                 assembly.created,
                 assembly.updated
              ],

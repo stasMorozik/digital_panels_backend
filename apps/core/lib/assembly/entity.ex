@@ -11,6 +11,8 @@ defmodule Core.Assembly.Entity do
     url: binary(),
     type: binary(),
     status: boolean(),
+    access_token: binary(),
+    refresh_token: binary(),
     created: binary(),
     updated: binary()
   }
@@ -20,6 +22,8 @@ defmodule Core.Assembly.Entity do
             url: nil,
             type: nil,
             status: nil,
+            access_token: nil,
+            refresh_token: nil,
             created: nil,
             updated: nil
 end

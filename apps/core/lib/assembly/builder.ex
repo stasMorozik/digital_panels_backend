@@ -11,6 +11,7 @@ defmodule Core.Assembly.Builder do
       |> Core.Assembly.Builders.Group.build(group)
       |> Core.Assembly.Builders.Type.build(type)
       |> Core.Assembly.Builders.Url.build()
+      |> Core.Assembly.Builders.Tokens.build()
   end
 
   def build(_) do
