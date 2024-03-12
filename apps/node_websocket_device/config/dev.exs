@@ -31,7 +31,8 @@ config :node_websocket_device,
   name_node: String.to_atom("node_websocket_device@debian"),
   name_process: NodeWebsocketDevice.WebsocketServer,
   cowboy_port: 8081,
-  developer_telegram_login: "@Stanm858"
+  developer_telegram_login: "@Stanm858",
+  idle_timeout: 10000
 
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

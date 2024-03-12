@@ -1,5 +1,7 @@
 import Config
 
+config :joken, default_signer: "secret"
+
 config :postgresql_adapters,
   hostname: "192.168.0.161",
   username: "db_user",
