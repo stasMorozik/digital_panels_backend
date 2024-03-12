@@ -130,7 +130,7 @@ defmodule NodeApi.Group.Controller do
             message: "Получена группа устройств",
             node: @name_node
           })
-
+          
           conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
             id: group.id,
             name: group.name,

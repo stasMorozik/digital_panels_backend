@@ -57,7 +57,13 @@ defmodule NodeApi.Device.Controller do
     }
 
     try do
-      case Updating.update(UserGettingById, GroupGettingById, DeviceGettingById, DeviceUpdating, args) do
+      case Updating.update(
+        UserGettingById, 
+        GroupGettingById, 
+        DeviceGettingById, 
+        DeviceUpdating, 
+        args
+      ) do
         {:ok, true} -> 
           ModLogger.Logger.info(%{
             message: "Обновлено устройство", 

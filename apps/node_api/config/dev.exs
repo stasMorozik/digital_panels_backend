@@ -32,10 +32,6 @@ config :notifier_adapters,
   name_node: String.to_atom("node_notifier@debian"),
   name_process: NodeNotifier.Notifier
 
-config :assembly_pipe,
-  name_node: String.to_atom("node_assembly_maker@debian"),
-  name_process: NodeAssemblyMaker.Maker
-
 config :node_api, 
   name_node: String.to_atom("node_api@debian"),
   name_process: NodeApi.WebsocketServer,

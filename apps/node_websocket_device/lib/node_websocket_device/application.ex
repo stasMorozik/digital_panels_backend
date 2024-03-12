@@ -25,10 +25,7 @@ defmodule NodeWebsocketDevice.Application do
         id: NodeWebsocketDevice.Postgres,
         start: {NodeWebsocketDevice.Postgres, :start_link, []}
       },
-      %{
-        id: NodeWebsocketDevice.WebsocketServer,
-        start: {NodeWebsocketDevice.WebsocketServer, :start_link, []}
-      }
+      NodeWebsocketDevice.WebsocketServer
     ]
 
     opts = [strategy: :one_for_one, name: NodeWebsocketDevice.Supervisor]
@@ -41,7 +38,7 @@ defmodule NodeWebsocketDevice.Application do
   defp dispatch do
     [
       {:_, [
-        {"/ws/**/", NodeWebsocketDevice.WebsocketHandler, []}
+        {"/ws", NodeWebsocketDevice.WebsocketHandler, []}
       ]}
     ]
   end

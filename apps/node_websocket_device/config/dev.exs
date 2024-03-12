@@ -3,6 +3,9 @@ import Config
 config :joken, 
   default_signer: "!qazSymKeyXsw2"
 
+config :core, 
+  email_address: "digital_panels@dev.org"
+
 config :postgresql_adapters,
   hostname: "192.168.0.161",
   username: "db_user",
@@ -27,7 +30,8 @@ config :node_api,
 config :node_websocket_device, 
   name_node: String.to_atom("node_websocket_device@debian"),
   name_process: NodeWebsocketDevice.WebsocketServer,
-  cowboy_port: 8081
+  cowboy_port: 8081,
+  developer_telegram_login: "@Stanm858"
 
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

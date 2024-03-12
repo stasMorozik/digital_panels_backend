@@ -4,6 +4,8 @@ defmodule NodeApi.WebsocketHandler do
   alias PostgresqlAdapters.User.GettingById, as: UserGettingById
 
   @name_node Application.compile_env(:node_api, :name_node)
+  @to Application.compile_env(:node_api, :developer_telegram_login)
+  @from Application.compile_env(:core, :email_address)
 
   alias NodeApi.WebsocketServer
 
@@ -16,22 +18,50 @@ defmodule NodeApi.WebsocketHandler do
 
   @impl true
   def websocket_init(state) do
-    with cookie <- Map.get(state, "cookie"),
-         map <- Cookie.parse(cookie),
-         access_token <- Map.get(map, "access_token"),
-         args <- %{token: access_token},
-         {:ok, _} <- Authorization.auth(UserGettingById, args) do
+    try do
+      with cookie <- Map.get(state, "cookie"),
+           map <- Cookie.parse(cookie),
+           access_token <- Map.get(map, "access_token"),
+           args <- %{token: access_token},
+           {:ok, _} <- Authorization.auth(UserGettingById, args) do
+        ModLogger.Logger.info(%{
+          message: "Пользователь авторизован и подключен к websocket серверу",
+          node: @name_node
+        })
+
+        WebsocketServer.join(self())
+
+        {:ok, state}
+      else
+        nil -> 
+          ModLogger.Logger.info(%{
+            message: "Пользователь не прошел авторизацию и не подключен к websocket серверу. Невалидный токен",
+            node: @name_node
+          })
+
+          {:reply, {:close, 1000, "Invalid token"}, nil}
+        {:error, message} -> 
+          ModLogger.Logger.info(%{
+            message: "Пользователь не прошел авторизацию и не подключен к websocket серверу. #{message}",
+            node: @name_node
+          })
+
+          {:reply, {:close, 1000, "Invalid token"}, nil}
+      end
+    rescue e -> 
       ModLogger.Logger.info(%{
-        message: "Пользователь авторизован и подключен к websocket серверу",
+        message: e,
         node: @name_node
       })
 
-      WebsocketServer.join(self())
+      NotifierAdapters.SenderToDeveloper.notify(%{
+        to: @to,
+        from: @from,
+        subject: "Exception",
+        message: e
+      })
 
-      {:ok, state}
-    else
-      nil -> {:reply, {:close, 1000, "Invalid token"}, nil}
-      {:error, _} -> {:reply, {:close, 1000, "Invalid token"}, nil}
+      {:reply, {:close, 1000, "Что то пошло не так"}, nil}
     end
   end
 
@@ -43,6 +73,11 @@ defmodule NodeApi.WebsocketHandler do
   @impl true
   def websocket_handle({:text, _msg}, state) do
     {:ok, state}
+  end
+
+  @impl true
+  def websocket_info({:device_updated, message}, state) do
+    {:reply, {:text, message}, state}
   end
 
   @impl true

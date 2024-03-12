@@ -16,22 +16,13 @@ defmodule NodeApi.Assembly.Controller do
     
     alias Core.Shared.Ports.Pipe
 
-    @where {
-      Application.compile_env(:assembly_pipe, :name_process), 
-      Application.compile_env(:assembly_pipe, :name_node)
-    }
-
     @behaviour Pipe
 
     @impl Pipe
     def emit(%{
-      id: id,
-      type: type
+      id: id
     }) do
-      Process.send(@where, {:make, %{
-        id: id,
-        type: type
-      }}, [:noconnect])
+      NodeApi.AssemblyMaker.make(id)
 
       {:ok, true}
     end

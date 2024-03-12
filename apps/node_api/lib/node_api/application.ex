@@ -11,7 +11,6 @@ defmodule NodeApi.Application do
 
     :pong = :net_adm.ping(@name_node_logger)
     :pong = :net_adm.ping(@name_node_notifier)
-    :pong = :net_adm.ping(@name_node_assembly_maker)
 
     children = [
       {
@@ -27,10 +26,7 @@ defmodule NodeApi.Application do
         id: NodeApi.Postgres,
         start: {NodeApi.Postgres, :start_link, []}
       },
-      %{
-        id: NodeApi.WebsocketServer,
-        start: {NodeApi.WebsocketServer, :start_link, []}
-      }
+      NodeApi.WebsocketServer
     ]
 
     opts = [strategy: :one_for_one, name: NodeApi.Supervisor]

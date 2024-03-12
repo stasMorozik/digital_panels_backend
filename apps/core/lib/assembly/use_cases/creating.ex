@@ -28,7 +28,7 @@ defmodule Core.Assembly.UseCases.Creating do
          args <- Map.put(args, :group, group),
          {:ok, assembly} <- Core.Assembly.Builder.build(args),
          {:ok, true} <- transformer_assembly.transform(assembly, user),
-         {:ok, true} <- pipe.emit(%{id: assembly.id, type: assembly.type}) do
+         {:ok, true} <- pipe.emit(%{id: assembly.id}) do
       {:ok, true}
     else
       {:error, message} -> {:error, message}

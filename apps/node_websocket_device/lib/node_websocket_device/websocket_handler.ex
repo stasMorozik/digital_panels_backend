@@ -1,9 +1,20 @@
 defmodule NodeWebsocketDevice.WebsocketHandler do
 
-  alias Core.User.UseCases.Authorization
+  alias Core.Device.UseCases.Updating
+  
+  alias PostgresqlAdapters.Device.Updating, as: DeviceUpdating
+  alias PostgresqlAdapters.Device.GettingById, as: DeviceGettingById
   alias PostgresqlAdapters.User.GettingById, as: UserGettingById
+  alias PostgresqlAdapters.Group.GettingById, as: GroupGettingById
 
-  @name_node Application.compile_env(:node_api, :name_node)
+  @name_node Application.compile_env(:node_websocket_device, :name_node)
+  @to Application.compile_env(:node_websocket_device, :developer_telegram_login)
+  @from Application.compile_env(:core, :email_address)
+
+  @where {
+    Application.compile_env(:node_api, :name_process), 
+    Application.compile_env(:node_api, :name_node)
+  }
 
   alias NodeWebsocketDevice.WebsocketServer
 
@@ -11,27 +22,76 @@ defmodule NodeWebsocketDevice.WebsocketHandler do
 
   @impl true
   def init(req, _state) do
-    {:cowboy_websocket, req, req.headers, %{idle_timeout: :infinity}}
+    {:cowboy_websocket, req, %{
+      headers: req.headers,
+      qs: req.qs
+    }, %{idle_timeout: 10000}} #3600000
   end
 
   @impl true
   def websocket_init(state) do
-    with cookie <- Map.get(state, "cookie"),
-         map <- Cookie.parse(cookie),
-         access_token <- Map.get(map, "access_token"),
-         args <- %{token: access_token},
-         {:ok, _} <- Authorization.auth(UserGettingById, args) do
+    try do
+        with cookie <- Map.get(state.headers, "cookie"),
+             map <- Cookie.parse(cookie),
+             access_token <- Map.get(map, "access_token"),
+             map <- URI.decode_query(state.qs),
+             group_id <- Map.get(map, "group_id"),
+             id <- Map.get(map, "id"),
+             args <- %{
+                token: access_token, 
+                id: id, 
+                group_id: group_id,
+                is_active: true
+             },
+             {:ok, true} <- Updating.update(
+                UserGettingById, 
+                GroupGettingById, 
+                DeviceGettingById, 
+                DeviceUpdating, 
+                args
+             ) do
+          WebsocketServer.join(self())
+
+          ModLogger.Logger.info(%{
+            message: "Устройство авторизовано и подключено к websocket серверу",
+            node: @name_node
+          })
+
+          :ok = Process.send(
+            @where, {:notify_all, Jason.encode!(%{id: id, is_active: true})}, []
+          )
+
+          {:ok, state}
+        else
+          nil -> 
+            ModLogger.Logger.info(%{
+              message: "Устройство не прошло авторизацию. Невалидный токен",
+              node: @name_node
+            })
+
+            {:reply, {:close, 1000, "Устройство не прошло авторизацию"}, nil}
+          {:error, message} -> 
+            ModLogger.Logger.info(%{
+              message: "Устройство не прошло авторизацию. #{message}",
+              node: @name_node
+            })
+
+            {:reply, {:close, 1000, "Устройство не прошло авторизацию"}, nil}
+        end
+    rescue e -> 
       ModLogger.Logger.info(%{
-        message: "Устройство авторизовано и подключено к websocket серверу",
+        message: e,
         node: @name_node
       })
 
-      WebsocketServer.join(self())
+      NotifierAdapters.SenderToDeveloper.notify(%{
+        to: @to,
+        from: @from,
+        subject: "Exception",
+        message: e
+      })
 
-      {:ok, state}
-    else
-      nil -> {:reply, {:close, 1000, "Invalid token"}, nil}
-      {:error, _} -> {:reply, {:close, 1000, "Invalid token"}, nil}
+      {:reply, {:close, 1000, "Что то пошло не так"}, nil}
     end
   end
 
@@ -51,7 +111,59 @@ defmodule NodeWebsocketDevice.WebsocketHandler do
   end
 
   @impl true
-  def terminate(_reason, _partial_req, _state) do
+  def terminate(_reason, _partial_req, state) do
+    try do
+      with cookie <- Map.get(state.headers, "cookie"),
+           map <- Cookie.parse(cookie),
+           access_token <- Map.get(map, "access_token"),
+           map <- URI.decode_query(state.qs),
+           group_id <- Map.get(map, "group_id"),
+           id <- Map.get(map, "id"),
+           args <- %{
+              token: access_token, 
+              id: id, 
+              group_id: group_id,
+              is_active: false
+             },
+             {:ok, true} <- Updating.update(
+                UserGettingById, 
+                GroupGettingById, 
+                DeviceGettingById, 
+                DeviceUpdating, 
+                args
+             ) do
+          WebsocketServer.join(self())
+
+          ModLogger.Logger.info(%{
+            message: "Устройство успешно одключено от websocket сервера",
+            node: @name_node
+          })
+
+          :ok = Process.send(
+            @where, {:notify_all, Jason.encode!(%{id: id, is_active: false})}, []
+          )
+
+          leave()
+        else
+          {:error, message} -> 
+            ModLogger.Logger.info(%{
+              message: "Устройство не успешно одключено от websocket сервера. #{message}",
+              node: @name_node
+            })
+
+            leave()
+        end
+    rescue e -> 
+      ModLogger.Logger.info(%{
+        message: e,
+        node: @name_node
+      })
+
+      leave()
+    end
+  end
+
+  defp leave() do
     WebsocketServer.leave(self())
     :ok
   end
