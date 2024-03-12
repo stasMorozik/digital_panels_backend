@@ -1,10 +1,6 @@
 defmodule NodeApi.User.Controller do
 
-  alias Core.User.UseCases.Authentication
   alias Core.User.UseCases.Authorization
-
-  alias PostgresqlAdapters.ConfirmationCode.Getting, as: ConfirmationCodeGetting
-  alias PostgresqlAdapters.User.GettingByEmail, as: UserGettingByEmail
   alias PostgresqlAdapters.User.GettingById, as: UserGettingById
 
   @name_node Application.compile_env(:node_api, :name_node)

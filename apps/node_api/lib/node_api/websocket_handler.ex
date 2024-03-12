@@ -1,19 +1,32 @@
 defmodule NodeApi.WebsocketHandler do
 
+  alias Core.User.UseCases.Authorization
+  alias PostgresqlAdapters.User.GettingById, as: UserGettingById
+
+  @name_node Application.compile_env(:node_api, :name_node)
+
   alias NodeApi.WebsocketServer
 
   @behaviour :cowboy_websocket
 
   @impl true
   def init(req, _state) do
-    {:cowboy_websocket, req, nil, %{idle_timeout: :infinity}}
+    {:cowboy_websocket, req, req.headers, %{idle_timeout: :infinity}}
   end
 
   @impl true
-  def websocket_init(_state) do
-    state = %{}
-    WebsocketServer.join(self())
-    {:ok, state}
+  def websocket_init(state) do
+    with cookie <- Map.get(state, "cookie"),
+         map <- Cookie.parse(cookie),
+         access_token <- Map.get(map, "access_token"),
+         args <- %{token: access_token},
+         {:ok, _} <- Authorization.auth(UserGettingById, args) do
+      WebsocketServer.join(self())
+      {:ok, state}
+    else
+      nil -> {:reply, {:close, 1000, "Invalid token"}, nil}
+      {:error, _} -> {:reply, {:close, 1000, "Invalid token"}, nil}
+    end
   end
 
   @impl true

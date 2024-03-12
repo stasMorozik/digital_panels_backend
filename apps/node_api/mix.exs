@@ -38,6 +38,7 @@ defmodule NodeApi.MixProject do
     [
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.7"},
+      {:cookie, "~> 0.1.2"},
       {:core, in_umbrella: true},
       {:postgresql_adapters, in_umbrella: true},
       {:http_adapters, in_umbrella: true},
