@@ -1,6 +1,8 @@
-defmodule NodeApi.AssemblyMaker do
+defmodule NodeApi.AssemblyCompiler do
   
   use GenServer
+
+  alias Core.Assembly.UseCases.Compiling
 
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
@@ -21,9 +23,18 @@ defmodule NodeApi.AssemblyMaker do
   end
 
   @impl true
-  def handle_cast({:make, id}, state) do
+  def handle_cast({:compile, %{id: id, user: user}}, state) do
     task = Task.async(fn -> 
-      
+      # case Compiling.compile(
+      #   PostgresqlAdapters.Assembly.GettingById,
+      #   HttpAdapters.Assembly.Uploading,
+      #   PostgresqlAdapters.Assembly.Updating,
+      # ) do
+      #   {:ok, true} -> 
+
+      #   {:error, message} ->
+          
+      # end
     end)
     {:noreply, new_state}
   end

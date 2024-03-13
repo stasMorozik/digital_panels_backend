@@ -25,6 +25,7 @@ defmodule HttpAdapters.MixProject do
   defp deps do
     [
       {:httpoison, "~> 2.0"},
+      {:exqlite, "~> 0.19.0"},
       {:core, in_umbrella: true}
     ]
   end

@@ -20,9 +20,13 @@ defmodule NodeApi.Assembly.Controller do
 
     @impl Pipe
     def emit(%{
-      id: id
+      id: id,
+      user: user
     }) do
-      NodeApi.AssemblyMaker.make(id)
+      NodeApi.AssemblyCompiler.compile(%{
+        id: id,
+        user: user
+      })
 
       {:ok, true}
     end
@@ -43,7 +47,7 @@ defmodule NodeApi.Assembly.Controller do
         AssemblyPipe, 
         args
       ) do
-        {:ok, true} -> 
+        {:ok, true} ->
           ModLogger.Logger.info(%{
             message: "Создана сборка и отправлена на компиляцию", 
             node: @name_node
@@ -51,9 +55,11 @@ defmodule NodeApi.Assembly.Controller do
 
           conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
 
-        {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
+        {:error, message} -> 
+          NodeApi.Handlers.handle_error(conn, message, 400)
 
-        {:exception, message} -> NodeApi.Handlers.handle_exception(conn, message)
+        {:exception, message} ->
+          NodeApi.Handlers.handle_exception(conn, message)
       end
     rescue
       e -> NodeApi.Handlers.handle_exception(conn, e)

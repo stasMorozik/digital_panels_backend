@@ -9,7 +9,10 @@ config :core,
 
 config :http_adapters,
   user_web_dav: "user",
-  password_web_dav: "12345"
+  password_web_dav: "12345",
+  path_android_bundle: "/home/bundles/b_an/",
+  path_linux_bundle: "/home/bundles/b_li/",
+  path_windows_bundle: "/home/bundles/b_wi/"
 
 config :postgresql_adapters,
   hostname: "192.168.0.161",
