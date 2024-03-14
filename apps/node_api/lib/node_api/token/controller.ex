@@ -14,8 +14,11 @@ defmodule NodeApi.Token.Controller do
       code: Map.get(conn.body_params, "code"),
     }
 
+    adapter_0 = ConfirmationCodeGetting
+    adapter_1 = UserGettingByEmail
+
     try do
-      case Authentication.auth(ConfirmationCodeGetting, UserGettingByEmail, args) do
+      case Authentication.auth(adapter_0, adapter_1, args) do
         {:ok, tokens} -> 
           ModLogger.Logger.info(%{
             message: "Пользователь аутентифицирован", 

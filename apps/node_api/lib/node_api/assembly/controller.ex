@@ -3,12 +3,18 @@ defmodule NodeApi.Assembly.Controller do
   alias Core.Assembly.UseCases.Creating
   alias Core.Assembly.UseCases.Getting
   alias Core.Assembly.UseCases.GettingList
+  alias Core.User.UseCases.Authorization
+  alias Core.Assembly.UseCases.Compiling
+  
 
   alias PostgresqlAdapters.User.GettingById, as: UserGettingById
   alias PostgresqlAdapters.Assembly.Inserting, as: AssemblyInserting
   alias PostgresqlAdapters.Assembly.GettingById, as: AssemblyGettingById
   alias PostgresqlAdapters.Group.GettingById, as: GroupGettingById
   alias PostgresqlAdapters.Assembly.GettingList, as: AssemblyGettingList
+  alias SqliteAdapters.Assembly.Inserting, as: SqliteAssemblyInserting
+  alias HttpAdapters.Assembly.Uploading, as: AssemblyUploading
+  alias PostgresqlAdapters.Assembly.Updating, as: AssemblyUpdating
 
   @name_node Application.compile_env(:node_api, :name_node)
 
@@ -19,10 +25,7 @@ defmodule NodeApi.Assembly.Controller do
     @behaviour Pipe
 
     @impl Pipe
-    def emit(%{
-      id: id,
-      user: user
-    }) do
+    def emit(%{id: id,user: user}) do
       NodeApi.AssemblyCompiler.compile(%{
         id: id,
         user: user
@@ -39,14 +42,13 @@ defmodule NodeApi.Assembly.Controller do
       token: Map.get(conn.cookies, "access_token")
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = GroupGettingById
+    adapter_2 = AssemblyInserting
+    adapter_3 = AssemblyPipe
+
     try do
-      case Creating.create(
-        UserGettingById, 
-        GroupGettingById, 
-        AssemblyInserting, 
-        AssemblyPipe, 
-        args
-      ) do
+      case Creating.create(adapter_0, adapter_1, adapter_2, adapter_3, args) do
         {:ok, true} ->
           ModLogger.Logger.info(%{
             message: "Создана сборка и отправлена на компиляцию", 
@@ -62,6 +64,36 @@ defmodule NodeApi.Assembly.Controller do
           NodeApi.Handlers.handle_exception(conn, message)
       end
     rescue
+      e -> NodeApi.Handlers.handle_exception(conn, e)
+    end
+  end
+
+  def update(conn, id) do
+    try do
+      with token <- Map.get(conn.cookies, "access_token"),
+           args <- %{token: token},
+           adapter_0 <- UserGettingById,
+           {:ok, user} <- Authorization.auth(adapter_0, args) do
+
+          NodeApi.AssemblyCompiler.compile(%{
+            id: id,
+            user: user
+          })
+
+          ModLogger.Logger.info(%{
+            message: "Сборка отправлена на компиляцию", 
+            node: @name_node
+          })
+
+          conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+        else
+          {:error, message} -> 
+            NodeApi.Handlers.handle_error(conn, message, 400)
+              
+          {:exception, message} -> 
+            NodeApi.Handlers.handle_exception(conn, message)
+        end
+    rescue 
       e -> NodeApi.Handlers.handle_exception(conn, e)
     end
   end
@@ -91,8 +123,11 @@ defmodule NodeApi.Assembly.Controller do
       }
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = AssemblyGettingList
+
     try do
-      case GettingList.get(UserGettingById, AssemblyGettingList, args) do
+      case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
           ModLogger.Logger.info(%{
             message: "Получен список сборок", 
@@ -116,9 +151,11 @@ defmodule NodeApi.Assembly.Controller do
             end)
           ))
 
-        {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
+        {:error, message} -> 
+          NodeApi.Handlers.handle_error(conn, message, 400)
 
-        {:exception, message} -> NodeApi.Handlers.handle_exception(conn, message)
+        {:exception, message} -> 
+          NodeApi.Handlers.handle_exception(conn, message)
       end
     rescue
       e -> NodeApi.Handlers.handle_exception(conn, e)
@@ -131,8 +168,11 @@ defmodule NodeApi.Assembly.Controller do
       id: id
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = AssemblyGettingById
+
     try do
-      case Getting.get(UserGettingById, AssemblyGettingById, args) do
+      case Getting.get(adapter_0, adapter_1, args) do
         {:ok, assembly} -> 
           ModLogger.Logger.info(%{
             message: "Получена группа устройств", 

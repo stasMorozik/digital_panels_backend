@@ -19,8 +19,11 @@ defmodule NodeApi.Group.Controller do
       token: Map.get(conn.cookies, "access_token")
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = GroupInserting
+
     try do
-      case Creating.create(UserGettingById, GroupInserting, args) do
+      case Creating.create(adapter_0, adapter_1, args) do
         {:ok, true} -> 
           ModLogger.Logger.info(%{
             message: "Создана группа устройств", 
@@ -45,8 +48,12 @@ defmodule NodeApi.Group.Controller do
       id: id
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = GroupGettingById
+    adapter_2 = GroupUpdating
+
     try do
-      case Updating.update(UserGettingById, GroupGettingById, GroupUpdating, args) do
+      case Updating.update(adapter_0, adapter_1, adapter_2, args) do
         {:ok, true} -> 
           ModLogger.Logger.info(%{
             message: "Обновлена группа устройств", 
@@ -89,8 +96,11 @@ defmodule NodeApi.Group.Controller do
       }
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = GroupGettingList
+
     try do
-      case GettingList.get(UserGettingById, GroupGettingList, args) do
+      case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
           ModLogger.Logger.info(%{
             message: "Получен список групп устройств", 
@@ -123,8 +133,11 @@ defmodule NodeApi.Group.Controller do
       id: id
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = GroupGettingById
+
     try do
-      case Getting.get(UserGettingById, GroupGettingById, args) do
+      case Getting.get(adapter_0, adapter_1, args) do
         {:ok, group} -> 
           ModLogger.Logger.info(%{
             message: "Получена группа устройств",

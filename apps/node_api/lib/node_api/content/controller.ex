@@ -25,14 +25,13 @@ defmodule NodeApi.Content.Controller do
       token: Map.get(conn.cookies, "access_token")
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = PlaylistGettingById
+    adapter_2 = FileGettingById
+    adapter_3 = ContentInserting
+
     try do
-      case Creating.create(
-        UserGettingById, 
-        PlaylistGettingById, 
-        FileGettingById, 
-        ContentInserting, 
-        args
-      ) do
+      case Creating.create(adapter_0, adapter_1, adapter_2, adapter_3, args) do
         {:ok, true} -> 
           ModLogger.Logger.info(%{
             message: "Создан контент", 
@@ -63,15 +62,14 @@ defmodule NodeApi.Content.Controller do
       id: id
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = PlaylistGettingById
+    adapter_2 = ContentGettingById
+    adapter_3 = FileGettingById
+    adapter_4 = ContentUpdating
+
     try do
-      case Updating.update(
-        UserGettingById, 
-        PlaylistGettingById, 
-        ContentGettingById,
-        FileGettingById,
-        ContentUpdating, 
-        args
-      ) do
+      case Updating.update(adapter_0, adapter_1, adapter_2, adapter_3, adapter_4, args) do
         {:ok, true} -> 
           ModLogger.Logger.info(%{
             message: "Обновлено устройство", 
@@ -116,8 +114,11 @@ defmodule NodeApi.Content.Controller do
       }
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = ContentGettingList
+
     try do
-      case GettingList.get(UserGettingById, ContentGettingList, args) do
+      case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
           ModLogger.Logger.info(%{
             message: "Получен список контента", 
@@ -153,8 +154,11 @@ defmodule NodeApi.Content.Controller do
       id: id
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = ContentGettingById
+
     try do
-      case Getting.get(UserGettingById, ContentGettingById, args) do
+      case Getting.get(adapter_0, adapter_1, args) do
         {:ok, content} -> 
           ModLogger.Logger.info(%{
             message: "Получен контент", 

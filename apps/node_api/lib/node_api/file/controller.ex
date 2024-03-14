@@ -13,18 +13,19 @@ defmodule NodeApi.File.Controller do
   @name_node Application.compile_env(:node_api, :name_node)
 
   def create(conn) do
-    file = Map.get(conn.body_params, "file")
     try do
-      with false <- file == nil,
-           tuple_file_size <- FileSize.from_file(file.path),
-           args <- %{
-              name: file.filename, 
-              path: file.path,
-              extname: Path.extname(file.filename),
-              size: tuple_file_size,
-              token: Map.get(conn.cookies, "access_token")
-           },
-           {:ok ,true} <- Creating.create(UserGettingById, FileInserting, FileUploading, args) do
+      with file <- Map.get(conn.body_params, "file"),
+           false <- file == nil,
+           args <- %{},
+           args <- Map.put(args, :name, file.filename),
+           args <- Map.put(args, :path, file.path),
+           args <- Map.put(args, :extname, Path.extname(file.filename)),
+           args <- Map.put(args, :size, FileSize.from_file(file.path)),
+           args <- Map.put(args, :token, Map.get(conn.cookies, "access_token")),
+           adapter_0 <- UserGettingById,
+           adapter_1 <- FileInserting,
+           adapter_2 <- FileUploading,
+           {:ok ,true} <- Creating.create(adapter_0, adapter_1, adapter_2, args) do
 
         ModLogger.Logger.info(%{
           message: "Создан файл", 
@@ -71,8 +72,11 @@ defmodule NodeApi.File.Controller do
       }
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = FileGettingList
+
     try do
-      case GettingList.get(UserGettingById, FileGettingList, args) do
+      case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
           ModLogger.Logger.info(%{
             message: "Получен список файлов", 
@@ -109,8 +113,11 @@ defmodule NodeApi.File.Controller do
       id: id
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = FileGettingById
+
     try do
-      case Getting.get(UserGettingById, FileGettingById, args) do
+      case Getting.get(adapter_0, adapter_1, args) do
         {:ok, file} -> 
           ModLogger.Logger.info(%{
             message: "Получен файл", 

@@ -19,8 +19,11 @@ defmodule NodeApi.Playlist.Controller do
       token: Map.get(conn.cookies, "access_token")
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = PlaylistInserting
+
     try do
-      case Creating.create(UserGettingById, PlaylistInserting, args) do
+      case Creating.create(adapter_0, adapter_1, args) do
         {:ok, true} -> 
           ModLogger.Logger.info(%{
             message: "Создан плэйлист", 
@@ -45,8 +48,12 @@ defmodule NodeApi.Playlist.Controller do
       id: id
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = PlaylistGettingById
+    adapter_2 = PlaylistUpdating
+
     try do
-      case Updating.update(UserGettingById, PlaylistGettingById, PlaylistUpdating, args) do
+      case Updating.update(adapter_0, adapter_1, adapter_2, args) do
         {:ok, true} -> 
           ModLogger.Logger.info(%{
             message: "Обновлен плэйлист", 
@@ -89,8 +96,11 @@ defmodule NodeApi.Playlist.Controller do
       }
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = PlaylistGettingList
+
     try do
-      case GettingList.get(UserGettingById, PlaylistGettingList, args) do
+      case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
           ModLogger.Logger.info(%{
             message: "Получен список плэйлистов", 
@@ -123,8 +133,11 @@ defmodule NodeApi.Playlist.Controller do
       id: id
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = PlaylistGettingById
+
     try do
-      case Getting.get(UserGettingById, PlaylistGettingById, args) do
+      case Getting.get(adapter_0, adapter_1, args) do
         {:ok, playlist} -> 
           ModLogger.Logger.info(%{
             message: "Получен плэйлист", 

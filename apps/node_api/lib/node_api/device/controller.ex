@@ -25,8 +25,12 @@ defmodule NodeApi.Device.Controller do
       token: Map.get(conn.cookies, "access_token")
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = GroupGettingById
+    adapter_2 = DeviceInserting
+
     try do
-      case Creating.create(UserGettingById, GroupGettingById, DeviceInserting, args) do
+      case Creating.create(adapter_0, adapter_1, adapter_2, args) do
         {:ok, true} -> 
           ModLogger.Logger.info(%{
             message: "Создано устройство", 
@@ -56,14 +60,13 @@ defmodule NodeApi.Device.Controller do
       id: id
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = GroupGettingById
+    adapter_2 = DeviceGettingById
+    adapter_3 = DeviceUpdating
+
     try do
-      case Updating.update(
-        UserGettingById, 
-        GroupGettingById, 
-        DeviceGettingById, 
-        DeviceUpdating, 
-        args
-      ) do
+      case Updating.update(adapter_0, adapter_1, adapter_2, adapter_3, args) do
         {:ok, true} -> 
           ModLogger.Logger.info(%{
             message: "Обновлено устройство", 
@@ -112,8 +115,11 @@ defmodule NodeApi.Device.Controller do
       }
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = DeviceGettingList
+
     try do
-      case GettingList.get(UserGettingById, DeviceGettingList, args) do
+      case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
           ModLogger.Logger.info(%{
             message: "Получен список устройств", 
@@ -149,8 +155,11 @@ defmodule NodeApi.Device.Controller do
       id: id
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = DeviceGettingById
+
     try do
-      case Getting.get(UserGettingById, DeviceGettingById, args) do
+      case Getting.get(adapter_0, adapter_1, args) do
         {:ok, device} -> 
           ModLogger.Logger.info(%{
             message: "Получено устройство", 

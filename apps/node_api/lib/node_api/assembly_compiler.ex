@@ -30,16 +30,15 @@ defmodule NodeApi.AssemblyCompiler do
   end
 
   @impl true
-  def handle_cast({:compile, %{id: id, user: user}}, state) do
+  def handle_cast({:compile, args}, state) do
     Task.async(fn -> 
       try do
-        case Compiling.compile(
-          PostgresqlAdapters.Assembly.GettingById,
-          SqliteAdapters.Assembly.Inserting,
-          HttpAdapters.Assembly.Uploading,
-          PostgresqlAdapters.Assembly.Updating,
-          %{id: id, user: user}
-        ) do
+        adapter_0 = PostgresqlAdapters.Assembly.GettingById
+        adapter_1 = SqliteAdapters.Assembly.Inserting
+        adapter_2 = HttpAdapters.Assembly.Uploading
+        adapter_3 = PostgresqlAdapters.Assembly.Updating
+
+        case Compiling.compile(adapter_0, adapter_1, adapter_2, adapter_3, args) do
           {:ok, true} -> 
             ModLogger.Logger.info(%{
               message: "Сборка скомпилирована", 
@@ -47,7 +46,7 @@ defmodule NodeApi.AssemblyCompiler do
             })
 
             NodeApi.WebsocketServer.broadcast(Jason.encode!(%{
-              id: id, 
+              id: args.id, 
               message: "Сборка скомпилирована"
             }))
 

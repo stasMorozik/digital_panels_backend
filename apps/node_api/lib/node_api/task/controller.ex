@@ -29,15 +29,14 @@ defmodule NodeApi.Task.Controller do
       token: Map.get(conn.cookies, "access_token")
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = PlaylistGettingById
+    adapter_2 = GroupGettingById
+    adapter_3 = TaskGettingList
+    adapter_4 = TaskInserting
+
     try do
-      case Creating.create(
-        UserGettingById, 
-        PlaylistGettingById, 
-        GroupGettingById,
-        TaskGettingList,
-        TaskInserting, 
-        args
-      ) do
+      case Creating.create(adapter_0, adapter_1, adapter_2, adapter_3, adapter_4, args) do
         {:ok, true} -> 
           ModLogger.Logger.info(%{
             message: "Создано задание",
@@ -72,16 +71,15 @@ defmodule NodeApi.Task.Controller do
       id: id
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = PlaylistGettingById
+    adapter_2 = GroupGettingById
+    adapter_3 = TaskGettingById
+    adapter_4 = TaskGettingList
+    adapter_5 = TaskUpdating
+
     try do
-      case Updating.update(
-        UserGettingById, 
-        PlaylistGettingById, 
-        GroupGettingById,
-        TaskGettingById,
-        TaskGettingList,
-        TaskUpdating, 
-        args
-      ) do
+      case Updating.update(adapter_0, adapter_1, adapter_2, adapter_3, adapter_4, adapter_5, args) do
         {:ok, true} -> 
           ModLogger.Logger.info(%{
             message: "Обновлено задание", 
@@ -131,8 +129,11 @@ defmodule NodeApi.Task.Controller do
       }
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = TaskGettingList
+
     try do
-      case GettingList.get(UserGettingById, TaskGettingList, args) do
+      case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
           ModLogger.Logger.info(%{
             message: "Получен список заданий", 
@@ -178,8 +179,11 @@ defmodule NodeApi.Task.Controller do
       id: id
     }
 
+    adapter_0 = UserGettingById
+    adapter_1 = TaskGettingById
+
     try do
-      case Getting.get(UserGettingById, TaskGettingById, args) do
+      case Getting.get(adapter_0, adapter_1, args) do
         {:ok, task} -> 
           ModLogger.Logger.info(%{
             message: "Получено задание", 

@@ -210,6 +210,13 @@ defmodule NodeApi.Router do
       |> NodeApi.Assembly.Controller.create()
   end
 
+  post "/api/v1/assembly/:id" do
+    conn 
+      |> fetch_cookies()
+      |> put_resp_content_type("application/json")
+      |> NodeApi.Assembly.Controller.update(id)
+  end
+
   get "/api/v1/assembly/" do
     conn 
       |> fetch_cookies()

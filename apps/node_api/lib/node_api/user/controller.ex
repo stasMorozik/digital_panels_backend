@@ -10,8 +10,10 @@ defmodule NodeApi.User.Controller do
       token: Map.get(conn.cookies, "access_token")
     }
 
+    adapter_0 = UserGettingById
+
     try do
-      case Authorization.auth(UserGettingById, args) do
+      case Authorization.auth(adapter_0, args) do
         {:ok, user} ->
           ModLogger.Logger.info(%{
             message: "Пользователь авторизован",
