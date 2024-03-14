@@ -18,6 +18,10 @@ defmodule HttpAdapters.Assembly.Uploading do
   @impl Transformer
   def transform(%Assembly{} = assembly, %User{} = _user) do
     with path_bandle <- Map.get(@paths, String.to_atom(assembly.type)),
+         true <- File.exists?(path_bandle),
+         true <- File.exists?("#{path_bandle}data"),
+         true <- File.exists?("#{path_bandle}lib"),
+         true <- File.exists?("/tmp/#{assembly.id}/local.db"),
          files_0 <- create_files_list("#{path_bandle}data", path_bandle),
          files_1 <- create_files_list("#{path_bandle}lib", path_bandle),
          name_file <- String.to_charlist(Path.basename("#{path_bandle}panel")), 
@@ -44,7 +48,7 @@ defmodule HttpAdapters.Assembly.Uploading do
       end
 
     else
-      false -> {:exception, "Не удалось найти папку со сборкой"}
+      false -> {:exception, "Не удалось найти файлы со сборкой"}
       {:error, _} -> {:exception, "Не удалось собрать архив со сборкой"}
     end
   end
