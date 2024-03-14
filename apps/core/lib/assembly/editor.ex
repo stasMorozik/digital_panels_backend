@@ -22,6 +22,8 @@ defmodule Core.Assembly.Editor do
       url: entity.url,
       type: entity.type,
       status: true,
+      access_token: entity.access_token,
+      refresh_token: entity.refresh_token,
       created: entity.created, 
       updated: entity.updated
     }}

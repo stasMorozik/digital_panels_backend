@@ -41,6 +41,7 @@ defmodule NodeApi.MixProject do
       {:cookie, "~> 0.1.2"},
       {:core, in_umbrella: true},
       {:postgresql_adapters, in_umbrella: true},
+      {:sqlite_adapters, in_umbrella: true},
       {:http_adapters, in_umbrella: true},
       {:mod_logger, in_umbrella: true},
       {:notifier_adapters, in_umbrella: true}

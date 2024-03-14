@@ -15,10 +15,12 @@ defmodule Core.Assembly.UseCases.Compiling do
     getter_assembly,
     transformer_assembly_0,
     transformer_assembly_1,
+    transformer_assembly_2,
     args
   ) when is_atom(getter_assembly) and
          is_atom(transformer_assembly_0) and
          is_atom(transformer_assembly_1) and
+         is_atom(transformer_assembly_2) and
          is_map(args) do
     with id <- Map.get(args, :id),
          {:ok, true} <- Core.Shared.Validators.Identifier.valid(id),
@@ -26,7 +28,8 @@ defmodule Core.Assembly.UseCases.Compiling do
          {:ok, assembly} <- getter_assembly.get(id, user),
          {:ok, assembly} <- Core.Assembly.Editor.edit(assembly),
          {:ok, true} <- transformer_assembly_0.transform(assembly, user),
-         {:ok, true} <- transformer_assembly_1.transform(assembly, user) do
+         {:ok, true} <- transformer_assembly_1.transform(assembly, user),
+         {:ok, true} <- transformer_assembly_2.transform(assembly, user) do
       {:ok, true}
     else
       {:error, message} -> {:error, message}

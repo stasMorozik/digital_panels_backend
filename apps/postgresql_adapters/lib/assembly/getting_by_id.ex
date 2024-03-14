@@ -13,6 +13,8 @@ defmodule PostgresqlAdapters.Assembly.GettingById do
       assemblies.url AS a_url,
       assemblies.type AS a_type,
       assemblies.status AS a_st,
+      assemblies.access_token AS a_at,
+      assemblies.refresh_token AS a_rt,
       assemblies.created AS a_created,
       assemblies.updated AS a_updated,
       groups.id AS gr_id, 
@@ -43,7 +45,7 @@ defmodule PostgresqlAdapters.Assembly.GettingById do
              true <- result.num_rows > 0,
              [row] <- result.rows,
              [
-                a_id, a_url, a_type, a_st, a_created, a_updated,
+                a_id, a_url, a_type, a_st, a_at, a_rt, a_created, a_updated,
                 gr_id, gr_name, gr_sum, gr_created, gr_updated
              ] <- row do
           {:ok, %Assembly{
@@ -58,6 +60,8 @@ defmodule PostgresqlAdapters.Assembly.GettingById do
             url: a_url,
             type: a_type,
             status: a_st,
+            access_token: a_at,
+            refresh_token: a_rt,
             created: a_created,
             updated: a_updated
           }}

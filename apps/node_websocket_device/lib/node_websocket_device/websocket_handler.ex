@@ -59,7 +59,11 @@ defmodule NodeWebsocketDevice.WebsocketHandler do
         })
 
         :ok = Process.send(
-          @where, {:notify_all, Jason.encode!(%{id: id, is_active: true})}, []
+          @where, {:notify_all, Jason.encode!(%{
+            id: id, 
+            message: "Устройство активно", 
+            is_active: true
+            })}, []
         )
 
         {:ok, state}
@@ -141,7 +145,11 @@ defmodule NodeWebsocketDevice.WebsocketHandler do
           })
 
           :ok = Process.send(
-            @where, {:notify_all, Jason.encode!(%{id: id, is_active: false})}, []
+            @where, {:notify_all, Jason.encode!(%{
+              id: id, 
+              is_active: false,
+              message: "Устройство не активно"
+            })}, []
           )
 
           leave()

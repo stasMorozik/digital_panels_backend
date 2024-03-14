@@ -59,7 +59,7 @@ defmodule NodeApi.WebsocketServer do
   @impl true
   def handle_cast({:notify_all, message}, state) do
     clients = state
-    Enum.each(clients, &send(&1, {:device_updated, message}))
+    Enum.each(clients, &send(&1, {:assembly_compiled, message}))
     {:noreply, state}
   end
 

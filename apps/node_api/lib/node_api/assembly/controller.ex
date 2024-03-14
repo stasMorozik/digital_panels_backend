@@ -81,7 +81,7 @@ defmodule NodeApi.Assembly.Controller do
         url: Map.get(filter, "url"),
         type: Map.get(filter, "type"),
         group: Map.get(filter, "group"),
-        status: Map.get(filter, "status"),
+        status: NodeApi.Utils.boolen_parse(filter, "status"),
         created_f: Map.get(filter, "created_f"), 
         created_t: Map.get(filter, "created_t")
       },

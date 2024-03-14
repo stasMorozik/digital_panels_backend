@@ -14,6 +14,11 @@ config :http_adapters,
   path_linux_bundle: "/home/bundles/b_li/",
   path_windows_bundle: "/home/bundles/b_wi/"
 
+config :sqlite_adapters,
+  path_android_bundle: "/home/bundles/b_an/",
+  path_linux_bundle: "/home/bundles/b_li/",
+  path_windows_bundle: "/home/bundles/b_wi/"
+
 config :postgresql_adapters,
   hostname: "192.168.0.161",
   username: "db_user",

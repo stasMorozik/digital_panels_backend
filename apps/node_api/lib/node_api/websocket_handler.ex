@@ -81,6 +81,11 @@ defmodule NodeApi.WebsocketHandler do
   end
 
   @impl true
+  def websocket_info({:assembly_compiled, message}, state) do
+    {:reply, {:text, message}, state}
+  end
+
+  @impl true
   def websocket_info(_info, state) do
     {:ok, state}
   end

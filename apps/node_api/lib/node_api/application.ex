@@ -4,7 +4,6 @@ defmodule NodeApi.Application do
 
   @name_node_logger Application.compile_env(:mod_logger, :name_node)
   @name_node_notifier Application.compile_env(:notifier_adapters, :name_node)
-  @name_node_assembly_maker Application.compile_env(:assembly_pipe, :name_node)
 
   def start(_type, _args) do
     :ets.new(:connections, [:set, :public, :named_table])
@@ -26,7 +25,8 @@ defmodule NodeApi.Application do
         id: NodeApi.Postgres,
         start: {NodeApi.Postgres, :start_link, []}
       },
-      NodeApi.WebsocketServer
+      NodeApi.WebsocketServer,
+      NodeApi.AssemblyCompiler
     ]
 
     opts = [strategy: :one_for_one, name: NodeApi.Supervisor]

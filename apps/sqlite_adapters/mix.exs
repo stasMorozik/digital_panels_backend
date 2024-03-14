@@ -1,9 +1,9 @@
-defmodule HttpAdapters.MixProject do
+defmodule SqliteAdapters.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :http_adapters,
+      app: :sqlite_adapters,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "./config/config.exs",
@@ -18,13 +18,13 @@ defmodule HttpAdapters.MixProject do
 
   def application do
     [
-      extra_applications: [:logger, :mnesia]
+      extra_applications: [:logger]
     ]
   end
 
   defp deps do
     [
-      {:httpoison, "~> 2.0"},
+      {:exqlite, "~> 0.19.0"},
       {:core, in_umbrella: true}
     ]
   end

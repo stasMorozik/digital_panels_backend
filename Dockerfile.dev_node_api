@@ -18,6 +18,15 @@ RUN chmod +x /usr/local/bin/*
 
 RUN mix deps.get
 
+RUN apk update && apk upgrade
+RUN apk add --no-cache sqlite 
+
+RUN mkdir /home/bundles
+
+RUN cp -R /app/apps/http_adapters/assets/b_an /home/bundles/b_an
+RUN cp -R /app/apps/http_adapters/assets/b_wi /home/bundles/b_wi
+RUN cp -R /app/apps/http_adapters/assets/b_li /home/bundles/b_li
+
 RUN mix local.hex
 
 EXPOSE 8080
