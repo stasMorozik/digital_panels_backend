@@ -72,7 +72,7 @@ defmodule HttpAdapters.Assembly.Uploading do
         case File.dir?(filename_path) do
           true -> acc ++ create_files_list(File.ls!(filename_path), filename_path, base_path, path_bandle)
           false -> 
-            [{String.to_char_list(
+            [{String.to_charlist(
               case String.length(base_path) > 0 do
                 true -> String.replace_leading(filename_path, path_bandle, "")
                 false -> filename_path  

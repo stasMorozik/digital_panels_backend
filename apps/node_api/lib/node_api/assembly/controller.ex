@@ -4,19 +4,12 @@ defmodule NodeApi.Assembly.Controller do
   alias Core.Assembly.UseCases.Getting
   alias Core.Assembly.UseCases.GettingList
   alias Core.User.UseCases.Authorization
-  alias Core.Assembly.UseCases.Compiling
-  
 
   alias PostgresqlAdapters.User.GettingById, as: UserGettingById
   alias PostgresqlAdapters.Assembly.Inserting, as: AssemblyInserting
   alias PostgresqlAdapters.Assembly.GettingById, as: AssemblyGettingById
   alias PostgresqlAdapters.Group.GettingById, as: GroupGettingById
   alias PostgresqlAdapters.Assembly.GettingList, as: AssemblyGettingList
-  alias SqliteAdapters.Assembly.Inserting, as: SqliteAssemblyInserting
-  alias HttpAdapters.Assembly.Uploading, as: AssemblyUploading
-  alias PostgresqlAdapters.Assembly.Updating, as: AssemblyUpdating
-
-  @name_node Application.compile_env(:node_api, :name_node)
 
   defmodule AssemblyPipe do
     
@@ -50,12 +43,11 @@ defmodule NodeApi.Assembly.Controller do
     try do
       case Creating.create(adapter_0, adapter_1, adapter_2, adapter_3, args) do
         {:ok, true} ->
-          ModLogger.Logger.info(%{
-            message: "Создана сборка и отправлена на компиляцию", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Создана сборка и отправлена на компиляцию")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+          json = Jason.encode!(true)
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> 
           NodeApi.Handlers.handle_error(conn, message, 400)
@@ -80,16 +72,15 @@ defmodule NodeApi.Assembly.Controller do
             user: user
           })
 
-          ModLogger.Logger.info(%{
-            message: "Сборка отправлена на компиляцию", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Сборка отправлена на компиляцию")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+          json = Jason.encode!(true)
+
+          conn |> Plug.Conn.send_resp(200, json)
         else
           {:error, message} -> 
             NodeApi.Handlers.handle_error(conn, message, 400)
-              
+
           {:exception, message} -> 
             NodeApi.Handlers.handle_exception(conn, message)
         end
@@ -129,27 +120,26 @@ defmodule NodeApi.Assembly.Controller do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          ModLogger.Logger.info(%{
-            message: "Получен список сборок", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получен список сборок")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(
-            Enum.map(list, fn (assembly) -> 
-              %{
-                id: assembly.id,
-                group: %{
-                  id: assembly.group.id,
-                  name: assembly.group.name,
-                  created: assembly.group.created
-                },
-                url: assembly.url,
-                type: assembly.type,
-                status: assembly.status,
-                created: assembly.created
-              }
-            end)
-          ))
+          fun = fn (assembly) -> 
+            %{
+              id: assembly.id,
+              group: %{
+                id: assembly.group.id,
+                name: assembly.group.name,
+                created: assembly.group.created
+              },
+              url: assembly.url,
+              type: assembly.type,
+              status: assembly.status,
+              created: assembly.created
+            }
+          end
+
+          json = Jason.encode!(Enum.map(list, fun))
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> 
           NodeApi.Handlers.handle_error(conn, message, 400)
@@ -174,12 +164,9 @@ defmodule NodeApi.Assembly.Controller do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, assembly} -> 
-          ModLogger.Logger.info(%{
-            message: "Получена группа устройств", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получена сборка")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
+          json = Jason.encode!(%{
             id: assembly.id,
             group: %{
               id: assembly.group.id,
@@ -192,14 +179,18 @@ defmodule NodeApi.Assembly.Controller do
             status: assembly.status,
             created: assembly.created,
             updated: assembly.updated
-          }))
+          })
 
-        {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
+          conn |> Plug.Conn.send_resp(200, json)
 
-        {:exception, message} -> NodeApi.Handlers.handle_exception(conn, message)
+        {:error, message} -> 
+          NodeApi.Handlers.handle_error(conn, message, 400)
+
+        {:exception, message} -> 
+          NodeApi.Handlers.handle_exception(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.handle_exception(conn, e)
+      e-> NodeApi.Handlers.handle_exception(conn, e)
     end
   end
 end

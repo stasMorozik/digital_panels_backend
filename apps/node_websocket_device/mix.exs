@@ -35,8 +35,7 @@ defmodule NodeWebsocketDevice.MixProject do
       {:uri, "~> 0.1.0"},
       {:core, in_umbrella: true},
       {:postgresql_adapters, in_umbrella: true},
-      {:mod_logger, in_umbrella: true},
-      {:notifier_adapters, in_umbrella: true}
+      {:amqp, "~> 3.3"}
     ]
   end
 

@@ -13,8 +13,6 @@ defmodule NodeApi.Task.Controller do
   alias PostgresqlAdapters.Playlist.GettingById, as: PlaylistGettingById
   alias PostgresqlAdapters.Group.GettingById, as: GroupGettingById
 
-  @name_node Application.compile_env(:node_api, :name_node)
-
   def create(conn) do
     args = %{
       group_id: Map.get(conn.body_params, "group_id"),
@@ -38,12 +36,11 @@ defmodule NodeApi.Task.Controller do
     try do
       case Creating.create(adapter_0, adapter_1, adapter_2, adapter_3, adapter_4, args) do
         {:ok, true} -> 
-          ModLogger.Logger.info(%{
-            message: "Создано задание",
-            node: @name_node
-          })
+          NodeApi.Logger.info("Создано задание")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+          json = Jason.encode!(true)
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> 
           NodeApi.Handlers.handle_error(conn, message, 400)
@@ -81,12 +78,11 @@ defmodule NodeApi.Task.Controller do
     try do
       case Updating.update(adapter_0, adapter_1, adapter_2, adapter_3, adapter_4, adapter_5, args) do
         {:ok, true} -> 
-          ModLogger.Logger.info(%{
-            message: "Обновлено задание", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Обновлено задание")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+          json = Jason.encode!(true)
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> 
           NodeApi.Handlers.handle_error(conn, message, 400)
@@ -135,32 +131,31 @@ defmodule NodeApi.Task.Controller do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          ModLogger.Logger.info(%{
-            message: "Получен список заданий", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получен список заданий")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(
-            Enum.map(list, fn (task) -> 
-              %{
-                id: task.id,
-                name: task.name,
-                type: task.type,
-                day: task.day,
-                start_hour: task.start_hour,
-                end_hour: task.end_hour,
-                start_minute: task.start_minute,
-                end_minute: task.end_minute,
-                start: task.start,
-                end: task.end,
-                created: task.created,
-                group: %{
-                  id: task.group.id,
-                  name: task.group.name
-                },
-              }
-            end)
-          ))
+          fun = fn (task) -> 
+            %{
+              id: task.id,
+              name: task.name,
+              type: task.type,
+              day: task.day,
+              start_hour: task.start_hour,
+              end_hour: task.end_hour,
+              start_minute: task.start_minute,
+              end_minute: task.end_minute,
+              start: task.start,
+              end: task.end,
+              created: task.created,
+              group: %{
+                id: task.group.id,
+                name: task.group.name
+              },
+            }
+          end
+
+          json = Jason.encode!(Enum.map(list, fun))
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> 
           NodeApi.Handlers.handle_error(conn, message, 400)
@@ -185,12 +180,28 @@ defmodule NodeApi.Task.Controller do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, task} -> 
-          ModLogger.Logger.info(%{
-            message: "Получено задание", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получено задание")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
+          fun = fn (content) -> 
+            %{
+              id: content.id,
+              name: content.name,
+              duration: content.duration,
+              file: %{
+                id: content.file.id, 
+                url: content.file.url, 
+                extension: content.file.extension, 
+                type: content.file.type, 
+                size: content.file.size, 
+                created: content.file.created
+              },
+              serial_number: content.serial_number,
+              created: content.created,
+              updated: content.updated
+            }
+          end
+
+          json = Jason.encode!(%{
               id: task.id,
               name: task.name,
               type: task.type,
@@ -208,24 +219,7 @@ defmodule NodeApi.Task.Controller do
                 id: task.playlist.id, 
                 name: task.playlist.name,
                 sum: task.playlist.sum,
-                contents: Enum.map(task.playlist.contents, fn (content) -> 
-                  %{
-                    id: content.id,
-                    name: content.name,
-                    duration: content.duration,
-                    file: %{
-                      id: content.file.id, 
-                      url: content.file.url, 
-                      extension: content.file.extension, 
-                      type: content.file.type, 
-                      size: content.file.size, 
-                      created: content.file.created
-                    },
-                    serial_number: content.serial_number,
-                    created: content.created,
-                    updated: content.updated
-                  }
-                end),
+                contents: Enum.map(task.playlist.contents, fun),
                 created: task.created,
                 updated: task.updated
               },
@@ -235,7 +229,9 @@ defmodule NodeApi.Task.Controller do
                 created: task.group.created, 
                 updated: task.group.updated
               },
-          }))
+          })
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> 
           NodeApi.Handlers.handle_error(conn, message, 400)

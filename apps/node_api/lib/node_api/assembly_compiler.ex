@@ -2,10 +2,6 @@ defmodule NodeApi.AssemblyCompiler do
   
   use GenServer
 
-  @name_node Application.compile_env(:node_api, :name_node)
-  @to Application.compile_env(:node_api, :developer_telegram_login)
-  @from Application.compile_env(:core, :email_address)
-
   alias Core.Assembly.UseCases.Compiling
 
   def start_link(opts \\ []) do
@@ -40,10 +36,7 @@ defmodule NodeApi.AssemblyCompiler do
 
         case Compiling.compile(adapter_0, adapter_1, adapter_2, adapter_3, args) do
           {:ok, true} -> 
-            ModLogger.Logger.info(%{
-              message: "Сборка скомпилирована", 
-              node: @name_node
-            })
+            NodeApi.Logger.info("Сборка скомпилирована")
 
             NodeApi.WebsocketServer.broadcast(Jason.encode!(%{
               id: args.id, 
@@ -51,24 +44,12 @@ defmodule NodeApi.AssemblyCompiler do
             }))
 
           {:error, message} ->
-            
-            ModLogger.Logger.info(%{
-              message: message, 
-              node: @name_node
-            })
+            NodeApi.Logger.info(message)
         end
       rescue e -> 
-        ModLogger.Logger.exception(%{
-          message: e, 
-          node: @name_node
-        })
+        NodeApi.Logger.exception(e)
 
-        NotifierAdapters.SenderToDeveloper.notify(%{
-          to: @to,
-          from: @from,
-          subject: "Exception",
-          message: e
-        })
+        NodeApi.NotifierAdmin.notify(e)
       end
     end)
     {:noreply, state}

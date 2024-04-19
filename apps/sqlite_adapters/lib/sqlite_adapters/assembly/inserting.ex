@@ -21,7 +21,7 @@ defmodule SqliteAdapters.Assembly.Inserting do
   @query_1 "insert into groups (id, name) values (?1, ?2)"
 
   @impl Transformer
-  def transform(%Assembly{} = assmbl, %User{} = user) do
+  def transform(%Assembly{} = assmbl, %User{} = _user) do
     with path_bandle <- Map.get(@paths, String.to_atom(assmbl.type)),
          true <- File.exists?(path_bandle),
          true <- File.exists?("#{path_bandle}local.db"),

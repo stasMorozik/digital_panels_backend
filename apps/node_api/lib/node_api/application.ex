@@ -2,14 +2,8 @@ defmodule NodeApi.Application do
 
   use Application
 
-  @name_node_logger Application.compile_env(:mod_logger, :name_node)
-  @name_node_notifier Application.compile_env(:notifier_adapters, :name_node)
-
   def start(_type, _args) do
     :ets.new(:connections, [:set, :public, :named_table])
-
-    :pong = :net_adm.ping(@name_node_logger)
-    :pong = :net_adm.ping(@name_node_notifier)
 
     children = [
       {

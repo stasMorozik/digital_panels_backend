@@ -11,8 +11,6 @@ defmodule NodeApi.Group.Controller do
   alias PostgresqlAdapters.Group.Updating, as: GroupUpdating
   alias PostgresqlAdapters.Group.GettingList, as: GroupGettingList
 
-  @name_node Application.compile_env(:node_api, :name_node)
-
   def create(conn) do
     args = %{
       name: Map.get(conn.body_params, "name"),
@@ -25,12 +23,11 @@ defmodule NodeApi.Group.Controller do
     try do
       case Creating.create(adapter_0, adapter_1, args) do
         {:ok, true} -> 
-          ModLogger.Logger.info(%{
-            message: "Создана группа устройств", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Создана группа устройств")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+          json = Jason.encode!(true)
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
 
@@ -55,12 +52,11 @@ defmodule NodeApi.Group.Controller do
     try do
       case Updating.update(adapter_0, adapter_1, adapter_2, args) do
         {:ok, true} -> 
-          ModLogger.Logger.info(%{
-            message: "Обновлена группа устройств", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Обновлена группа устройств")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+          json = Jason.encode!(true)
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
 
@@ -102,21 +98,20 @@ defmodule NodeApi.Group.Controller do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          ModLogger.Logger.info(%{
-            message: "Получен список групп устройств", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получен список групп устройств")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(
-            Enum.map(list, fn (group) -> 
-              %{
-                id: group.id,
-                name: group.name,
-                sum: group.sum,
-                created: group.created
-              }
-            end)
-          ))
+          fun = fn (group) -> 
+            %{
+              id: group.id,
+              name: group.name,
+              sum: group.sum,
+              created: group.created
+            }
+          end
+
+          json = Jason.encode!(Enum.map(list, fun))
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
 
@@ -139,29 +134,30 @@ defmodule NodeApi.Group.Controller do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, group} -> 
-          ModLogger.Logger.info(%{
-            message: "Получена группа устройств",
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получена группа устройств")
           
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
+          fun = fn (device) -> 
+            %{
+              id: device.id,
+              ip: device.ip,
+              latitude: device.latitude,
+              longitude: device.longitude,
+              desc: device.desc,
+              is_active: device.is_active,
+              created: device.created,
+            }
+          end
+
+          json = Jason.encode!(%{
             id: group.id,
             name: group.name,
             sum: group.sum,
             created: group.created,
             updated: group.created,
-            devices: Enum.map(group.devices, fn (device) -> 
-              %{
-                id: device.id,
-                ip: device.ip,
-                latitude: device.latitude,
-                longitude: device.longitude,
-                desc: device.desc,
-                is_active: device.is_active,
-                created: device.created,
-              }
-            end)
-          }))
+            devices: Enum.map(group.devices, fun)
+          })
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
 

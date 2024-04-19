@@ -32,7 +32,7 @@ defmodule NodeApi.WebsocketServer do
   @impl true
   def handle_info({:notify_all, message}, state) do
     clients = state
-    Enum.each(clients, &send(&1, {:device_updated, message}))
+    Enum.each(clients, &send(&1, {:notify, message}))
     {:noreply, state}
   end
   
@@ -43,28 +43,11 @@ defmodule NodeApi.WebsocketServer do
 
   @impl true
   def handle_cast({:join, pid}, state) do
-    current_clients = state
-    new_state = [pid | current_clients]
-    {:noreply, new_state}
+    {:noreply, [pid | state]}
   end
 
   @impl true
   def handle_cast({:leave, pid}, state) do
-    all_clients = state
-    others = all_clients -- [pid]
-    new_state = others
-    {:noreply, new_state}
-  end
-
-  @impl true
-  def handle_cast({:notify_all, message}, state) do
-    clients = state
-    Enum.each(clients, &send(&1, {:assembly_compiled, message}))
-    {:noreply, state}
-  end
-
-  @impl true
-  def handle_call({:clients_count}, _from, state) do
-    {:reply, {:ok, Enum.count(state)}, state}
+    {:noreply, state -- [pid]}
   end
 end

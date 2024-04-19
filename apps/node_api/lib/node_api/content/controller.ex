@@ -13,8 +13,6 @@ defmodule NodeApi.Content.Controller do
   alias PostgresqlAdapters.Playlist.GettingById, as: PlaylistGettingById
   alias PostgresqlAdapters.File.GettingById, as: FileGettingById
 
-  @name_node Application.compile_env(:node_api, :name_node)
-
   def create(conn) do
     args = %{
       file_id: Map.get(conn.body_params, "file_id"),
@@ -33,12 +31,11 @@ defmodule NodeApi.Content.Controller do
     try do
       case Creating.create(adapter_0, adapter_1, adapter_2, adapter_3, args) do
         {:ok, true} -> 
-          ModLogger.Logger.info(%{
-            message: "Создан контент", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Создан контен")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+          json = Jason.encode!(true)
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> 
           NodeApi.Handlers.handle_error(conn, message, 400)
@@ -71,12 +68,11 @@ defmodule NodeApi.Content.Controller do
     try do
       case Updating.update(adapter_0, adapter_1, adapter_2, adapter_3, adapter_4, args) do
         {:ok, true} -> 
-          ModLogger.Logger.info(%{
-            message: "Обновлено устройство", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Обновлен контен")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+          json = Jason.encode!(true)
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> 
           NodeApi.Handlers.handle_error(conn, message, 400)
@@ -120,22 +116,21 @@ defmodule NodeApi.Content.Controller do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          ModLogger.Logger.info(%{
-            message: "Получен список контента", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получен список контента")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(
-            Enum.map(list, fn (content) -> 
-              %{
-                id: content.id,
-                name: content.name,
-                duration: content.duration,
-                created: content.created,
-                updated: content.updated
-              }
-            end)
-          ))
+          fun = fn (content) -> 
+            %{
+              id: content.id,
+              name: content.name,
+              duration: content.duration,
+              created: content.created,
+              updated: content.updated
+            }
+          end
+
+          json = Jason.encode!(Enum.map(list, fun))
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> 
           NodeApi.Handlers.handle_error(conn, message, 400)
@@ -160,12 +155,9 @@ defmodule NodeApi.Content.Controller do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, content} -> 
-          ModLogger.Logger.info(%{
-            message: "Получен контент", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получен контент")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
+          json = Jason.encode!(%{
               id: content.id,
               name: content.name,
               duration: content.duration,
@@ -186,7 +178,9 @@ defmodule NodeApi.Content.Controller do
               serial_number: content.serial_number,
               created: content.created,
               updated: content.updated
-          }))
+          })
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> 
           NodeApi.Handlers.handle_error(conn, message, 400)

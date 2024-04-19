@@ -11,8 +11,6 @@ defmodule NodeApi.Playlist.Controller do
   alias PostgresqlAdapters.Playlist.Updating, as: PlaylistUpdating
   alias PostgresqlAdapters.Playlist.GettingList, as: PlaylistGettingList
 
-  @name_node Application.compile_env(:node_api, :name_node)
-
   def create(conn) do
     args = %{
       name: Map.get(conn.body_params, "name"),
@@ -25,12 +23,11 @@ defmodule NodeApi.Playlist.Controller do
     try do
       case Creating.create(adapter_0, adapter_1, args) do
         {:ok, true} -> 
-          ModLogger.Logger.info(%{
-            message: "Создан плэйлист", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Создан плэйлист")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+          json = Jason.encode!(true)
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
 
@@ -55,12 +52,11 @@ defmodule NodeApi.Playlist.Controller do
     try do
       case Updating.update(adapter_0, adapter_1, adapter_2, args) do
         {:ok, true} -> 
-          ModLogger.Logger.info(%{
-            message: "Обновлен плэйлист", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Обновлен плэйлист")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+          json = Jason.encode!(true)
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
 
@@ -102,21 +98,20 @@ defmodule NodeApi.Playlist.Controller do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          ModLogger.Logger.info(%{
-            message: "Получен список плэйлистов", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получен список плэйлистов")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(
-            Enum.map(list, fn (playlist) -> 
-              %{
-                id: playlist.id,
-                name: playlist.name,
-                sum: playlist.sum,
-                created: playlist.created
-              }
-            end)
-          ))
+          fun = fn (playlist) -> 
+            %{
+              id: playlist.id,
+              name: playlist.name,
+              sum: playlist.sum,
+              created: playlist.created
+            }
+          end
+
+          json = Jason.encode!(Enum.map(list, fun))
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
 
@@ -139,37 +134,38 @@ defmodule NodeApi.Playlist.Controller do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, playlist} -> 
-          ModLogger.Logger.info(%{
-            message: "Получен плэйлист", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получен плэйлист")
+          
+          fun = fn (content) -> 
+            %{
+              id: content.id,
+              name: content.name,
+              duration: content.duration,
+              file: %{
+                id: content.file.id, 
+                path: content.file.path, 
+                url: content.file.url, 
+                extension: content.file.extension, 
+                type: content.file.type, 
+                size: content.file.size, 
+                created: content.file.created
+              },
+              serial_number: content.serial_number,
+              created: content.created,
+              updated: content.updated
+            }
+          end
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
+          json = Jason.encode!(%{
             id: playlist.id,
             name: playlist.name,
             sum: playlist.sum,
             created: playlist.created,
             updated: playlist.created,
-            contents: Enum.map(playlist.contents, fn (content) -> 
-              %{
-                  id: content.id,
-                  name: content.name,
-                  duration: content.duration,
-                  file: %{
-                    id: content.file.id, 
-                    path: content.file.path, 
-                    url: content.file.url, 
-                    extension: content.file.extension, 
-                    type: content.file.type, 
-                    size: content.file.size, 
-                    created: content.file.created
-                  },
-                  serial_number: content.serial_number,
-                  created: content.created,
-                  updated: content.updated
-                }
-            end)
-          }))
+            contents: Enum.map(playlist.contents, fun)
+          })
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
 

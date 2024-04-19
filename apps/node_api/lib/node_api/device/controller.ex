@@ -12,8 +12,6 @@ defmodule NodeApi.Device.Controller do
   alias PostgresqlAdapters.Device.GettingList, as: DeviceGettingList
   alias PostgresqlAdapters.Group.GettingById, as: GroupGettingById
 
-  @name_node Application.compile_env(:node_api, :name_node)
-
   def create(conn) do
     args = %{
       ip: Map.get(conn.body_params, "ip"), 
@@ -32,12 +30,11 @@ defmodule NodeApi.Device.Controller do
     try do
       case Creating.create(adapter_0, adapter_1, adapter_2, args) do
         {:ok, true} -> 
-          ModLogger.Logger.info(%{
-            message: "Создано устройство", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Создано устройство")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+          json = Jason.encode!(true)
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
 
@@ -68,12 +65,11 @@ defmodule NodeApi.Device.Controller do
     try do
       case Updating.update(adapter_0, adapter_1, adapter_2, adapter_3, args) do
         {:ok, true} -> 
-          ModLogger.Logger.info(%{
-            message: "Обновлено устройство", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Обновлено устройство")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+          json = Jason.encode!(true)
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
 
@@ -121,24 +117,23 @@ defmodule NodeApi.Device.Controller do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          ModLogger.Logger.info(%{
-            message: "Получен список устройств", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получен список устройств")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(
-            Enum.map(list, fn (device) -> 
-              %{
-                id: device.id, 
-                ip: device.ip, 
-                latitude: device.latitude, 
-                longitude: device.longitude, 
-                desc: device.desc,
-                is_active: device.is_active,
-                created: device.created, 
-              }
-            end)
-          ))
+          fun = fn (device) -> 
+            %{
+              id: device.id, 
+              ip: device.ip, 
+              latitude: device.latitude, 
+              longitude: device.longitude, 
+              desc: device.desc,
+              is_active: device.is_active,
+              created: device.created, 
+            }
+          end
+
+          json = Jason.encode!(Enum.map(list, fun))
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
 
@@ -161,12 +156,9 @@ defmodule NodeApi.Device.Controller do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, device} -> 
-          ModLogger.Logger.info(%{
-            message: "Получено устройство", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получено устройство")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
+          json = Jason.encode!(%{
             id: device.id, 
             ip: device.ip, 
             latitude: device.latitude, 
@@ -182,7 +174,9 @@ defmodule NodeApi.Device.Controller do
               created: device.group.created, 
               updated: device.group.updated
             } 
-          }))
+          })
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
 

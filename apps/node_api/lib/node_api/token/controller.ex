@@ -6,8 +6,6 @@ defmodule NodeApi.Token.Controller do
   alias PostgresqlAdapters.ConfirmationCode.Getting, as: ConfirmationCodeGetting
   alias PostgresqlAdapters.User.GettingByEmail, as: UserGettingByEmail
 
-  @name_node Application.compile_env(:node_api, :name_node)
-
   def create(conn) do
     args = %{
       email: Map.get(conn.body_params, "email"),
@@ -20,15 +18,14 @@ defmodule NodeApi.Token.Controller do
     try do
       case Authentication.auth(adapter_0, adapter_1, args) do
         {:ok, tokens} -> 
-          ModLogger.Logger.info(%{
-            message: "Пользователь аутентифицирован", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Пользователь аутентифицирован")
+
+          json = Jason.encode!(true)
 
           conn 
             |> Plug.Conn.put_resp_cookie("access_token", tokens.access_token)
             |> Plug.Conn.put_resp_cookie("refresh_token", tokens.refresh_token)  
-            |> Plug.Conn.send_resp(200, Jason.encode!(true))
+            |> Plug.Conn.send_resp(200, json)
           
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 400)
         
@@ -43,15 +40,14 @@ defmodule NodeApi.Token.Controller do
     try do
       case Refreshing.refresh(Map.get(conn.cookies, "refresh_token")) do
         {:ok, tokens} ->
-          ModLogger.Logger.info(%{
-            message: "Токен обновлен", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Токен обновлен")
           
+          json = Jason.encode!(true)
+
           conn 
             |> Plug.Conn.put_resp_cookie("access_token", tokens.access_token)
             |> Plug.Conn.put_resp_cookie("refresh_token", tokens.refresh_token)  
-            |> Plug.Conn.send_resp(200, Jason.encode!(true))
+            |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> NodeApi.Handlers.handle_error(conn, message, 401)
 

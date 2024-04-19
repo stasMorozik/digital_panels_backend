@@ -10,8 +10,6 @@ defmodule NodeApi.File.Controller do
   alias PostgresqlAdapters.File.GettingById, as: FileGettingById
   alias PostgresqlAdapters.File.GettingList, as: FileGettingList
 
-  @name_node Application.compile_env(:node_api, :name_node)
-
   def create(conn) do
     try do
       with file <- Map.get(conn.body_params, "file"),
@@ -27,12 +25,11 @@ defmodule NodeApi.File.Controller do
            adapter_2 <- FileUploading,
            {:ok ,true} <- Creating.create(adapter_0, adapter_1, adapter_2, args) do
 
-        ModLogger.Logger.info(%{
-          message: "Создан файл", 
-          node: @name_node
-        })
+        NodeApi.Logger.info("Создан файл")
 
-        conn |> Plug.Conn.send_resp(200, Jason.encode!(true))
+        json = Jason.encode!(true)
+
+        conn |> Plug.Conn.send_resp(200, json)
       else
         true -> 
           NodeApi.Handlers.handle_error(conn, "Нет файла для загрузки", 400)
@@ -78,23 +75,22 @@ defmodule NodeApi.File.Controller do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          ModLogger.Logger.info(%{
-            message: "Получен список файлов", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получен список файлов")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(
-            Enum.map(list, fn (file) -> 
-              %{
-                id: file.id,
-                url: file.url,
-                extension: file.extension,
-                type: file.type,
-                size: file.size,
-                created: file.created
-              }
-            end)
-          ))
+          fun = fn (file) -> 
+            %{
+              id: file.id,
+              url: file.url,
+              extension: file.extension,
+              type: file.type,
+              size: file.size,
+              created: file.created
+            }
+          end
+
+          json = Jason.encode!(Enum.map(list, fun))
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> 
           NodeApi.Handlers.handle_error(conn, message, 400)
@@ -119,12 +115,9 @@ defmodule NodeApi.File.Controller do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, file} -> 
-          ModLogger.Logger.info(%{
-            message: "Получен файл", 
-            node: @name_node
-          })
+          NodeApi.Logger.info("Получен файл")
 
-          conn |> Plug.Conn.send_resp(200, Jason.encode!(%{
+          json = Jason.encode!(%{
             id: file.id,
             path: file.path,
             url: file.url,
@@ -132,7 +125,9 @@ defmodule NodeApi.File.Controller do
             type: file.type,
             size: file.size,
             created: file.created
-          }))
+          })
+
+          conn |> Plug.Conn.send_resp(200, json)
 
         {:error, message} -> 
           NodeApi.Handlers.handle_error(conn, message, 400)
