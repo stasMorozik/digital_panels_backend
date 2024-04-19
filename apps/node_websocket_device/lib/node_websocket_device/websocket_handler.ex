@@ -90,61 +90,59 @@ defmodule NodeWebsocketDevice.WebsocketHandler do
 
   @impl true
   def terminate(_reason, _partial_req, state) do
-    leave()
-    # try do
-    #   with cookie <- Map.get(state.headers, "cookie"),
-    #        false <- cookie == nil,
-    #        map <- Cookie.parse(cookie),
-    #        access_token <- Map.get(map, "access_token"),
-    #        map <- URI.decode_query(state.qs),
-    #        group_id <- Map.get(map, "group_id"),
-    #        false <- group_id == nil,
-    #        id <- Map.get(map, "id"),
-    #        false <- id == nil,
-    #        args <- %{
-    #           token: access_token, 
-    #           id: id, 
-    #           group_id: group_id,
-    #           is_active: false
-    #          },
-    #          {:ok, true} <- Updating.update(
-    #             UserGettingById, 
-    #             GroupGettingById, 
-    #             DeviceGettingById, 
-    #             DeviceUpdating, 
-    #             args
-    #          ) do
+    a_0 = UserGettingById
+    a_1 = GroupGettingById
+    a_2 = DeviceGettingById
+    a_3 = DeviceUpdating
 
-    #       NodeWebsocketDevice.Logger.info("Устройство одключено от websocket сервера")
+    try do
+      with cookie <- Map.get(state.headers, "cookie"),
+           false <- cookie == nil,
+           map <- Cookie.parse(cookie),
+           access_token <- Map.get(map, "access_token"),
+           map <- URI.decode_query(state.qs),
+           group_id <- Map.get(map, "group_id"),
+           false <- group_id == nil,
+           id <- Map.get(map, "id"),
+           false <- id == nil,
+           args <- %{
+              token: access_token, 
+              id: id, 
+              group_id: group_id,
+              is_active: false
+           },
+           {:ok, true} <- Updating.update(a_0, a_1, a_2, a_3, args) do
 
-    #       :ok = Process.send(
-    #         @where, {:notify_all, %{
-    #           id: id, 
-    #           message: "Устройство не активно", 
-    #           is_active: false
-    #         }}, []
-    #       )
+          NodeWebsocketDevice.Logger.info("Устройство одключено от websocket сервера")
 
-    #       leave()
-    #     else
-    #       true ->
-    #         NodeWebsocketDevice.Logger.error("Невалидный данные для отключения")
+          :ok = Process.send(
+            @where, {:notify_all, %{
+              id: id, 
+              message: "Устройство не активно", 
+              is_active: false
+            }}, []
+          )
 
-    #         {:reply, {:close, 1000, "Невалидный данные для отключения"}, nil}
+          leave()
+        else
+          true ->
+            NodeWebsocketDevice.Logger.error("Невалидный данные для отключения")
 
-    #         leave()
-    #       {:error, message} -> 
-    #         NodeWebsocketDevice.Logger.error(message)
+            {:reply, {:close, 1000, "Невалидный данные для отключения"}, nil}
 
-    #         leave()
-    #     end
-    # rescue e -> 
-    #   NodeWebsocketDevice.Logger.exception(e)
+            leave()
+          {:error, message} -> 
+            NodeWebsocketDevice.Logger.error(message)
 
-    #   # NodeWebsocketDevice.NotifierAdmin.notify(e)
+            leave()
+        end
+    rescue e -> 
+      NodeWebsocketDevice.Logger.exception(e)
 
-    #   leave()
-    # end
+      NodeWebsocketDevice.NotifierAdmin.notify(e)
+
+      leave()
+    end
   end
 
   defp leave() do

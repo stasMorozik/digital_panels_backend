@@ -14,11 +14,7 @@ defmodule NodeWebsocketDevice.Logger do
   end
 
   defp log(type, message) do
-    # {:ok, chann} = AMQP.Application.get_channel(:chan)
-    r = AMQP.Connection.open("amqp://user:12345@192.168.0.107:5672")
-    
-    IO.inspect(r)
-    # {:ok, chann} = AMQP.Channel.open(conn)
+    {:ok, chann} = AMQP.Channel.open(conn)
 
     data = %{
       message: message, 
@@ -26,8 +22,6 @@ defmodule NodeWebsocketDevice.Logger do
       date: DateTime.utc_now()
     }
 
-    IO.inspect(data)
-
-    # AMQP.Basic.publish(chann, "logger", type, Jason.encode!(data))
+    AMQP.Basic.publish(chann, "logger", type, Jason.encode!(data))
   end
 end
