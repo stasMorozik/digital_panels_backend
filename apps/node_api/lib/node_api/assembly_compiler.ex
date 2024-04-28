@@ -38,10 +38,12 @@ defmodule NodeApi.AssemblyCompiler do
           {:ok, true} -> 
             NodeApi.Logger.info("Сборка скомпилирована")
 
-            NodeApi.WebsocketServer.broadcast(Jason.encode!(%{
+            json = Jason.encode!(%{
               id: args.id, 
               message: "Сборка скомпилирована"
-            }))
+            })
+
+            NodeApi.WebsocketServer.broadcast(json)
 
           {:error, message} ->
             NodeApi.Logger.info(message)
