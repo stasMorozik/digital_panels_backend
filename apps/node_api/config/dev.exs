@@ -2,7 +2,7 @@ import Config
 
 config :amqp,
   connections: [
-    conn: [url: "amqp://user:12345@192.168.0.107:5672"],
+    conn: [url: "amqp://user:12345@192.168.0.161:5672"],
   ],
   channels: [
     chann: [connection: :conn]
@@ -13,7 +13,7 @@ config :joken,
 
 config :core, 
   email_address: "digital_panels@dev.org",
-  url_web_dav: "http://192.168.0.107:8100/upload"
+  url_web_dav: "http://192.168.0.161:8100/upload"
 
 config :http_adapters,
   user_web_dav: "user",
@@ -28,7 +28,7 @@ config :sqlite_adapters,
   path_windows_bundle: "/home/bundles/b_wi/"
 
 config :postgresql_adapters,
-  hostname: "192.168.0.107",
+  hostname: "192.168.0.161",
   username: "db_user",
   password: "12345",
   database: "system_content_manager",

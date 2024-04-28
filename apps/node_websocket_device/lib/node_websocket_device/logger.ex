@@ -14,7 +14,7 @@ defmodule NodeWebsocketDevice.Logger do
   end
 
   defp log(type, message) do
-    {:ok, chann} = AMQP.Channel.open(conn)
+    {:ok, chann} = AMQP.Application.get_channel(:chann)
 
     data = %{
       message: message, 

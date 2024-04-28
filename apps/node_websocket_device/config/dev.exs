@@ -2,7 +2,7 @@ import Config
 
 config :amqp,
   connections: [
-    conn: [url: "amqp://user:12345@192.168.0.107:5672"],
+    conn: [url: "amqp://user:12345@192.168.0.161:5672"],
   ],
   channels: [
     chann: [connection: :conn]
@@ -15,7 +15,7 @@ config :core,
   email_address: "digital_panels@dev.org"
 
 config :postgresql_adapters,
-  hostname: "192.168.0.107",
+  hostname: "192.168.0.161",
   username: "db_user",
   password: "12345",
   database: "system_content_manager",

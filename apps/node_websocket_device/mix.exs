@@ -32,10 +32,10 @@ defmodule NodeWebsocketDevice.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.7"},
       {:cookie, "~> 0.1.2"},
-      {:uri, "~> 0.1.0"},
       {:core, in_umbrella: true},
       {:postgresql_adapters, in_umbrella: true},
-      {:amqp, "~> 3.3"}
+      {:amqp, "~> 3.3"},
+      {:uri, "~> 0.1.0"},
     ]
   end
 
