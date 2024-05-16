@@ -39,8 +39,9 @@ defmodule NodeApi.AssemblyCompiler do
             NodeApi.Logger.info("Сборка скомпилирована")
 
             json = Jason.encode!(%{
+              type: "assembly",
               id: args.id, 
-              message: "Сборка скомпилирована"
+              status: true
             })
 
             NodeApi.WebsocketServer.broadcast(json)
@@ -49,9 +50,9 @@ defmodule NodeApi.AssemblyCompiler do
             NodeApi.Logger.info(message)
         end
       rescue e -> 
-        NodeApi.Logger.exception(e)
+        NodeApi.Logger.exception(e.message)
 
-        NodeApi.NotifierAdmin.notify(e)
+        NodeApi.NotifierAdmin.notify(e.message)
       end
     end)
     {:noreply, state}

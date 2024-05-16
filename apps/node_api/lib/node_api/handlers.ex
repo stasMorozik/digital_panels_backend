@@ -1,8 +1,8 @@
 defmodule NodeApi.Handlers do
-  def handle_exception(conn, error) do
-    NodeApi.NotifierAdmin.notify(error)
+  def handle_exception(conn, exception) do
+    NodeApi.NotifierAdmin.notify(exception.message)
 
-    NodeApi.Logger.exception(error)
+    NodeApi.Logger.exception(exception.message)
 
     json = Jason.encode!(%{
       message: "Что то пошло не так"

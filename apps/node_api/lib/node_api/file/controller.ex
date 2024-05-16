@@ -33,8 +33,10 @@ defmodule NodeApi.File.Controller do
       else
         true -> 
           NodeApi.Handlers.handle_error(conn, "Нет файла для загрузки", 400)
+          
         {:error, message} -> 
           NodeApi.Handlers.handle_error(conn, message, 400)
+
         {:exception, message} -> 
           NodeApi.Handlers.handle_exception(conn, message)
       end

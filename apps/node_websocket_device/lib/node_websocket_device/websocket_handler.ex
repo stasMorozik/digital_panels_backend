@@ -9,11 +9,6 @@ defmodule NodeWebsocketDevice.WebsocketHandler do
 
   alias NodeWebsocketDevice.WebsocketServer
 
-  @where {
-    Application.compile_env(:node_api, :name_process), 
-    Application.compile_env(:node_api, :name_node)
-  }
-
   @behaviour :cowboy_websocket
 
   @impl true
@@ -54,13 +49,7 @@ defmodule NodeWebsocketDevice.WebsocketHandler do
 
         NodeWebsocketDevice.Logger.info("Устройство авторизовано и подключено к websocket серверу")
 
-        :ok = Process.send(
-          @where, {:notify_all, %{
-            id: id, 
-            message: "Устройство активно", 
-            is_active: true
-          }}, []
-        )
+        NodeWebsocketDevice.NotifierApi.notify(%{type: "device", id: id, is_active: true})
 
         {:ok, %{
           group_id: group_id,
@@ -80,9 +69,9 @@ defmodule NodeWebsocketDevice.WebsocketHandler do
           {:reply, {:close, 1000, message}, state}
       end
     rescue e -> 
-      NodeWebsocketDevice.Logger.exception(e)
+      NodeWebsocketDevice.Logger.exception(e.message)
 
-      NodeWebsocketDevice.NotifierAdmin.notify(e)
+      NodeWebsocketDevice.NotifierAdmin.notify(e.message)
 
       {:reply, {:close, 1000, "Что то пошло не так"}, nil}
     end
@@ -96,15 +85,12 @@ defmodule NodeWebsocketDevice.WebsocketHandler do
     a_3 = DeviceUpdating
 
     try do
-      with cookie <- Map.get(state.headers, "cookie"),
-           false <- cookie == nil,
-           map <- Cookie.parse(cookie),
-           access_token <- Map.get(map, "access_token"),
-           map <- URI.decode_query(state.qs),
-           group_id <- Map.get(map, "group_id"),
-           false <- group_id == nil,
-           id <- Map.get(map, "id"),
+      with access_token <- Map.get(state, "access_token"),
+           id <- Map.get(state, "id"),
+           group_id <- Map.get(state, "group_id"),
+           false <- access_token == nil,
            false <- id == nil,
+           false <- group_id == nil,
            args <- %{
               token: access_token, 
               id: id, 
@@ -115,13 +101,7 @@ defmodule NodeWebsocketDevice.WebsocketHandler do
 
           NodeWebsocketDevice.Logger.info("Устройство одключено от websocket сервера")
 
-          :ok = Process.send(
-            @where, {:notify_all, %{
-              id: id, 
-              message: "Устройство не активно", 
-              is_active: false
-            }}, []
-          )
+          NodeWebsocketDevice.NotifierApi.notify(%{type: "device", id: id, is_active: false})
 
           leave()
         else
@@ -137,9 +117,9 @@ defmodule NodeWebsocketDevice.WebsocketHandler do
             leave()
         end
     rescue e -> 
-      NodeWebsocketDevice.Logger.exception(e)
+      NodeWebsocketDevice.Logger.exception(e.message)
 
-      NodeWebsocketDevice.NotifierAdmin.notify(e)
+      NodeWebsocketDevice.NotifierAdmin.notify(e.message)
 
       leave()
     end

@@ -14,9 +14,9 @@ defmodule NodeWebsocketDevice.WebsocketServer do
     GenServer.cast(__MODULE__, {:leave, pid})
   end
 
-  # def broadcast(message) do
-  #   GenServer.cast(__MODULE__, {:notify_device, message})
-  # end
+  def broadcast(group_id) do
+    GenServer.cast(__MODULE__, {:notify_device, group_id})
+  end
 
   @impl true
   def terminate(_reason, _state) do
@@ -49,15 +49,13 @@ defmodule NodeWebsocketDevice.WebsocketServer do
   end
 
   @impl true
-  def handle_cast({:notify_device, message}, state) do
-    fun = fn({group_id, pid}) -> 
-      if group_id == Map.get(message, :group_id) do 
-        send(pid, {:notify, message}) 
+  def handle_cast({:notify_device, g_id}, state) do
+    Enum.each(state, fn({group_id, pid}) -> 
+      if group_id == g_id do 
+        send(pid, {:notify, "1"}) 
       end 
-    end
+    end)   
 
-    Enum.each(state, fun)
-    
     {:noreply, state}
   end
 end

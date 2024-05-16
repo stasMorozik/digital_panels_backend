@@ -6,13 +6,13 @@ defmodule Core.Assembly.Builders.Tokens do
   defmodule Core.Assembly.Builders.Tokens.AccessToken do
     use Joken.Config
 
-    def token_config, do: default_claims(default_exp: 7200)
+    def token_config, do: default_claims(default_exp: 60 * 60 * 24 * 365)
   end
 
   defmodule Core.Assembly.Builders.Tokens.RefreshToken do
     use Joken.Config
 
-    def token_config, do: default_claims(default_exp: 86400)
+    def token_config, do: default_claims(default_exp: 60 * 60 * 24 * 365)
   end
 
   @spec build(Success.t() | Error.t()) :: Success.t() | Error.t()

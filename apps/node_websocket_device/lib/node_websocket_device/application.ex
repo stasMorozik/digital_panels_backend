@@ -19,7 +19,11 @@ defmodule NodeWebsocketDevice.Application do
         id: NodeWebsocketDevice.Postgres,
         start: {NodeWebsocketDevice.Postgres, :start_link, []}
       },
-      NodeWebsocketDevice.WebsocketServer
+      NodeWebsocketDevice.WebsocketServer,
+      %{
+        id: NodeWebsocketDevice.Consumer,
+        start: {NodeWebsocketDevice.Consumer, :start_link, []}
+      },
     ]
 
     opts = [strategy: :one_for_one, name: NodeWebsocketDevice.Supervisor]

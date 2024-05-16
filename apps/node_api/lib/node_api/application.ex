@@ -20,7 +20,11 @@ defmodule NodeApi.Application do
         start: {NodeApi.Postgres, :start_link, []}
       },
       NodeApi.WebsocketServer,
-      NodeApi.AssemblyCompiler
+      NodeApi.AssemblyCompiler,
+      %{
+        id: NodeApi.Consumer,
+        start: {NodeApi.Consumer, :start_link, []}
+      },
     ]
 
     opts = [strategy: :one_for_one, name: NodeApi.Supervisor]
