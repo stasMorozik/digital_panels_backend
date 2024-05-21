@@ -2,8 +2,8 @@ defmodule NodeWebsocketDevice.Consumer do
   use GenServer
   use AMQP
 
-  @exchange    "content_chane"
-  @queue       "device"
+  @exchange    "websocket_device"
+  @queue       "content_change"
 
   def start_link do
     GenServer.start_link(__MODULE__, [], [])

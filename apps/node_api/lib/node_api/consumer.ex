@@ -3,7 +3,7 @@ defmodule NodeApi.Consumer do
   use AMQP
 
   @exchange    "api"
-  @queue       "device"
+  @queue       "admin_panel"
 
   def start_link do
     GenServer.start_link(__MODULE__, [], [])
