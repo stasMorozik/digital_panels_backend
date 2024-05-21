@@ -30,8 +30,8 @@ defmodule NodeApi.NotifierWebsocketDevice do
       case :ets.lookup(:connections, "postgresql") do
         [{"postgresql", "", connection}] ->
           with {:ok, query} <- Postgrex.prepare(connection, "", @query),
-              {:ok, _, result} <- Postgrex.execute(connection, query, [playlist_id]),
-              {:ok, chann} = AMQP.Application.get_channel(:chann) do
+               {:ok, _, result} <- Postgrex.execute(connection, query, [playlist_id]),
+               {:ok, chann} = AMQP.Application.get_channel(:chann) do
             
             fun <- fn ([_, gr_id, _]) do
               AMQP.Basic.publish(chann, "websocket_device", "content_change", Jason.encode!(%{
