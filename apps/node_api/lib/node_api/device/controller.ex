@@ -32,6 +32,8 @@ defmodule NodeApi.Device.Controller do
         {:ok, true} -> 
           NodeApi.Logger.info("Создано устройство")
 
+          NodeApi.NotifierWebsocketDevice.notify(%{group_id: args.group_id})
+
           json = Jason.encode!(true)
 
           conn |> Plug.Conn.send_resp(200, json)
@@ -66,6 +68,8 @@ defmodule NodeApi.Device.Controller do
       case Updating.update(adapter_0, adapter_1, adapter_2, adapter_3, args) do
         {:ok, true} -> 
           NodeApi.Logger.info("Обновлено устройство")
+
+          NodeApi.NotifierWebsocketDevice.notify(%{group_id: args.group_id})
 
           json = Jason.encode!(true)
 

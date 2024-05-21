@@ -33,6 +33,8 @@ defmodule NodeApi.Content.Controller do
         {:ok, true} -> 
           NodeApi.Logger.info("Создан контен")
 
+          NodeApi.NotifierWebsocketDevice.notify(%{playlist_id: args.playlist_id})
+
           json = Jason.encode!(true)
 
           conn |> Plug.Conn.send_resp(200, json)
@@ -69,6 +71,8 @@ defmodule NodeApi.Content.Controller do
       case Updating.update(adapter_0, adapter_1, adapter_2, adapter_3, adapter_4, args) do
         {:ok, true} -> 
           NodeApi.Logger.info("Обновлен контен")
+
+          NodeApi.NotifierWebsocketDevice.notify(%{playlist_id: args.playlist_id})
 
           json = Jason.encode!(true)
 
