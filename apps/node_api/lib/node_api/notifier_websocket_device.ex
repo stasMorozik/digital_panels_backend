@@ -26,28 +26,30 @@ defmodule NodeApi.NotifierWebsocketDevice do
   end
 
   def notify(%{playlist_id: playlist_id}) do
-    case :ets.lookup(:connections, "postgresql") do
-      [{"postgresql", "", connection}] ->
-        with {:ok, query} <- Postgrex.prepare(connection, "", @query),
-             {:ok, _, result} <- Postgrex.execute(connection, query, [playlist_id]),
-             {:ok, chann} = AMQP.Application.get_channel(:chann),
-             fun <- fn ([_, gr_id, _]) do
-                AMQP.Basic.publish(chann, "websocket_device", "content_change", Jason.encode!(%{
+    spawn(fn -> 
+      case :ets.lookup(:connections, "postgresql") do
+        [{"postgresql", "", connection}] ->
+          with {:ok, query} <- Postgrex.prepare(connection, "", @query),
+              {:ok, _, result} <- Postgrex.execute(connection, query, [playlist_id]),
+              {:ok, chann} = AMQP.Application.get_channel(:chann) do
+            
+            fun <- fn ([_, gr_id, _]) do
+              AMQP.Basic.publish(chann, "websocket_device", "content_change", Jason.encode!(%{
                   group_id: gr_id,
-                }))
-             end
-          
-          Enum.each(result, fun)
+              }))
+            end
 
-          {:ok, true}
-        else
-          {:error, e} -> {:exception, e.postgres.message}
-        end
+            Enum.each(result, fun)
 
-      [] -> 
-        {:exception, "Database connection error"}
-      _ -> 
-        {:exception, "Database connection error"}
-    end
+            {:ok, true}
+          else
+            {:error, e} -> {:exception, e.postgres.message}
+          end
+        [] -> 
+          {:exception, "Database connection error"}
+        _ -> 
+          {:exception, "Database connection error"}
+      end
+    end)
   end
 end
