@@ -4,13 +4,17 @@ defmodule Core.User.Builder do
   """
 
   alias UUID
+  alias Core.Shared.Builders.BuilderProperties
+
+  alias Core.Shared.Validators.Email
+  alias Core.User.Validators.Name
 
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(%{email: email, name: name, surname: surname}) do
     entity()
-      |> Core.User.Builders.Email.build(email)
-      |> Core.User.Builders.Name.build(:name, name)
-      |> Core.User.Builders.Name.build(:surname, surname)
+      |> BuilderProperties.build(Email, :email, email)
+      |> BuilderProperties.build(Name, :name, name)
+      |> BuilderProperties.build(Name, :surname, surname)
   end
 
   def build(_) do
