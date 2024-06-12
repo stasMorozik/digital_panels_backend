@@ -38,4 +38,28 @@ defmodule Core.Task.Entity do
             sum: nil,
             created: nil,
             updated: nil
+
+  defimpl Jason.Encoder, for: Core.Task.Entity do
+    @impl Jason.Encoder
+
+    def encode(value, opts) do
+      Jason.Encode.map(Map.take(value, [
+        :id,
+        :name,
+        :playlist,
+        :group,
+        :type,
+        :day,
+        :start_hour,
+        :end_hour,
+        :start_minute,
+        :end_minute,
+        :start,
+        :end,
+        :sum,
+        :created,
+        :updated
+      ]), opts)
+    end
+  end
 end

@@ -14,5 +14,25 @@ defmodule Core.User.Entity do
     updated: binary()
   }
 
-  defstruct id: nil, email: nil, name: nil, surname: nil, created: nil, updated: nil
+  defstruct id: nil, 
+            email: nil, 
+            name: nil, 
+            surname: nil, 
+            created: nil, 
+            updated: nil
+
+  defimpl Jason.Encoder, for: Core.Playlist.Entity do
+    @impl Jason.Encoder
+
+    def encode(value, opts) do
+      Jason.Encode.map(Map.take(value, [
+        :id, 
+        :email, 
+        :name, 
+        :surname, 
+        :created, 
+        :updated
+      ]), opts)
+    end
+  end
 end

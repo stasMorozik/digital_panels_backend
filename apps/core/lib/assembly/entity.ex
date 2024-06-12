@@ -26,4 +26,23 @@ defmodule Core.Assembly.Entity do
             refresh_token: nil,
             created: nil,
             updated: nil
+
+
+  defimpl Jason.Encoder, for: Core.Assembly.Entity do
+    @impl Jason.Encoder
+
+    def encode(value, opts) do
+      Jason.Encode.map(Map.take(value, [
+        :id,
+        :group,
+        :url,
+        :type,
+        :status,
+        :access_token,
+        :refresh_token,
+        :created,
+        :updated
+      ]), opts)
+    end
+  end
 end

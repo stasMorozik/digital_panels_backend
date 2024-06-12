@@ -20,4 +20,19 @@ defmodule Core.Playlist.Entity do
             contents: nil,
             created: nil,
             updated: nil
+
+  defimpl Jason.Encoder, for: Core.Playlist.Entity do
+    @impl Jason.Encoder
+
+    def encode(value, opts) do
+      Jason.Encode.map(Map.take(value, [
+        :id, 
+        :name,
+        :sum,
+        :devices, 
+        :created, 
+        :updated
+      ]), opts)
+    end
+  end
 end

@@ -22,4 +22,20 @@ defmodule Core.File.Entity do
             type: nil, 
             size: nil, 
             created: nil
+
+  defimpl Jason.Encoder, for: Core.File.Entity do
+    @impl Jason.Encoder
+
+    def encode(value, opts) do
+      Jason.Encode.map(Map.take(value, [
+        :id, 
+        :path, 
+        :url, 
+        :extension, 
+        :type, 
+        :size, 
+        :created
+      ]), opts)
+    end
+  end
 end
