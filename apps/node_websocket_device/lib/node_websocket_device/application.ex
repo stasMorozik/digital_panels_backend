@@ -19,10 +19,10 @@ defmodule NodeWebsocketDevice.Application do
         id: NodeWebsocketDevice.Postgres,
         start: {NodeWebsocketDevice.Postgres, :start_link, []}
       },
-      NodeWebsocketDevice.WebsocketServer,
+      NodeWebsocketDevice.GenServers.Websocket,
       %{
-        id: NodeWebsocketDevice.Consumer,
-        start: {NodeWebsocketDevice.Consumer, :start_link, []}
+        id: NodeWebsocketDevice.GenServers.Consumer,
+        start: {NodeWebsocketDevice.GenServers.Consumer, :start_link, []}
       },
     ]
 
@@ -36,7 +36,7 @@ defmodule NodeWebsocketDevice.Application do
   defp dispatch do
     [
       {:_, [
-        {"/ws", NodeWebsocketDevice.WebsocketHandler, []}
+        {"/ws", NodeWebsocketDevice.Handlers.Websocket, []}
       ]}
     ]
   end

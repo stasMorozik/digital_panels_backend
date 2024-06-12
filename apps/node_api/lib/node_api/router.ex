@@ -13,41 +13,41 @@ defmodule NodeApi.Router do
   put "/api/v1/confirmation-code/" do
      conn
       |> put_resp_content_type("application/json")
-      |> NodeApi.ConfirmationCode.Controller.create()
+      |> NodeApi.Controllers.ConfirmationCode.create()
   end
 
   put "/api/v1/token/" do
     conn
       |> put_resp_content_type("application/json")
-      |> NodeApi.Token.Controller.create()
+      |> NodeApi.Controllers.Token.create()
   end
 
   post "/api/v1/token/" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Token.Controller.refresh()
+      |> NodeApi.Controllers.Token.refresh()
   end
 
   get "/api/v1/user/" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.User.Controller.authorization()
+      |> NodeApi.Controllers.User.authorization()
   end
 
   put "/api/v1/group/" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Group.Controller.create()
+      |> NodeApi.Controllers.Group.create()
   end
 
   post "/api/v1/group/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Group.Controller.update(id)
+      |> NodeApi.Controllers.Group.update(id)
   end
 
   get "/api/v1/group/" do
@@ -55,28 +55,28 @@ defmodule NodeApi.Router do
       |> fetch_cookies()
       |> fetch_query_params()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Group.Controller.list()
+      |> NodeApi.Controllers.Group.list()
   end
 
   get "/api/v1/group/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Group.Controller.get(id)
+      |> NodeApi.Controllers.Group.get(id)
   end
 
   put "/api/v1/device/" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Device.Controller.create()
+      |> NodeApi.Controllers.Device.create()
   end
 
   post "/api/v1/device/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Device.Controller.update(id)
+      |> NodeApi.Controllers.Device.update(id)
   end
 
   get "/api/v1/device/" do
@@ -84,28 +84,28 @@ defmodule NodeApi.Router do
       |> fetch_cookies()
       |> fetch_query_params()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Device.Controller.list()
+      |> NodeApi.Controllers.Device.list()
   end
 
   get "/api/v1/device/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Device.Controller.get(id)
+      |> NodeApi.Controllers.Device.get(id)
   end
 
   put "/api/v1/playlist/" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Playlist.Controller.create()
+      |> NodeApi.Controllers.Playlist.create()
   end
 
   post "/api/v1/playlist/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Playlist.Controller.update(id)
+      |> NodeApi.Controllers.Playlist.update(id)
   end
 
   get "/api/v1/playlist/" do
@@ -113,21 +113,21 @@ defmodule NodeApi.Router do
       |> fetch_cookies()
       |> fetch_query_params()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Playlist.Controller.list()
+      |> NodeApi.Controllers.Playlist.list()
   end
 
   get "/api/v1/playlist/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Playlist.Controller.get(id)
+      |> NodeApi.Controllers.Playlist.get(id)
   end
 
   put "/api/v1/file/" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.File.Controller.create()
+      |> NodeApi.Controllers.File.create()
   end
 
   get "/api/v1/file/" do
@@ -135,28 +135,28 @@ defmodule NodeApi.Router do
       |> fetch_cookies()
       |> fetch_query_params()
       |> put_resp_content_type("application/json")
-      |> NodeApi.File.Controller.list()
+      |> NodeApi.Controllers.File.list()
   end
 
   get "/api/v1/file/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.File.Controller.get(id)
+      |> NodeApi.Controllers.File.get(id)
   end
 
   put "/api/v1/content/" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Content.Controller.create()
+      |> NodeApi.Controllers.Content..create()
   end
 
   post "/api/v1/content/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Content.Controller.update(id)
+      |> NodeApi.Controllers.Content..update(id)
   end
 
   get "/api/v1/content/" do
@@ -164,28 +164,28 @@ defmodule NodeApi.Router do
       |> fetch_cookies()
       |> fetch_query_params()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Content.Controller.list()
+      |> NodeApi.Controllers.Content..list()
   end
 
   get "/api/v1/content/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Content.Controller.get(id)
+      |> NodeApi.Controllers.Content..get(id)
   end
 
   put "/api/v1/task/" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Task.Controller.create()
+      |> NodeApi.Controllers.Task.create()
   end
 
   post "/api/v1/task/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Task.Controller.update(id)
+      |> NodeApi.Controllers.Task.update(id)
   end
 
   get "/api/v1/task/" do
@@ -193,28 +193,28 @@ defmodule NodeApi.Router do
       |> fetch_cookies()
       |> fetch_query_params()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Task.Controller.list()
+      |> NodeApi.Controllers.Task.list()
   end
 
   get "/api/v1/task/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Task.Controller.get(id)
+      |> NodeApi.Controllers.Task.get(id)
   end
 
   put "/api/v1/assembly/" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Assembly.Controller.create()
+      |> NodeApi.Controllers.Assembly.create()
   end
 
   post "/api/v1/assembly/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Assembly.Controller.update(id)
+      |> NodeApi.Controllers.Assembly.update(id)
   end
 
   get "/api/v1/assembly/" do
@@ -222,14 +222,14 @@ defmodule NodeApi.Router do
       |> fetch_cookies()
       |> fetch_query_params()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Assembly.Controller.list()
+      |> NodeApi.Controllers.Assembly.list()
   end
 
   get "/api/v1/assembly/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Assembly.Controller.get(id)
+      |> NodeApi.Controllers.Assembly.get(id)
   end
 
   match _ do

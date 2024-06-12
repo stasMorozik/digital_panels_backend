@@ -19,11 +19,11 @@ defmodule NodeApi.Application do
         id: NodeApi.Postgres,
         start: {NodeApi.Postgres, :start_link, []}
       },
-      NodeApi.WebsocketServer,
-      NodeApi.AssemblyCompiler,
+      NodeApi.GenServers.Websocket,
+      NodeApi.GenServers.Compiler,
       %{
-        id: NodeApi.Consumer,
-        start: {NodeApi.Consumer, :start_link, []}
+        id: NodeApi.GenServers.Consumer,
+        start: {NodeApi.GenServers.Consumer, :start_link, []}
       },
     ]
 
@@ -37,7 +37,7 @@ defmodule NodeApi.Application do
   defp dispatch do
     [
       {:_, [
-        {"/ws", NodeApi.WebsocketHandler, []},
+        {"/ws", NodeApi.Handlers.Websocket, []},
         {:_, Plug.Cowboy.Handler, {NodeApi.Router, []}}
       ]}
     ]
