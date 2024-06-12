@@ -7,14 +7,30 @@ defmodule Core.Content.Editor do
   alias Core.Shared.Types.Error
   alias Core.Content.Entity
 
+  alias Core.Shared.Builders.BuilderProperties
+
+  alias Core.Content.Validators.Name
+  alias Core.Content.Validators.Duration
+  alias Core.Content.Validators.SerialNumber
+  alias Core.Content.Validators.Playlist
+  alias Core.Content.Validators.File
+
   @spec edit(Entity.t(), map()) :: Success.t() | Error.t()
   def edit(%Entity{} = entity, args) when is_map(args) do
+    setter = fn (
+      entity, 
+      key, 
+      value
+    ) -> 
+      Map.put(entity, key, value) 
+    end
+
     entity(entity)
-      |> name(Map.get(args, :name))
-      |> duration(Map.get(args, :duration))
-      |> file(Map.get(args, :file))
-      |> playlist(Map.get(args, :playlist))
-      |> serial_number(Map.get(args, :serial_number))
+      |> name(Map.get(args, :name), setter)
+      |> duration(Map.get(args, :duration), setter)
+      |> file(Map.get(args, :file), setter)
+      |> playlist(Map.get(args, :playlist), setter)
+      |> serial_number(Map.get(args, :serial_number), setter)
   end
 
   def edit(_, _) do
@@ -34,58 +50,58 @@ defmodule Core.Content.Editor do
     }}
   end
 
-  defp name({:ok, entity}, name) do
+  defp name({:ok, entity}, name, setter) do
     case name do
       nil -> {:ok, entity}
-      name -> Core.Content.Builders.Name.build({:ok, entity}, name)
+      name -> BuilderProperties.build({:ok, entity}, Name, setter, :name, name)
     end
   end
 
-  defp name({:error, message}, _) do
+  defp name({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp duration({:ok, entity}, duration) do
+  defp duration({:ok, entity}, duration, setter) do
     case duration do
       nil -> {:ok, entity}
-      duration -> Core.Content.Builders.Duration.build({:ok, entity}, duration)
+      duration -> BuilderProperties.build({:ok, entity}, Duration, setter, :duration, duration)
     end
   end
 
-  defp duration({:error, message}, _) do
+  defp duration({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp file({:ok, entity}, file) do
+  defp file({:ok, entity}, file, setter) do
     case file do
       nil -> {:ok, entity}
-      file -> Core.Content.Builders.File.build({:ok, entity}, file)
+      file -> BuilderProperties.build({:ok, entity}, File, setter, :file, file)
     end
   end
 
-  defp file({:error, message}, _) do
+  defp file({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp playlist({:ok, entity}, playlist) do
+  defp playlist({:ok, entity}, playlist, setter) do
     case playlist do
       nil -> {:ok, entity}
-      playlist -> Core.Content.Builders.Playlist.build({:ok, entity}, playlist)
+      playlist -> BuilderProperties.build({:ok, entity}, Playlist, setter, :playlist, playlist)
     end
   end
 
-  defp playlist({:error, message}, _) do
+  defp playlist({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp serial_number({:ok, entity}, serial_number) do
+  defp serial_number({:ok, entity}, serial_number, setter) do
     case serial_number do
       nil -> {:ok, entity}
-      serial_number -> Core.Content.Builders.SerialNumber.build({:ok, entity}, serial_number)
+      serial_number -> BuilderProperties.build({:ok, entity}, SerialNumber, setter, :serial_number, serial_number)
     end
   end
 
-  defp serial_number({:error, message}, _) do
+  defp serial_number({:error, message}, _, _) do
     {:error, message}
   end
 end

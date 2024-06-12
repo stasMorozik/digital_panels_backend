@@ -25,10 +25,9 @@ defmodule Core.Task.Builders.Sort do
   end
 
   defp name({:ok, sort}, order, setter) do
-    with false <- order == nil do
-      BuilderProperties.build({:ok, sort}, Sort, setter, :name, order)
-    else
-      true -> {:ok, sort}
+    case order do
+      nil -> {:ok, sort}
+      order -> BuilderProperties.build({:ok, sort}, Sort, setter, :name, order)
     end
   end
 
@@ -37,10 +36,9 @@ defmodule Core.Task.Builders.Sort do
   end
 
   defp type({:ok, sort}, order, setter) do
-    with false <- order == nil do
-      BuilderProperties.build({:ok, sort}, Sort, setter, :type, order)
-    else
-      true -> {:ok, sort}
+    case order do
+      nil -> {:ok, sort}
+      order -> BuilderProperties.build({:ok, sort}, Sort, setter, :type, order)
     end
   end
 
@@ -49,10 +47,9 @@ defmodule Core.Task.Builders.Sort do
   end
 
   defp created({:ok, sort}, order, setter) do
-    with false <- order == nil do
-      BuilderProperties.build({:ok, sort}, Sort, setter, :created, order)
-    else
-      true -> {:ok, sort}
+    case order do
+      nil -> {:ok, sort}
+      order -> BuilderProperties.build({:ok, sort}, Sort, setter, :created, order)
     end
   end
 

@@ -1,19 +1,31 @@
 defmodule Core.Assembly.Builders.Filter do
   
-  alias Core.Assembly.Builders.Type
+  alias Core.Assembly.Validators.Type
+  alias Core.Assembly.Validators.Url
+
+  alias Core.Shared.Builders.BuilderProperties
 
   alias Core.Shared.Validators.Date
   alias Core.Shared.Validators.Identifier
+  alias Core.Shared.Validators.Boolean
 
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(%{} = args) do
+    setter = fn (
+      entity, 
+      key, 
+      value
+    ) -> 
+      Map.put(entity, key, value) 
+    end
+
     filter()
-      |> type(Map.get(args, :type))
-      |> url(Map.get(args, :url))
-      |> group(Map.get(args, :group))
-      |> status(Map.get(args, :status))
-      |> created_f(Map.get(args, :created_f))
-      |> created_t(Map.get(args, :created_t))
+      |> type(Map.get(args, :type), setter)
+      |> url(Map.get(args, :url), setter)
+      |> group(Map.get(args, :group), setter)
+      |> status(Map.get(args, :status), setter)
+      |> created_f(Map.get(args, :created_f), setter)
+      |> created_t(Map.get(args, :created_t), setter)
   end
 
   def build(_) do
@@ -24,84 +36,69 @@ defmodule Core.Assembly.Builders.Filter do
     {:ok, %Core.Assembly.Types.Filter{}}
   end
 
-  defp type({:ok, filter}, type) do
+  defp type({:ok, filter}, type, setter) do
     case type do
       nil -> {:ok, filter}
-      type -> Type.build({:ok, filter}, type)
+      type -> BuilderProperties.build({:ok, filter}, Type, setter, :type, type)
     end
   end
 
-  defp type({:error, message}, _) do
+  defp type({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp url({:ok, filter}, url) do
-    with false <- url == nil,
-         true <- is_binary(url) do
-      {:ok, Map.put(filter, :url, url)}
-    else
-      true -> {:ok, filter}
-      false -> {:error, "Не валидный url"}
+  defp url({:ok, filter}, url, setter) do
+    case url do
+      nil -> {:ok, filter}
+      url -> BuilderProperties.build({:ok, filter}, Url, setter, :url, url)
     end
   end
 
-  defp url({:error, message}, _) do
+  defp url({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp group({:ok, filter}, group) do
-    with false <- group == nil,
-         {:ok, _} <- Identifier.valid(group) do
-      {:ok, Map.put(filter, :group, group)}
-    else
-      true -> {:ok, filter}
-      {:error, message} -> {:error, message}
+  defp group({:ok, filter}, group, setter) do
+    case group do
+      nil -> {:ok, filter}
+      group -> BuilderProperties.build({:ok, filter}, Identifier, setter, :group, group)
     end
   end
 
-  defp group({:error, message}, _) do
+  defp group({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp status({:ok, filter}, status) do
-    with false <- status == nil,
-         true <- is_boolean(status) do
-      {:ok, Map.put(filter, :status, status)}
-    else
-      true -> {:ok, filter}
-      false -> {:error, "Не валидный статус"}
+  defp status({:ok, filter}, status, setter) do
+    case status do
+      nil -> {:ok, filter}
+      status -> BuilderProperties.build({:ok, filter}, Boolean, setter, :status, status)
     end
   end
 
-  defp status({:error, message}, _) do
+  defp status({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp created_f({:ok, filter}, created_f) do
-    with false <- created_f == nil,
-         {:ok, _} <- Date.valid(created_f) do
-      {:ok, Map.put(filter, :created_f, created_f)}
-    else
-      true -> {:ok, filter}
-      {:error, message} -> {:error, message}
+  defp created_f({:ok, filter}, created_f, setter) do
+    case created_f do
+      nil -> {:ok, filter}
+      created_f -> BuilderProperties.build({:ok, filter}, Date, setter, :created_f, created_f)
     end
   end
 
-  defp created_f({:error, message}, _) do
+  defp created_f({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp created_t({:ok, filter}, created_t) do
-    with false <- created_t == nil,
-         {:ok, _} <- Date.valid(created_t) do
-      {:ok, Map.put(filter, :created_t, created_t)}
-    else
-      true -> {:ok, filter}
-      {:error, message} -> {:error, message}
+  defp created_t({:ok, filter}, created_t, setter) do
+    case created_t do
+      nil -> {:ok, filter}
+      created_t -> BuilderProperties.build({:ok, filter}, Date, setter, :created_t, created_t)
     end
   end
 
-  defp created_t({:error, message}, _) do
+  defp created_t({:error, message}, _, _) do
     {:error, message}
   end
 end

@@ -3,6 +3,8 @@ defmodule Core.ConfirmationCode.Builder do
     Билдер сущности
   """
 
+  alias Core.Shared.Builders.BuilderProperties
+
   alias Core.ConfirmationCode.Entity
 
   alias Core.Shared.Types.Success
@@ -13,8 +15,16 @@ defmodule Core.ConfirmationCode.Builder do
   """
   @spec build(atom(), any()) :: Success.t() | Error.t()
   def build(validator, needle) when is_atom(validator) do
+    setter = fn (
+      entity, 
+      key, 
+      value
+    ) -> 
+      Map.put(entity, key, value) 
+    end
+
     entity() 
-      |> Core.ConfirmationCode.Builders.Needle.build(validator, needle)
+      |> BuilderProperties.build(validator, setter, :needle, needle) 
   end
 
   def build(_, _) do

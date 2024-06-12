@@ -2,12 +2,22 @@ defmodule Core.Group.Builders.Sort do
   
   alias Core.Shared.Validators.Sort
 
+  alias Core.Shared.Builders.BuilderProperties
+
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(%{} = args) do
+    setter = fn (
+      entity, 
+      key, 
+      value
+    ) -> 
+      Map.put(entity, key, String.upcase(value)) 
+    end
+
     sort()
-      |> name(Map.get(args, :name))
-      |> sum(Map.get(args, :sum))
-      |> created(Map.get(args, :created))
+      |> name(Map.get(args, :name), setter)
+      |> sum(Map.get(args, :sum), setter)
+      |> created(Map.get(args, :created), setter)
   end
 
   def build(_) do
@@ -18,42 +28,36 @@ defmodule Core.Group.Builders.Sort do
     {:ok, %Core.Group.Types.Sort{}}
   end
 
-  defp name({:ok, sort}, order) do
-    with false <- order == nil,
-         {:ok, _} <- Sort.valid(order) do
-      {:ok, Map.put(sort, :name, String.upcase(order))}
-    else
-      true -> {:ok, sort}
+  defp name({:ok, sort}, order, setter) do
+    case order do
+      nil -> {:ok, sort}
+      order -> BuilderProperties.build({:ok, sort}, Sort, setter, :name, order)
     end
   end
 
-  defp name({:error, message}, _) do
+  defp name({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp sum({:ok, sort}, order) do
-    with false <- order == nil,
-         {:ok, _} <- Sort.valid(order) do
-      {:ok, Map.put(sort, :sum, String.upcase(order))}
-    else
-      true -> {:ok, sort}
+  defp sum({:ok, sort}, order, setter) do
+    case order do
+      nil -> {:ok, sort}
+      order -> BuilderProperties.build({:ok, sort}, Sort, setter, :sum, order)
     end
   end
 
-  defp sum({:error, message}, _) do
+  defp sum({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp created({:ok, sort}, order) do
-    with false <- order == nil,
-         {:ok, _} <- Sort.valid(order) do
-      {:ok, Map.put(sort, :created, String.upcase(order))}
-    else
-      true -> {:ok, sort}
+  defp created({:ok, sort}, order, setter) do
+    case order do
+      nil -> {:ok, sort}
+      order -> BuilderProperties.build({:ok, sort}, Sort, setter, :created, order)
     end
   end
 
-  defp created({:error, message}, _) do
+  defp created({:error, message}, _, _) do
     {:error, message}
   end
 end

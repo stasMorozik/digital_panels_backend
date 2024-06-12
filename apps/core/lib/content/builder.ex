@@ -4,6 +4,14 @@ defmodule Core.Content.Builder do
   """
   
   alias UUID
+
+  alias Core.Shared.Builders.BuilderProperties
+
+  alias Core.Content.Validators.Name
+  alias Core.Content.Validators.Duration
+  alias Core.Content.Validators.SerialNumber
+  alias Core.Content.Validators.Playlist
+  alias Core.Content.Validators.File
   
   @spec build(map()) :: Success.t() | Error.t()
   def build(%{
@@ -12,13 +20,21 @@ defmodule Core.Content.Builder do
     name: name, 
     playlist: playlist, 
     serial_number: serial_number
-  }) do    
+  }) do
+    setter = fn (
+      entity, 
+      key, 
+      value
+    ) -> 
+      Map.put(entity, key, value) 
+    end
+
     entity()
-      |> Core.Content.Builders.Name.build(name)
-      |> Core.Content.Builders.Duration.build(duration)
-      |> Core.Content.Builders.File.build(file)
-      |> Core.Content.Builders.Playlist.build(playlist)
-      |> Core.Content.Builders.SerialNumber.build(serial_number)
+      |> BuilderProperties.build(Name, setter, :name, name) 
+      |> BuilderProperties.build(Duration, setter, :duration, duration)
+      |> BuilderProperties.build(File, setter, :file, file)
+      |> BuilderProperties.build(Playlist, setter, :playlist, playlist)
+      |> BuilderProperties.build(SerialNumber, setter, :serial_number, serial_number)
   end
 
   def build(_) do

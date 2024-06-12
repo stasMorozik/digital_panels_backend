@@ -15,7 +15,8 @@ defmodule Core.User.Builder do
       entity, 
       key, 
       value
-    ) -> Map.put(entity, key, value) 
+    ) -> 
+      Map.put(entity, key, value) 
     end
 
     entity()

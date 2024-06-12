@@ -87,10 +87,9 @@ defmodule Core.Task.Builders.Filter do
   end
 
   defp group({:ok, filter}, group, setter) do
-    with false <- group == nil do
-      BuilderProperties.build({:ok, filter}, Identifier, setter, :group, group)
-    else
-      true -> {:ok, filter}
+    case group do
+      nil -> {:ok, filter}
+      group -> BuilderProperties.build({:ok, filter}, Identifier, setter, :group, group)
     end
   end
 
@@ -99,10 +98,9 @@ defmodule Core.Task.Builders.Filter do
   end
 
   defp created_f({:ok, filter}, created_f, setter) do
-    with false <- created_f == nil do
-      BuilderProperties.build({:ok, filter}, Date, setter, :created_f, created_f)
-    else
-      true -> {:ok, filter}
+    case created_f do
+      nil -> {:ok, filter}
+      created_f -> BuilderProperties.build({:ok, filter}, Date, setter, :created_f, created_f)
     end
   end
 
@@ -111,10 +109,9 @@ defmodule Core.Task.Builders.Filter do
   end
 
   defp created_t({:ok, filter}, created_t, setter) do
-    with false <- created_t == nil do
-      BuilderProperties.build({:ok, filter}, Date, setter, :created_t, created_t)
-    else
-      true -> {:ok, filter}
+    case created_t do
+      nil -> {:ok, filter}
+      created_t -> BuilderProperties.build({:ok, filter}, Date, setter, :created_t, created_t)
     end
   end
 

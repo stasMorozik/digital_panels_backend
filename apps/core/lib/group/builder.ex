@@ -1,14 +1,24 @@
 defmodule Core.Group.Builder do
-  
   @moduledoc """
     Билдер сущности
   """
 
   alias Core.Group.Entity
 
+  alias Core.Shared.Builders.BuilderProperties
+  alias Core.Group.Validators.Name
+
   def build(%{name: name}) do
+    setter = fn (
+      entity, 
+      key, 
+      value
+    ) -> 
+      Map.put(entity, key, value) 
+    end
+
     entity() 
-      |> Core.Group.Builders.Name.build(name)
+      |> BuilderProperties.build(Name, setter, :name, name)
       
   end
 

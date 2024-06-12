@@ -6,22 +6,33 @@ defmodule Core.Device.Editor do
   alias Core.Shared.Types.Success
   alias Core.Shared.Types.Error
   alias Core.Device.Entity
+
+  alias Core.Shared.Builders.BuilderProperties
   
-  alias Core.Device.Builders.Ip
-  alias Core.Device.Builders.Latitude
-  alias Core.Device.Builders.Longitude
-  alias Core.Device.Builders.Description
-  alias Core.Device.Builders.Group
+  alias Core.Device.Validators.Ip
+  alias Core.Device.Validators.Latitude
+  alias Core.Device.Validators.Longitude
+  alias Core.Device.Validators.Description
+  alias Core.Device.Validators.Group
+  alias Core.Shared.Validators.Boolean
 
   @spec edit(Entity.t(), map()) :: Success.t() | Error.t()
   def edit(%Entity{} = entity, args) when is_map(args) do
+    setter = fn (
+      entity, 
+      key, 
+      value
+    ) -> 
+      Map.put(entity, key, value) 
+    end
+
     entity(entity)
-      |> ip(Map.get(args, :ip))
-      |> longitude(Map.get(args, :longitude))
-      |> latitude(Map.get(args, :latitude))
-      |> desc(Map.get(args, :desc))
-      |> group(Map.get(args, :group))
-      |> is_active(Map.get(args, :is_active))
+      |> ip(Map.get(args, :ip), setter)
+      |> longitude(Map.get(args, :longitude), setter)
+      |> latitude(Map.get(args, :latitude), setter)
+      |> desc(Map.get(args, :desc), setter)
+      |> group(Map.get(args, :group), setter)
+      |> is_active(Map.get(args, :is_active), setter)
   end
 
   def edit(_, _) do
@@ -42,72 +53,69 @@ defmodule Core.Device.Editor do
     }}
   end
 
-  defp ip({:ok, entity}, ip) do
+  defp ip({:ok, entity}, ip, setter) do
     case ip do
       nil -> {:ok, entity}
-      ip -> Ip.build({:ok, entity}, ip)
+      ip -> BuilderProperties.build({:ok, entity}, Ip, setter, :ip, ip)
     end
   end
 
-  defp ip({:error, message}, _) do
+  defp ip({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp latitude({:ok, entity}, latitude) do
+  defp latitude({:ok, entity}, latitude, setter) do
     case latitude do
       nil -> {:ok, entity}
-      latitude -> Latitude.build({:ok, entity}, latitude)
+      latitude -> BuilderProperties.build({:ok, entity}, Latitude, setter, :latitude, latitude)
     end
   end
 
-  defp latitude({:error, message}, _) do
+  defp latitude({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp longitude({:ok, entity}, longitude) do
+  defp longitude({:ok, entity}, longitude, setter) do
     case longitude do
       nil -> {:ok, entity}
-      longitude -> Longitude.build({:ok, entity}, longitude)
+      longitude -> BuilderProperties.build({:ok, entity}, Longitude, setter, :longitude, longitude)
     end
   end
 
-  defp longitude({:error, message}, _) do
+  defp longitude({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp desc({:ok, entity}, desc) do
+  defp desc({:ok, entity}, desc, setter) do
     case desc do
       nil -> {:ok, entity}
-      desc -> Description.build({:ok, entity}, desc)
+      desc -> BuilderProperties.build({:ok, entity}, Description, setter, :desc, desc)
     end
   end
 
-  defp desc({:error, message}, _) do
+  defp desc({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp group({:ok, entity}, group) do
+  defp group({:ok, entity}, group, setter) do
     case group do
       nil -> {:ok, entity}
-      group -> Group.build({:ok, entity}, group)
+      group -> BuilderProperties.build({:ok, entity}, Group, setter, :group, group)
     end
   end
 
-  defp group({:error, message}, _) do
+  defp group({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp is_active({:ok, entity}, is_active) do
-    with false <- is_active == nil,
-         true <- is_boolean(is_active) do
-      {:ok, Map.put(entity, :is_active, is_active)}
-    else
-      true -> {:ok, entity}
-      false -> {:error, "Не валидная активность"}
+  defp is_active({:ok, entity}, is_active, setter) do
+    case is_active do
+      nil -> {:ok, entity}
+      is_active -> BuilderProperties.build({:ok, entity}, Boolean, setter, :is_active, is_active)
     end
   end
 
-  defp is_active({:error, message}, _) do
+  defp is_active({:error, message}, _, _) do
     {:error, message}
   end
 end
