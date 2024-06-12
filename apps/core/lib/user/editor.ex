@@ -14,10 +14,14 @@ defmodule Core.User.Editor do
 
   @spec edit(Entity.t(), map()) :: Success.t() | Error.t()
   def edit(%Entity{} = entity, args) when is_map(args) do
+    setter = fn (entity, key, value) -> 
+      Map.put(entity, key, value) 
+    end
+
     entity(entity)
-      |> email(Map.get(args, :email))
-      |> name(Map.get(args, :name))
-      |> surname(Map.get(args, :surname))
+      |> email(Map.get(args, :email), setter)
+      |> name(Map.get(args, :name), setter)
+      |> surname(Map.get(args, :surname), setter)
   end
 
   def edit(_, _) do
@@ -35,36 +39,36 @@ defmodule Core.User.Editor do
     }}
   end
 
-  defp email({:ok, entity}, email) do
+  defp email({:ok, entity}, email, setter) do
     case email do
       nil -> {:ok, entity}
-      email -> BuilderProperties.build({:ok, entity}, Email, :email, email)
+      email -> BuilderProperties.build({:ok, entity}, Email, setter, :email, email)
     end
   end
 
-  defp email({:error, message}, _) do
+  defp email({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp name({:ok, entity}, name) do
+  defp name({:ok, entity}, name, setter) do
     case name do
       nil -> {:ok, entity}
-      name -> BuilderProperties.build({:ok, entity}, Name, :name, name)
+      name -> BuilderProperties.build({:ok, entity}, Name, setter, :name, name)
     end
   end
 
-  defp name({:error, message}, _) do
+  defp name({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp surname({:ok, entity}, surname) do
+  defp surname({:ok, entity}, surname, setter) do
     case surname do
       nil -> {:ok, entity}
-      surname -> BuilderProperties.build({:ok, entity}, Name, :surname, surname)
+      surname -> BuilderProperties.build({:ok, entity}, Name, setter, :surname, surname)
     end
   end
 
-  defp surname({:error, message}, _) do
+  defp surname({:error, message}, _, _) do
     {:error, message}
   end
 end

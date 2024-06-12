@@ -2,12 +2,18 @@ defmodule Core.Task.Builders.Sort do
   
   alias Core.Shared.Validators.Sort
 
+  alias Core.Shared.Builders.BuilderProperties
+
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(%{} = args) do
+    setter = fn (entity, key, value) -> 
+      Map.put(entity, key, String.upcase(value)) 
+    end
+
     sort()
-      |> name(Map.get(args, :name))
-      |> type(Map.get(args, :type))
-      |> created(Map.get(args, :created))
+      |> name(Map.get(args, :name), setter)
+      |> type(Map.get(args, :type), setter)
+      |> created(Map.get(args, :created), setter)
   end
 
   def build(_) do
@@ -18,42 +24,39 @@ defmodule Core.Task.Builders.Sort do
     {:ok, %Core.Task.Types.Sort{}}
   end
 
-  defp name({:ok, sort}, order) do
-    with false <- order == nil,
-         {:ok, _} <- Sort.valid(order) do
-      {:ok, Map.put(sort, :name, String.upcase(order))}
+  defp name({:ok, sort}, order, setter) do
+    with false <- order == nil do
+      BuilderProperties.build({:ok, sort}, Sort, setter, :name, order)
     else
       true -> {:ok, sort}
     end
   end
 
-  defp name({:error, message}, _) do
+  defp name({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp type({:ok, sort}, order) do
-    with false <- order == nil,
-         {:ok, _} <- Sort.valid(order) do
-      {:ok, Map.put(sort, :name, String.upcase(order))}
+  defp type({:ok, sort}, order, setter) do
+    with false <- order == nil do
+      BuilderProperties.build({:ok, sort}, Sort, setter, :type, order)
     else
       true -> {:ok, sort}
     end
   end
 
-  defp type({:error, message}, _) do
+  defp type({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp created({:ok, sort}, order) do
-    with false <- order == nil,
-         {:ok, _} <- Sort.valid(order) do
-      {:ok, Map.put(sort, :created, String.upcase(order))}
+  defp created({:ok, sort}, order, setter) do
+    with false <- order == nil do
+      BuilderProperties.build({:ok, sort}, Sort, setter, :created, order)
     else
       true -> {:ok, sort}
     end
   end
 
-  defp created({:error, message}, _) do
+  defp created({:error, message}, _, _) do
     {:error, message}
   end
 end

@@ -1,24 +1,46 @@
 defmodule Core.Task.Builders.Filter do
   
-  alias Core.Task.Builders.Name
-  alias Core.Task.Builders.Type
-  alias Core.Task.Builders.Start
-  alias Core.Task.Builders.End
-  alias Core.Task.Builders.Day
+
   alias Core.Shared.Validators.Date
   alias Core.Shared.Validators.Identifier
 
+  alias Core.Shared.Builders.BuilderProperties
+
+  alias Core.Task.Validators.Name
+  alias Core.Task.Validators.Type
+  alias Core.Task.Validators.TypeDay
+  alias Core.Task.Validators.TimePoints
+
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(%{} = args) do
+    simple_setter = fn (entity, key, value) -> 
+      Map.put(entity, key, value) 
+    end
+
+    type_day_setter = fn (entity, key, {_, day}) -> 
+      Map.put(entity, key, day) 
+    end
+
+    time_points_setter = fn (entity, key, {hour, minute}) ->
+      hour = case hour == 24 do
+        true -> 0
+        false -> hour
+      end
+
+      minutes = (hour * 60) + minute
+
+      Map.put(entity, key, minutes)
+    end
+
     filter()
-      |> name(Map.get(args, :name))
-      |> type(Map.get(args, :type))
-      |> day({Map.get(args, :type), Map.get(args, :day)})
-      |> group(Map.get(args, :group))
-      |> start_hm({Map.get(args, :start_hour), Map.get(args, :start_minute)})
-      |> end_hm({Map.get(args, :end_hour), Map.get(args, :end_minute)})
-      |> created_f(Map.get(args, :created_f))
-      |> created_t(Map.get(args, :created_t))
+      |> name(Map.get(args, :name), simple_setter)
+      |> type(Map.get(args, :type), simple_setter)
+      |> day({Map.get(args, :type), Map.get(args, :day)}, type_day_setter)
+      |> group(Map.get(args, :group), simple_setter)
+      |> start_hm({Map.get(args, :start_hour), Map.get(args, :start_minute)}, time_points_setter)
+      |> end_hm({Map.get(args, :end_hour), Map.get(args, :end_minute)}, time_points_setter)
+      |> created_f(Map.get(args, :created_f), simple_setter)
+      |> created_t(Map.get(args, :created_t), simple_setter)
   end
 
   def build(_) do
@@ -29,112 +51,100 @@ defmodule Core.Task.Builders.Filter do
     {:ok, %Core.Task.Types.Filter{}}
   end
 
-  defp name({:ok, filter}, name) do
+  defp name({:ok, filter}, name, setter) do
     case name do
       nil -> {:ok, filter}
-      name -> Name.build({:ok, filter}, name)
+      name -> BuilderProperties.build({:ok, filter}, Name, setter, :name, name)
     end
   end
 
-  defp name({:error, message}, _) do
+  defp name({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp type({:ok, filter}, type) do
+  defp type({:ok, filter}, type, setter) do
     case type do
       nil -> {:ok, filter}
-      type -> Type.build({:ok, filter}, type)
+      type -> BuilderProperties.build({:ok, filter}, Type, setter, :type, type)
     end
   end
 
-  defp type({:error, message}, _) do
+  defp type({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp day({:ok, filter}, {type, day}) do
+  defp day({:ok, filter}, {type, day}, setter) do
     with false <- type == nil,
-         false <- day == nil,
-         {:ok, filter} <- Day.build({:ok, filter}, type, day) do
-      {:ok, filter}
+         false <- day == nil do
+      BuilderProperties.build({:ok, filter}, TypeDay, setter, :day, {type, day})
     else
       true -> {:ok, filter}
-      {:error, message} -> {:error, message}
     end
   end
 
-  defp day({:error, message}, _) do
+  defp day({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp group({:ok, filter}, group) do
-    with false <- group == nil,
-         {:ok, _} <- Identifier.valid(group) do
-      {:ok, Map.put(filter, :group, group)}
+  defp group({:ok, filter}, group, setter) do
+    with false <- group == nil do
+      BuilderProperties.build({:ok, filter}, Identifier, setter, :group, group)
     else
       true -> {:ok, filter}
-      {:error, message} -> {:error, message}
     end
   end
 
-  defp group({:error, message}, _) do
+  defp group({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp created_f({:ok, filter}, created_f) do
-    with false <- created_f == nil,
-         {:ok, _} <- Date.valid(created_f) do
-      {:ok, Map.put(filter, :created_f, created_f)}
+  defp created_f({:ok, filter}, created_f, setter) do
+    with false <- created_f == nil do
+      BuilderProperties.build({:ok, filter}, Date, setter, :created_f, created_f)
     else
       true -> {:ok, filter}
-      {:error, message} -> {:error, message}
     end
   end
 
-  defp created_f({:error, message}, _) do
+  defp created_f({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp created_t({:ok, filter}, created_t) do
-    with false <- created_t == nil,
-         {:ok, _} <- Date.valid(created_t) do
-      {:ok, Map.put(filter, :created_t, created_t)}
+  defp created_t({:ok, filter}, created_t, setter) do
+    with false <- created_t == nil do
+      BuilderProperties.build({:ok, filter}, Date, setter, :created_t, created_t)
     else
       true -> {:ok, filter}
-      {:error, message} -> {:error, message}
     end
   end
 
-  defp created_t({:error, message}, _) do
+  defp created_t({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp start_hm({:ok, filter}, {start_hour, start_minute}) do
+  defp start_hm({:ok, filter}, {start_hour, start_minute}, setter) do
     with false <- start_hour == nil,
-         false <- start_minute == nil,
-         {:ok, filter} <- Start.build({:ok, filter}, {start_hour, start_minute}) do
-      {:ok, filter}
+         false <- start_minute == nil do
+      BuilderProperties.build({:ok, filter}, TimePoints, setter, :start, {start_hour, start_minute})
     else
       true -> {:ok, filter}
-      {:error, message} -> {:error, message}
     end
   end
 
-  defp start_hm({:error, message}, _) do
+  defp start_hm({:error, message}, _, _) do
     {:error, message}
   end
 
-  defp end_hm({:ok, filter}, {end_hour, end_minute}) do
+  defp end_hm({:ok, filter}, {end_hour, end_minute}, setter) do
     with false <- end_hour == nil,
-         false <- end_minute == nil,
-         {:ok, filter} <- End.build({:ok, filter}, {end_hour, end_minute}) do
-      {:ok, filter}
+         false <- end_minute == nil do
+      BuilderProperties.build({:ok, filter}, TimePoints, setter, :end, {end_hour, end_minute})
     else
       true -> {:ok, filter}
-      {:error, message} -> {:error, message}
     end
   end
 
-  defp end_hm({:error, message}, _) do
+  defp end_hm({:error, message}, _, _) do
     {:error, message}
   end
 end

@@ -3,10 +3,22 @@ defmodule Core.Playlist.Builder do
     Билдер сущности
   """
 
+  alias Core.Shared.Builders.BuilderProperties
+
+  alias Core.Playlist.Validators.Name
+
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(%{name: name}) do
+    setter = fn (
+      entity, 
+      key, 
+      value
+    ) -> 
+      Map.put(entity, key, value) 
+    end
+
     entity() 
-      |> Core.Playlist.Builders.Name.build(name)
+      |> BuilderProperties.build(Name, setter, :name, name)
   end
 
   def build(_) do

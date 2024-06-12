@@ -11,10 +11,17 @@ defmodule Core.User.Builder do
 
   @spec build(map()) :: Core.Shared.Types.Success.t() | Core.Shared.Types.Error.t()
   def build(%{email: email, name: name, surname: surname}) do
+    setter = fn (
+      entity, 
+      key, 
+      value
+    ) -> Map.put(entity, key, value) 
+    end
+
     entity()
-      |> BuilderProperties.build(Email, :email, email)
-      |> BuilderProperties.build(Name, :name, name)
-      |> BuilderProperties.build(Name, :surname, surname)
+      |> BuilderProperties.build(Email, setter, :email, email)
+      |> BuilderProperties.build(Name, setter, :name, name)
+      |> BuilderProperties.build(Name, setter, :surname, surname)
   end
 
   def build(_) do
