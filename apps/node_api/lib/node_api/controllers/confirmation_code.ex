@@ -3,6 +3,10 @@ defmodule NodeApi.Controllers.ConfirmationCode do
   alias Core.ConfirmationCode.UseCases.Creating
   alias PostgresqlAdapters.ConfirmationCode.Inserting
 
+  alias NodeApi.Handlers.Success
+  alias NodeApi.Handlers.Error
+  alias NodeApi.Handlers.Exception
+
   def create(conn) do
     args = %{needle: Map.get(conn.body_params, "needle")}
 
@@ -15,14 +19,14 @@ defmodule NodeApi.Controllers.ConfirmationCode do
           message = "Создан код подтверждения"
           payload = true
           
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 end

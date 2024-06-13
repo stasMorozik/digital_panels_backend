@@ -12,6 +12,12 @@ defmodule NodeApi.Controllers.Task do
   alias PostgresqlAdapters.Task.GettingList, as: TaskGettingList
   alias PostgresqlAdapters.Playlist.GettingById, as: PlaylistGettingById
   alias PostgresqlAdapters.Group.GettingById, as: GroupGettingById
+  
+  alias NodeApi.Utils.Parsers.Integer
+  alias NodeApi.Notifiers.Node
+  alias NodeApi.Handlers.Success
+  alias NodeApi.Handlers.Error
+  alias NodeApi.Handlers.Exception
 
   def create(conn) do
     args = %{
@@ -19,11 +25,11 @@ defmodule NodeApi.Controllers.Task do
       playlist_id: Map.get(conn.body_params, "playlist_id"),
       name: Map.get(conn.body_params, "name"),
       type: Map.get(conn.body_params, "type"),
-      day: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "day"),
-      start_hour: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "start_hour"),
-      end_hour: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "end_hour"),
-      start_minute: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "start_minute"),
-      end_minute: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "end_minute"),
+      day: Integer.parse(conn.body_params, "day"),
+      start_hour: Integer.parse(conn.body_params, "start_hour"),
+      end_hour: Integer.parse(conn.body_params, "end_hour"),
+      start_minute: Integer.parse(conn.body_params, "start_minute"),
+      end_minute: Integer.parse(conn.body_params, "end_minute"),
       token: Map.get(conn.cookies, "access_token")
     }
 
@@ -39,16 +45,16 @@ defmodule NodeApi.Controllers.Task do
           message = "Создано задание"
           payload = true
 
-          NodeApi.Notifiers.Node.notify(%{group_id: args.group_id})
+          Node.notify(%{group_id: args.group_id})
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -58,11 +64,11 @@ defmodule NodeApi.Controllers.Task do
       playlist_id: Map.get(conn.body_params, "playlist_id"),
       name: Map.get(conn.body_params, "name"),
       type: Map.get(conn.body_params, "type"),
-      day: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "day"),
-      start_hour: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "start_hour"),
-      end_hour: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "end_hour"),
-      start_minute: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "start_minute"),
-      end_minute: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "end_minute"),
+      day: Integer.parse(conn.body_params, "day"),
+      start_hour: Integer.parse(conn.body_params, "start_hour"),
+      end_hour: Integer.parse(conn.body_params, "end_hour"),
+      start_minute: Integer.parse(conn.body_params, "start_minute"),
+      end_minute: Integer.parse(conn.body_params, "end_minute"),
       token: Map.get(conn.cookies, "access_token"),
       id: id
     }
@@ -80,16 +86,16 @@ defmodule NodeApi.Controllers.Task do
           message = "Обновлено задание"
           payload = true
 
-          NodeApi.Notifiers.Node.notify(%{group_id: args.group_id})
+          Node.notify(%{group_id: args.group_id})
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -101,18 +107,18 @@ defmodule NodeApi.Controllers.Task do
     args = %{
       token: Map.get(conn.cookies, "access_token"),
       pagi: %{
-        page: NodeApi.Utils.Parsers.Integer.parse(pagi, "page"),
-        limit: NodeApi.Utils.Parsers.Integer.parse(pagi, "limit"),
+        page: Integer.parse(pagi, "page"),
+        limit: Integer.parse(pagi, "limit"),
       },
       filter: %{
         name: Map.get(filter, "name"),
         type: Map.get(filter, "type"),
         group: Map.get(filter, "group"),
-        day: NodeApi.Utils.Parsers.Integer.parse(filter, "day"),
-        start_hour: NodeApi.Utils.Parsers.Integer.parse(filter, "start_hour"),
-        start_minute: NodeApi.Utils.Parsers.Integer.parse(filter, "start_minute"),
-        end_hour: NodeApi.Utils.Parsers.Integer.parse(filter, "end_hour"),
-        end_minute: NodeApi.Utils.Parsers.Integer.parse(filter, "end_minute"),
+        day: Integer.parse(filter, "day"),
+        start_hour: Integer.parse(filter, "start_hour"),
+        start_minute: Integer.parse(filter, "start_minute"),
+        end_hour: Integer.parse(filter, "end_hour"),
+        end_minute: Integer.parse(filter, "end_minute"),
         created_f: Map.get(filter, "created_f"), 
         created_t: Map.get(filter, "created_t")
       },
@@ -148,14 +154,14 @@ defmodule NodeApi.Controllers.Task do
               },
           } end)
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -217,14 +223,14 @@ defmodule NodeApi.Controllers.Task do
             },
           }
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 end

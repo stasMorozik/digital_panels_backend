@@ -11,6 +11,11 @@ defmodule NodeApi.Controllers.Playlist do
   alias PostgresqlAdapters.Playlist.Updating, as: PlaylistUpdating
   alias PostgresqlAdapters.Playlist.GettingList, as: PlaylistGettingList
 
+  alias NodeApi.Handlers.Success
+  alias NodeApi.Handlers.Error
+  alias NodeApi.Handlers.Exception
+  alias NodeApi.Utils.Parsers.Integer
+
   def create(conn) do
     args = %{
       name: Map.get(conn.body_params, "name"),
@@ -26,14 +31,14 @@ defmodule NodeApi.Controllers.Playlist do
           message = "Создан плэйлист"
           payload = true
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -54,14 +59,14 @@ defmodule NodeApi.Controllers.Playlist do
           message = "Обновлен плэйлист"
           payload = true
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -73,13 +78,13 @@ defmodule NodeApi.Controllers.Playlist do
     args = %{
       token: Map.get(conn.cookies, "access_token"),
       pagi: %{
-        page: NodeApi.Utils.Parsers.Integer.parse(pagi, "page"),
-        limit: NodeApi.Utils.Parsers.Integer.parse(pagi, "limit"),
+        page: Integer.parse(pagi, "page"),
+        limit: Integer.parse(pagi, "limit"),
       },
       filter: %{
         name: Map.get(filter, "name"), 
-        sum_f: NodeApi.Utils.Parsers.Integer.parse(filter, "sum_f"), 
-        sum_t: NodeApi.Utils.Parsers.Integer.parse(filter, "sum_t"), 
+        sum_f: Integer.parse(filter, "sum_f"), 
+        sum_t: Integer.parse(filter, "sum_t"), 
         created_f: Map.get(filter, "created_f"), 
         created_t: Map.get(filter, "created_t")
       },
@@ -104,14 +109,14 @@ defmodule NodeApi.Controllers.Playlist do
             created: playlist.created
           } end)
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -153,14 +158,14 @@ defmodule NodeApi.Controllers.Playlist do
             } end)
           }
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 end

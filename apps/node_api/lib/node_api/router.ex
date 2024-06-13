@@ -149,14 +149,14 @@ defmodule NodeApi.Router do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Controllers.Content..create()
+      |> NodeApi.Controllers.Content.create()
   end
 
   post "/api/v1/content/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Controllers.Content..update(id)
+      |> NodeApi.Controllers.Content.update(id)
   end
 
   get "/api/v1/content/" do
@@ -164,14 +164,14 @@ defmodule NodeApi.Router do
       |> fetch_cookies()
       |> fetch_query_params()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Controllers.Content..list()
+      |> NodeApi.Controllers.Content.list()
   end
 
   get "/api/v1/content/:id" do
     conn 
       |> fetch_cookies()
       |> put_resp_content_type("application/json")
-      |> NodeApi.Controllers.Content..get(id)
+      |> NodeApi.Controllers.Content.get(id)
   end
 
   put "/api/v1/task/" do

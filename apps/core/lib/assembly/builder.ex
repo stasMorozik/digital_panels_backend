@@ -9,7 +9,6 @@ defmodule Core.Assembly.Builder do
 
   alias Core.Assembly.Validators.Group
   alias Core.Assembly.Validators.Type
-  alias Core.Assembly.Validators.Tokens
 
   @url_web_dav Application.compile_env(:core, :url_web_dav)
 

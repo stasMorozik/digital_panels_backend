@@ -13,13 +13,19 @@ defmodule NodeApi.Controllers.Content do
   alias PostgresqlAdapters.Playlist.GettingById, as: PlaylistGettingById
   alias PostgresqlAdapters.File.GettingById, as: FileGettingById
 
+  alias NodeApi.Notifiers.Node
+  alias NodeApi.Utils.Parsers.Integer
+  alias NodeApi.Handlers.Success
+  alias NodeApi.Handlers.Error
+  alias NodeApi.Handlers.Exception
+
   def create(conn) do
     args = %{
       file_id: Map.get(conn.body_params, "file_id"),
       playlist_id: Map.get(conn.body_params, "playlist_id"),
       name: Map.get(conn.body_params, "name"),
-      serial_number: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "serial_number"),
-      duration: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "duration"),
+      serial_number: Integer.parse(conn.body_params, "serial_number"),
+      duration: Integer.parse(conn.body_params, "duration"),
       token: Map.get(conn.cookies, "access_token")
     }
 
@@ -34,16 +40,16 @@ defmodule NodeApi.Controllers.Content do
           message = "Создан контен"
           payload = true
 
-          NodeApi.Notifiers.Node.notify(%{playlist_id: args.playlist_id})
+          Node.notify(%{playlist_id: args.playlist_id})
           
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -52,8 +58,8 @@ defmodule NodeApi.Controllers.Content do
       file_id: Map.get(conn.body_params, "file_id"),
       playlist_id: Map.get(conn.body_params, "playlist_id"),
       name: Map.get(conn.body_params, "name"),
-      serial_number: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "serial_number"),
-      duration: NodeApi.Utils.Parsers.Integer.parse(conn.body_params, "duration"),
+      serial_number: Integer.parse(conn.body_params, "serial_number"),
+      duration: Integer.parse(conn.body_params, "duration"),
       token: Map.get(conn.cookies, "access_token"),
       id: id
     }
@@ -70,16 +76,16 @@ defmodule NodeApi.Controllers.Content do
           message = "Обновлен контен"
           payload = true
 
-          NodeApi.Notifiers.Node.notify(%{playlist_id: args.playlist_id})
+          Node.notify(%{playlist_id: args.playlist_id})
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -91,13 +97,13 @@ defmodule NodeApi.Controllers.Content do
     args = %{
       token: Map.get(conn.cookies, "access_token"),
       pagi: %{
-        page: NodeApi.Utils.Parsers.Integer.parse(pagi, "page"),
-        limit: NodeApi.Utils.Parsers.Integer.parse(pagi, "limit"),
+        page: Integer.parse(pagi, "page"),
+        limit: Integer.parse(pagi, "limit"),
       },
       filter: %{
         name: Map.get(filter, "name"),
-        duration_f: NodeApi.Utils.Parsers.Integer.parse(filter, "duration_f"),
-        duration_t: NodeApi.Utils.Parsers.Integer.parse(filter, "duration_t"),
+        duration_f: Integer.parse(filter, "duration_f"),
+        duration_t: Integer.parse(filter, "duration_t"),
         created_f: Map.get(filter, "created_f"), 
         created_t: Map.get(filter, "created_t")
       },
@@ -115,7 +121,7 @@ defmodule NodeApi.Controllers.Content do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
           message = "Получен список контента"
-          payload = Enum.map(list, fun = fn (content) -> %{
+          payload = Enum.map(list, fn (content) -> %{
             id: content.id,
             name: content.name,
             duration: content.duration,
@@ -123,14 +129,14 @@ defmodule NodeApi.Controllers.Content do
             updated: content.updated
           } end)
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -170,14 +176,14 @@ defmodule NodeApi.Controllers.Content do
               updated: content.updated
           }
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 end

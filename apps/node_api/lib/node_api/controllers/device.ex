@@ -12,6 +12,16 @@ defmodule NodeApi.Controllers.Device do
   alias PostgresqlAdapters.Device.GettingList, as: DeviceGettingList
   alias PostgresqlAdapters.Group.GettingById, as: GroupGettingById
 
+  alias NodeApi.Utils.Parsers.Float
+  alias NodeApi.Utils.Parsers.Boolean
+  alias NodeApi.Utils.Parsers.Integer
+
+  alias NodeApi.Notifiers.Node
+
+  alias NodeApi.Handlers.Success
+  alias NodeApi.Handlers.Error
+  alias NodeApi.Handlers.Exception
+
   def create(conn) do
     args = %{
       ip: Map.get(conn.body_params, "ip"), 
@@ -33,26 +43,26 @@ defmodule NodeApi.Controllers.Device do
           message = "Создано устройство"
           payload = true
 
-          NodeApi.Notifiers.Node.notify(%{group_id: args.group_id})
+          Node.notify(%{group_id: args.group_id})
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
   def update(conn, id) do
     args = %{
       ip: Map.get(conn.body_params, "ip"), 
-      latitude: NodeApi.Utils.Parsers.Float.parse(conn.body_params, "latitude"), 
-      longitude: NodeApi.Utils.Parsers.Float.parse(conn.body_params, "longitude"),
+      latitude: Float.parse(conn.body_params, "latitude"), 
+      longitude: Float.parse(conn.body_params, "longitude"),
       desc: Map.get(conn.body_params, "desc"),
-      is_active: NodeApi.Utils.Parsers.Boolen.parse(conn.body_params, "is_active"),
+      is_active: Boolean.parse(conn.body_params, "is_active"),
       group_id: Map.get(conn.body_params, "group_id"),
       token: Map.get(conn.cookies, "access_token"),
       id: id
@@ -69,16 +79,16 @@ defmodule NodeApi.Controllers.Device do
           message = "Обновлено устройство"
           payload = true
 
-          NodeApi.Notifiers.Node.notify(%{group_id: args.group_id})
+          Node.notify(%{group_id: args.group_id})
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -90,17 +100,17 @@ defmodule NodeApi.Controllers.Device do
     args = %{
       token: Map.get(conn.cookies, "access_token"),
       pagi: %{
-        page: NodeApi.Utils.integer_parse(pagi, "page"),
-        limit: NodeApi.Utils.integer_parse(pagi, "limit"),
+        page: Integer.parse(pagi, "page"),
+        limit: Integer.parse(pagi, "limit"),
       },
       filter: %{
         ip: Map.get(filter, "ip"),
-        latitude_f: NodeApi.Utils.Parsers.Float.parse(filter, "latitude_f"),
-        latitude_t: NodeApi.Utils.Parsers.Float.parse(filter, "latitude_t"),
-        longitude_f: NodeApi.Utils.Parsers.Float.parse(filter, "longitude_f"),
-        longitude_t: NodeApi.Utils.Parsers.Float.parse(filter, "longitude_t"),
+        latitude_f: Float.parse(filter, "latitude_f"),
+        latitude_t: Float.parse(filter, "latitude_t"),
+        longitude_f: Float.parse(filter, "longitude_f"),
+        longitude_t: Float.parse(filter, "longitude_t"),
         description: Map.get(filter, "description"),
-        is_active: NodeApi.Utils.Parsers.Boolen.parse(filter, "is_active"),
+        is_active: Boolean.parse(filter, "is_active"),
         created_f: Map.get(filter, "created_f"),
         created_t: Map.get(filter, "created_t")
       },
@@ -130,14 +140,14 @@ defmodule NodeApi.Controllers.Device do
             created: device.created, 
           } end)
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -172,14 +182,14 @@ defmodule NodeApi.Controllers.Device do
             } 
           }
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 end

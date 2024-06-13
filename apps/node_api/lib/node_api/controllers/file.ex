@@ -10,6 +10,11 @@ defmodule NodeApi.Controllers.File do
   alias PostgresqlAdapters.File.GettingById, as: FileGettingById
   alias PostgresqlAdapters.File.GettingList, as: FileGettingList
 
+  alias NodeApi.Utils.Parsers.Integer
+  alias NodeApi.Handlers.Success
+  alias NodeApi.Handlers.Error
+  alias NodeApi.Handlers.Exception
+
   def create(conn) do
     try do
       with file <- Map.get(conn.body_params, "file"),
@@ -27,17 +32,17 @@ defmodule NodeApi.Controllers.File do
         message = "Создан файл"
         payload = true
 
-        NodeApi.Handlers.Success.handle(conn, payload, message)
+        Success.handle(conn, payload, message)
       else
         true ->
-          NodeApi.Handlers.Error.handle(conn, "Нет файла для загрузки")
+          Error.handle(conn, "Нет файла для загрузки")
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
   
@@ -49,14 +54,14 @@ defmodule NodeApi.Controllers.File do
     args = %{
       token: Map.get(conn.cookies, "access_token"),
       pagi: %{
-        page: NodeApi.Utils.Parsers.Integer.parse(pagi, "page"),
-        limit: NodeApi.Utils.Parsers.Integer.parse(pagi, "limit"),
+        page: Integer.parse(pagi, "page"),
+        limit: Integer.parse(pagi, "limit"),
       },
       filter: %{
         type: Map.get(filter, "type"),
         url: Map.get(filter, "url"),
         extension: Map.get(filter, "extension"), 
-        size: NodeApi.Utils.Parsers.Integer.parse(filter, "size"),
+        size: Integer.parse(filter, "size"),
         created_f: Map.get(filter, "created_f"), 
         created_t: Map.get(filter, "created_t")
       },
@@ -83,14 +88,14 @@ defmodule NodeApi.Controllers.File do
             created: file.created
           } end)
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -117,14 +122,14 @@ defmodule NodeApi.Controllers.File do
             created: file.created
           }
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 end

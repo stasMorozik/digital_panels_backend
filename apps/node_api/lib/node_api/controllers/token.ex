@@ -6,6 +6,10 @@ defmodule NodeApi.Controllers.Token do
   alias PostgresqlAdapters.ConfirmationCode.Getting, as: ConfirmationCodeGetting
   alias PostgresqlAdapters.User.GettingByEmail, as: UserGettingByEmail
 
+  alias NodeApi.Handlers.Success
+  alias NodeApi.Handlers.Error
+  alias NodeApi.Handlers.Exception
+
   def create(conn) do
     args = %{
       email: Map.get(conn.body_params, "email"),
@@ -25,14 +29,14 @@ defmodule NodeApi.Controllers.Token do
             |> Plug.Conn.put_resp_cookie("access_token", tokens.access_token)
             |> Plug.Conn.put_resp_cookie("refresh_token", tokens.refresh_token)
           
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
   
@@ -47,14 +51,14 @@ defmodule NodeApi.Controllers.Token do
             |> Plug.Conn.put_resp_cookie("access_token", tokens.access_token)
             |> Plug.Conn.put_resp_cookie("refresh_token", tokens.refresh_token)  
           
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 end

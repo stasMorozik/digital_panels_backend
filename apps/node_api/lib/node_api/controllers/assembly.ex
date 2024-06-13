@@ -10,6 +10,12 @@ defmodule NodeApi.Controllers.Assembly do
   alias PostgresqlAdapters.Group.GettingById, as: GroupGettingById
   alias PostgresqlAdapters.Assembly.GettingList, as: AssemblyGettingList
 
+  alias NodeApi.Handlers.Success
+  alias NodeApi.Handlers.Error
+  alias NodeApi.Handlers.Exception
+
+  alias NodeApi.GenServers.Compiler
+
   defmodule AssemblyPipe do
     
     alias Core.Shared.Ports.Pipe
@@ -18,7 +24,7 @@ defmodule NodeApi.Controllers.Assembly do
 
     @impl Pipe
     def emit(%{id: id,user: user}) do
-      NodeApi.GenServers.Compiler.compile(%{
+      Compiler.compile(%{
         id: id,
         user: user
       })
@@ -45,14 +51,14 @@ defmodule NodeApi.Controllers.Assembly do
           message = "Создана сборка и отправлена на компиляцию"
           payload = true
           
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} ->
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -62,7 +68,7 @@ defmodule NodeApi.Controllers.Assembly do
            args <- %{token: token},
            adapter_0 <- UserGettingById,
            {:ok, user} <- Authorization.auth(adapter_0, args) do
-          NodeApi.GenServers.Compiler.compile(%{
+          Compiler.compile(%{
             id: id,
             user: user
           })
@@ -70,15 +76,15 @@ defmodule NodeApi.Controllers.Assembly do
           message = "Сборка отправлена на компиляцию"
           payload = true
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         else
           {:error, message} -> 
-            NodeApi.Handlers.Error.handle(conn, message)
+            Error.handle(conn, message)
           {:exception, message} -> 
-            NodeApi.Handlers.Exception.handle(conn, message)
+            Exception.handle(conn, message)
         end
     rescue 
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -97,7 +103,7 @@ defmodule NodeApi.Controllers.Assembly do
         url: Map.get(filter, "url"),
         type: Map.get(filter, "type"),
         group: Map.get(filter, "group"),
-        status: NodeApi.Utils.Parsers.Boolen.parse(filter, "status"),
+        status: NodeApi.Utils.Parsers.Boolean.parse(filter, "status"),
         created_f: Map.get(filter, "created_f"), 
         created_t: Map.get(filter, "created_t")
       },
@@ -113,7 +119,7 @@ defmodule NodeApi.Controllers.Assembly do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          payload = Enum.map(list, fun = fn (assembly) -> %{
+          payload = Enum.map(list, fn (assembly) -> %{
             id: assembly.id,
             group: %{
               id: assembly.group.id,
@@ -127,14 +133,14 @@ defmodule NodeApi.Controllers.Assembly do
           } end)
           message = "Получен список сборок"
 
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e -> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e -> Exception.handle(conn, Map.get(e, :message))
     end
   end
 
@@ -166,14 +172,14 @@ defmodule NodeApi.Controllers.Assembly do
           }
           message = "Получена сборка"
           
-          NodeApi.Handlers.Success.handle(conn, payload, message)
+          Success.handle(conn, payload, message)
         {:error, message} -> 
-          NodeApi.Handlers.Error.handle(conn, message)
+          Error.handle(conn, message)
         {:exception, message} -> 
-          NodeApi.Handlers.Exception.handle(conn, message)
+          Exception.handle(conn, message)
       end
     rescue
-      e-> NodeApi.Handlers.Exception.handle(conn, Map.get(e.message))
+      e-> Exception.handle(conn, Map.get(e, :message))
     end
   end
 end
