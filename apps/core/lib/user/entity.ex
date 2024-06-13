@@ -21,7 +21,7 @@ defmodule Core.User.Entity do
             created: nil, 
             updated: nil
 
-  defimpl Jason.Encoder, for: Core.Playlist.Entity do
+  defimpl Jason.Encoder, for: Core.User.Entity do
     @impl Jason.Encoder
 
     def encode(value, opts) do

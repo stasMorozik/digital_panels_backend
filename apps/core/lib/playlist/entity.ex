@@ -17,7 +17,7 @@ defmodule Core.Playlist.Entity do
   defstruct id: nil, 
             name: nil,
             sum: nil,
-            contents: [],
+            contents: nil,
             created: nil,
             updated: nil
 
@@ -25,11 +25,42 @@ defmodule Core.Playlist.Entity do
     @impl Jason.Encoder
 
     def encode(value, opts) do
-      contents = Enum.map(value.contents, fn content -> Map.from_struct(content) end)
+      fun = fn {key, value}, acc ->
+        case value do
+          nil -> acc
+          value -> Map.put(acc, key, value)
+        end
+      end
 
-      value = Map.put(value, contents, contents)
+      contents = case Map.get(value, :contents) do
+        nil -> 
+          nil
+        contents -> 
+          Enum.map(contents, fn c -> 
+            file = Map.from_struct(c.file)
+            file = Map.to_list(file)
+            file = List.foldr(file, %{}, fun)
 
-      Jason.Encode.map(Map.from_struct(value), opts)
+            content = Map.from_struct(c)
+            content = Map.delete(content, :file)
+
+            content = Map.put(content, :file, file)
+            content = Map.to_list(content)
+
+            List.foldr(content, %{}, fun)
+          end)
+      end
+
+      playlist = Map.from_struct(value)
+      playlist = Map.delete(playlist, :contents)
+
+      playlist = Map.put(playlist, :contents, contents)
+
+      playlist = Map.to_list(playlist)
+      
+      playlist = List.foldr(playlist, %{}, fun)
+
+      Jason.Encode.map(playlist, opts)
     end
   end
 end

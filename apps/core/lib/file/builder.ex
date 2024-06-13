@@ -64,7 +64,7 @@ defmodule Core.File.Builder do
       |> BuilderProperties.build(Extension, setter, :extension, extname)
       |> BuilderProperties.build(Size, size_setter, :size, size)
       |> BuilderProperties.build(Path, setter, :path, path)
-      |> BuilderProperties.build(Extension, setter_type, :path, extname)
+      |> BuilderProperties.build(Extension, setter_type, :type, extname)
       |> BuilderProperties.build(Path, setter_url, :url, name)
   end
 

@@ -32,17 +32,30 @@ defmodule Core.Assembly.Entity do
     @impl Jason.Encoder
 
     def encode(value, opts) do
-      Jason.Encode.map(Map.take(value, [
-        :id,
-        :group,
-        :url,
-        :type,
-        :status,
-        :access_token,
-        :refresh_token,
-        :created,
-        :updated
-      ]), opts)
+      fun = fn {key, value}, acc ->
+        case value do
+          nil -> acc
+          value -> Map.put(acc, key, value)
+        end
+      end
+
+      group = Map.from_struct(value.group)
+
+      group = Map.to_list(group)
+
+      group = List.foldr(group, %{}, fun)
+
+      assembly = Map.delete(value, :group)
+
+      assembly = Map.from_struct(assembly)
+
+      assembly = Map.to_list(assembly)
+      
+      assembly = List.foldr(assembly, %{}, fun)
+
+      assembly = Map.put(assembly, :group, group)
+
+      Jason.Encode.map(assembly, opts)
     end
   end
 end

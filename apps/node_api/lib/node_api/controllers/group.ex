@@ -15,6 +15,7 @@ defmodule NodeApi.Controllers.Group do
   alias NodeApi.Handlers.Success
   alias NodeApi.Handlers.Error
   alias NodeApi.Handlers.Exception
+  alias NodeApi.Logger, as: AppLogger
 
   def create(conn) do
     args = %{
@@ -28,10 +29,9 @@ defmodule NodeApi.Controllers.Group do
     try do
       case Creating.create(adapter_0, adapter_1, args) do
         {:ok, true} -> 
-          message = "Создана группа устройств"
-          payload = true
+          AppLogger.info("Создана группа устройств")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, true)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -56,10 +56,9 @@ defmodule NodeApi.Controllers.Group do
     try do
       case Updating.update(adapter_0, adapter_1, adapter_2, args) do
         {:ok, true} -> 
-          message = "Обновлена группа устройств"
-          payload = true
+          AppLogger.info("Обновлена группа устройств")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, true)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -101,15 +100,9 @@ defmodule NodeApi.Controllers.Group do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          message = "Получен список групп устройств"
-          payload = Enum.map(list, fn (group) -> %{
-            id: group.id,
-            name: group.name,
-            sum: group.sum,
-            created: group.created
-          } end)
+          AppLogger.info("Получен список групп устройств")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, list)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -132,25 +125,9 @@ defmodule NodeApi.Controllers.Group do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, group} -> 
-          message = "Получена группа устройств"
-          payload = %{
-            id: group.id,
-            name: group.name,
-            sum: group.sum,
-            created: group.created,
-            updated: group.created,
-            devices: Enum.map(group.devices, fn (device) -> %{
-              id: device.id,
-              ip: device.ip,
-              latitude: device.latitude,
-              longitude: device.longitude,
-              desc: device.desc,
-              is_active: device.is_active,
-              created: device.created,
-            } end)
-          }
+          AppLogger.info("Получена группа устройств")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, group)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 

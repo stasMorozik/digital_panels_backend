@@ -21,6 +21,7 @@ defmodule NodeApi.Controllers.Device do
   alias NodeApi.Handlers.Success
   alias NodeApi.Handlers.Error
   alias NodeApi.Handlers.Exception
+  alias NodeApi.Logger, as: AppLogger
 
   def create(conn) do
     args = %{
@@ -40,12 +41,11 @@ defmodule NodeApi.Controllers.Device do
     try do
       case Creating.create(adapter_0, adapter_1, adapter_2, args) do
         {:ok, true} -> 
-          message = "Создано устройство"
-          payload = true
+          AppLogger.info("Создано устройство")
 
           Node.notify(%{group_id: args.group_id})
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, true)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -76,12 +76,11 @@ defmodule NodeApi.Controllers.Device do
     try do
       case Updating.update(adapter_0, adapter_1, adapter_2, adapter_3, args) do
         {:ok, true} -> 
-          message = "Обновлено устройство"
-          payload = true
+          AppLogger.info("Обновлено устройство")
 
           Node.notify(%{group_id: args.group_id})
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, true)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -129,18 +128,9 @@ defmodule NodeApi.Controllers.Device do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          message = "Получен список устройств"
-          payload = Enum.map(list, fn (device) -> %{
-            id: device.id, 
-            ip: device.ip, 
-            latitude: device.latitude, 
-            longitude: device.longitude, 
-            desc: device.desc,
-            is_active: device.is_active,
-            created: device.created, 
-          } end)
+          AppLogger.info("Получен список устройств")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, list)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -163,26 +153,9 @@ defmodule NodeApi.Controllers.Device do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, device} -> 
-          message = "Получено устройство"
-          payload = %{
-            id: device.id, 
-            ip: device.ip, 
-            latitude: device.latitude, 
-            longitude: device.longitude, 
-            desc: device.desc,
-            is_active: device.is_active,
-            created: device.created,
-            updated: device.updated,
-            group: %{
-              id: device.group.id, 
-              name: device.group.name,
-              sum: device.group.sum,
-              created: device.group.created, 
-              updated: device.group.updated
-            } 
-          }
+          AppLogger.info("Получено устройство")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, device)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 

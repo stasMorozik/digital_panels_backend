@@ -43,23 +43,57 @@ defmodule Core.Task.Entity do
     @impl Jason.Encoder
 
     def encode(value, opts) do
-      Jason.Encode.map(Map.take(value, [
-        :id,
-        :name,
-        :playlist,
-        :group,
-        :type,
-        :day,
-        :start_hour,
-        :end_hour,
-        :start_minute,
-        :end_minute,
-        :start,
-        :end,
-        :sum,
-        :created,
-        :updated
-      ]), opts)
+      fun = fn {key, value}, acc ->
+        case value do
+          nil -> acc
+          value -> Map.put(acc, key, value)
+        end
+      end
+
+      group = case Map.get(value, :group) do
+        nil -> nil
+        group -> List.foldr(Map.to_list(Map.from_struct(group)), %{}, fun)
+      end
+
+      playlist = case Map.get(value, :playlist) do
+        nil -> 
+          nil
+        playlist -> 
+          
+
+          contents = Enum.map(playlist.contents, fn c -> 
+            file = Map.from_struct(c.file)
+            file = Map.to_list(file)
+            file = List.foldr(file, %{}, fun)
+
+            content = Map.from_struct(c)
+            content = Map.delete(content, :file)
+
+            content = Map.put(content, :file, file)
+            content = Map.to_list(content)
+
+            List.foldr(content, %{}, fun)
+          end)
+
+          playlist = Map.from_struct(playlist)
+          playlist = Map.delete(playlist, :contents)
+          playlist = Map.put(playlist, :contents, contents)
+
+          playlist = Map.to_list(playlist)
+      
+          List.foldr(playlist, %{}, fun)
+      end
+
+      task = Map.from_struct(value)
+      task = Map.delete(task, :playlist)
+
+      task = Map.put(task, :playlist, playlist)
+
+      task = Map.to_list(task)
+      
+      task = List.foldr(task, %{}, fun)
+
+      Jason.Encode.map(task, opts)
     end
   end
 end

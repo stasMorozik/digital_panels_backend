@@ -15,6 +15,7 @@ defmodule NodeApi.Controllers.Playlist do
   alias NodeApi.Handlers.Error
   alias NodeApi.Handlers.Exception
   alias NodeApi.Utils.Parsers.Integer
+  alias NodeApi.Logger, as: AppLogger
 
   def create(conn) do
     args = %{
@@ -28,10 +29,9 @@ defmodule NodeApi.Controllers.Playlist do
     try do
       case Creating.create(adapter_0, adapter_1, args) do
         {:ok, true} -> 
-          message = "Создан плэйлист"
-          payload = true
+          AppLogger.info("Создан плэйлист")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, true)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -56,10 +56,9 @@ defmodule NodeApi.Controllers.Playlist do
     try do
       case Updating.update(adapter_0, adapter_1, adapter_2, args) do
         {:ok, true} -> 
-          message = "Обновлен плэйлист"
-          payload = true
+          AppLogger.info("Обновлен плэйлист")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, true)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -101,15 +100,9 @@ defmodule NodeApi.Controllers.Playlist do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          message = "Получен список плэйлистов"
-          payload = Enum.map(list, fn (playlist) -> %{
-            id: playlist.id,
-            name: playlist.name,
-            sum: playlist.sum,
-            created: playlist.created
-          } end)
+          AppLogger.info("Получен список плэйлистов")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, list)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -132,33 +125,9 @@ defmodule NodeApi.Controllers.Playlist do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, playlist} -> 
-          message = "Получен плэйлист"
-          payload = %{
-            id: playlist.id,
-            name: playlist.name,
-            sum: playlist.sum,
-            created: playlist.created,
-            updated: playlist.created,
-            contents: Enum.map(playlist.contents, fn (content) -> %{
-              id: content.id,
-              name: content.name,
-              duration: content.duration,
-              file: %{
-                id: content.file.id, 
-                path: content.file.path, 
-                url: content.file.url, 
-                extension: content.file.extension, 
-                type: content.file.type, 
-                size: content.file.size, 
-                created: content.file.created
-              },
-              serial_number: content.serial_number,
-              created: content.created,
-              updated: content.updated
-            } end)
-          }
+          AppLogger.info("Получен плэйлист")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, playlist)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 

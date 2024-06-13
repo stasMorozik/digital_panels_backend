@@ -24,16 +24,36 @@ defmodule Core.Content.Entity do
     @impl Jason.Encoder
 
     def encode(value, opts) do
-      Jason.Encode.map(Map.take(value, [
-        :id,
-        :name,
-        :duration,
-        :file,
-        :playlist,
-        :serial_number,
-        :created,
-        :updated
-      ]), opts)
+      fun = fn {key, value}, acc ->
+        case value do
+          nil -> acc
+          value -> Map.put(acc, key, value)
+        end
+      end
+
+      file = case Map.get(value, :file) do
+        nil -> nil
+        file -> List.foldr(Map.to_list(Map.from_struct(file)) , %{}, fun)
+      end
+
+      playlist = case Map.get(value, :playlist) do
+        nil -> nil
+        playlist -> List.foldr(Map.to_list(Map.from_struct(playlist)), %{}, fun)
+      end
+
+      content = Map.from_struct(value)
+
+      content = Map.delete(content, :file)
+      content = Map.delete(content, :playlist)
+
+      content = Map.put(content, :file, file)
+      content = Map.put(content, :playlist, playlist)
+
+      content = Map.to_list(content)
+      
+      content = List.foldr(content, %{}, fun)
+
+      Jason.Encode.map(content, opts)
     end
   end
 end

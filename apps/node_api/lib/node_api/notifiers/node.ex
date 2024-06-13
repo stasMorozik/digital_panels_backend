@@ -32,55 +32,30 @@ defmodule NodeApi.Notifiers.Node do
     spawn(fn -> 
       case :ets.lookup(:connections, "postgresql") do
         [{"postgresql", "", connection}] ->
-          {:ok, true}
+          with {:ok, query} <- Postgrex.prepare(connection, "", @query),
+               {:ok, _, result} <- Postgrex.execute(connection, query, [playlist_id]),
+               {:ok, chann} <- AMQP.Application.get_channel(:chann) do
+
+            Enum.each(result, fn ([_, gr_id, _]) -> 
+              AMQP.Basic.publish(chann, "websocket_device", "content_change", Jason.encode!(%{
+                  group_id: gr_id,
+              }))
+            end)
+          else
+            {:error, e} -> 
+              AppLogger.exception("NodeApi.Notifiers.Node - #{e.postgres.message}")
+
+              Admin.notify("NodeApi.Notifiers.Node - #{e.postgres.message}")
+          end
         [] -> 
           AppLogger.exception("NodeApi.Notifiers.Node - Database connection error")
 
           Admin.notify("NodeApi.Notifiers.Node - Database connection error")
-
-          {:exception, "Database connection error"}
         _ -> 
           AppLogger.exception("NodeApi.Notifiers.Node - Database connection error")
 
           Admin.notify("NodeApi.Notifiers.Node - Database connection error")
-
-          {:exception, "Database connection error"}
       end
-      # case :ets.lookup(:connections, "postgresql") do
-      #   [{"postgresql", "", connection}] ->
-      #     with {:ok, query} <- Postgrex.prepare(connection, "", @query),
-      #          {:ok, _, result} <- Postgrex.execute(connection, query, [playlist_id]),
-      #          {:ok, chann} = AMQP.Application.get_channel(:chann) do
-
-      #       fun = fn ([_, gr_id, _]) do
-      #         AMQP.Basic.publish(chann, "websocket_device", "content_change", Jason.encode!(%{
-      #             group_id: gr_id,
-      #         }))
-      #       end
-
-      #       Enum.each(result, fun)
-
-      #       {:ok, true}
-      #     else
-      #       AppLogger.exception("NodeApi.Notifiers.Node - #{e.postgres.message}")
-
-      #       Admin.notify("NodeApi.Notifiers.Node - #{e.postgres.message}")
-
-      #       {:error, e} -> {:exception, e.postgres.message}
-      #     end
-      #   [] -> 
-      #     AppLogger.exception("NodeApi.Notifiers.Node - Database connection error")
-
-      #     Admin.notify("NodeApi.Notifiers.Node - Database connection error")
-
-      #     {:exception, "Database connection error"}
-      #   _ -> 
-      #     AppLogger.exception("NodeApi.Notifiers.Node - Database connection error")
-
-      #     Admin.notify("NodeApi.Notifiers.Node - Database connection error")
-
-      #     {:exception, "Database connection error"}
-      # end
     end)
   end
 end

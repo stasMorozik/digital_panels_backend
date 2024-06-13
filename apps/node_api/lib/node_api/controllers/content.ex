@@ -18,6 +18,7 @@ defmodule NodeApi.Controllers.Content do
   alias NodeApi.Handlers.Success
   alias NodeApi.Handlers.Error
   alias NodeApi.Handlers.Exception
+  alias NodeApi.Logger, as: AppLogger
 
   def create(conn) do
     args = %{
@@ -37,12 +38,11 @@ defmodule NodeApi.Controllers.Content do
     try do
       case Creating.create(adapter_0, adapter_1, adapter_2, adapter_3, args) do
         {:ok, true} -> 
-          message = "Создан контен"
-          payload = true
+          AppLogger.info("Создан контен")
 
           Node.notify(%{playlist_id: args.playlist_id})
-          
-          Success.handle(conn, payload, message)
+
+          Success.handle(conn, true)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -73,12 +73,11 @@ defmodule NodeApi.Controllers.Content do
     try do
       case Updating.update(adapter_0, adapter_1, adapter_2, adapter_3, adapter_4, args) do
         {:ok, true} -> 
-          message = "Обновлен контен"
-          payload = true
+          AppLogger.info("Обновлен контен")
 
           Node.notify(%{playlist_id: args.playlist_id})
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, true)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -120,16 +119,9 @@ defmodule NodeApi.Controllers.Content do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          message = "Получен список контента"
-          payload = Enum.map(list, fn (content) -> %{
-            id: content.id,
-            name: content.name,
-            duration: content.duration,
-            created: content.created,
-            updated: content.updated
-          } end)
+          AppLogger.info("Получен список контента")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, list)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -152,31 +144,9 @@ defmodule NodeApi.Controllers.Content do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, content} -> 
-          message = "Получен контент"
-          payload = %{
-              id: content.id,
-              name: content.name,
-              duration: content.duration,
-              file: %{
-                id: content.file.id, 
-                url: content.file.url,
-                extension: content.file.extension, 
-                type: content.file.type, 
-                size: content.file.size, 
-                created: content.file.created
-              },
-              playlist: %{
-                id: content.playlist.id,
-                name: content.playlist.name,
-                created: content.playlist.created,
-                updated: content.playlist.updated
-              },
-              serial_number: content.serial_number,
-              created: content.created,
-              updated: content.updated
-          }
+          AppLogger.info("Получен контент")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, content)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 

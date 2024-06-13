@@ -40,7 +40,7 @@ defmodule PostgresqlAdapters.ConfirmationCode.Inserting do
                 r_1 = Postgrex.execute(conn, query_1, data)
 
                 case {r_0, r_1} do
-                  {{:ok, _, _}, {:ok, _, _}} -> {:ok, true}
+                  {{:ok, _, _}, {:ok, _, _}} -> true
                   {{:error, e}, {:ok, _, _}} -> DBConnection.rollback(conn, e)
                   {{:ok, _, _}, {:error, e}} -> DBConnection.rollback(conn, e)
                   {{:error, e}, {:error, _}} -> DBConnection.rollback(conn, e)

@@ -9,6 +9,7 @@ defmodule NodeApi.Controllers.Token do
   alias NodeApi.Handlers.Success
   alias NodeApi.Handlers.Error
   alias NodeApi.Handlers.Exception
+  alias NodeApi.Logger, as: AppLogger
 
   def create(conn) do
     args = %{
@@ -22,14 +23,13 @@ defmodule NodeApi.Controllers.Token do
     try do
       case Authentication.auth(adapter_0, adapter_1, args) do
         {:ok, tokens} -> 
-          message = "Пользователь аутентифицирован"
-          payload = true
+          AppLogger.info("Пользователь аутентифицирован")
 
           conn = conn 
             |> Plug.Conn.put_resp_cookie("access_token", tokens.access_token)
             |> Plug.Conn.put_resp_cookie("refresh_token", tokens.refresh_token)
           
-          Success.handle(conn, payload, message)
+          Success.handle(conn, true)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -44,14 +44,13 @@ defmodule NodeApi.Controllers.Token do
     try do
       case Refreshing.refresh(Map.get(conn.cookies, "refresh_token")) do
         {:ok, tokens} ->
-          message = "Токен обновлен"
-          payload = true
+          AppLogger.info("Токен обновлен")
 
           conn = conn 
             |> Plug.Conn.put_resp_cookie("access_token", tokens.access_token)
             |> Plug.Conn.put_resp_cookie("refresh_token", tokens.refresh_token)  
           
-          Success.handle(conn, payload, message)
+          Success.handle(conn, true)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 

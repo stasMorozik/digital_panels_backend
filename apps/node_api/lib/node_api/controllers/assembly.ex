@@ -13,8 +13,10 @@ defmodule NodeApi.Controllers.Assembly do
   alias NodeApi.Handlers.Success
   alias NodeApi.Handlers.Error
   alias NodeApi.Handlers.Exception
-
   alias NodeApi.GenServers.Compiler
+  alias NodeApi.Logger, as: AppLogger
+  alias NodeApi.Utils.Parsers.Integer
+  alias NodeApi.Utils.Parsers.Boolean
 
   defmodule AssemblyPipe do
     
@@ -48,10 +50,9 @@ defmodule NodeApi.Controllers.Assembly do
     try do
       case Creating.create(adapter_0, adapter_1, adapter_2, adapter_3, args) do
         {:ok, true} ->
-          message = "Создана сборка и отправлена на компиляцию"
-          payload = true
+          AppLogger.info("Создана сборка и отправлена на компиляцию")
           
-          Success.handle(conn, payload, message)
+          Success.handle(conn, true)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} ->
@@ -73,10 +74,9 @@ defmodule NodeApi.Controllers.Assembly do
             user: user
           })
 
-          message = "Сборка отправлена на компиляцию"
-          payload = true
+          AppLogger.info("Сборка отправлена на компиляцию")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, true)
         else
           {:error, message} -> 
             Error.handle(conn, message)
@@ -96,14 +96,14 @@ defmodule NodeApi.Controllers.Assembly do
     args = %{
       token: Map.get(conn.cookies, "access_token"),
       pagi: %{
-        page: NodeApi.Utils.Parsers.Integer.parse(pagi, "page"),
-        limit: NodeApi.Utils.Parsers.Integer.parse(pagi, "limit"),
+        page: Integer.parse(pagi, "page"),
+        limit: Integer.parse(pagi, "limit"),
       },
       filter: %{
         url: Map.get(filter, "url"),
         type: Map.get(filter, "type"),
         group: Map.get(filter, "group"),
-        status: NodeApi.Utils.Parsers.Boolean.parse(filter, "status"),
+        status: Boolean.parse(filter, "status"),
         created_f: Map.get(filter, "created_f"), 
         created_t: Map.get(filter, "created_t")
       },
@@ -119,21 +119,9 @@ defmodule NodeApi.Controllers.Assembly do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          payload = Enum.map(list, fn (assembly) -> %{
-            id: assembly.id,
-            group: %{
-              id: assembly.group.id,
-              name: assembly.group.name,
-              created: assembly.group.created
-            },
-            url: assembly.url,
-            type: assembly.type,
-            status: assembly.status,
-            created: assembly.created
-          } end)
-          message = "Получен список сборок"
+          AppLogger.info("Получен список сборок")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, list)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -156,23 +144,9 @@ defmodule NodeApi.Controllers.Assembly do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, assembly} -> 
-          payload = %{
-            id: assembly.id,
-            group: %{
-              id: assembly.group.id,
-              name: assembly.group.name,
-              sum: assembly.group.sum,
-              created: assembly.group.created
-            },
-            url: assembly.url,
-            type: assembly.type,
-            status: assembly.status,
-            created: assembly.created,
-            updated: assembly.updated
-          }
-          message = "Получена сборка"
+          AppLogger.info("Получена сборка")
           
-          Success.handle(conn, payload, message)
+          Success.handle(conn, assembly)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 

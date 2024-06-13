@@ -7,6 +7,8 @@ defmodule NodeApi.Controllers.User do
   alias NodeApi.Handlers.Error
   alias NodeApi.Handlers.Exception
 
+  alias NodeApi.Logger, as: AppLogger
+
   def authorization(conn) do
     args = %{
       token: Map.get(conn.cookies, "access_token")
@@ -17,17 +19,9 @@ defmodule NodeApi.Controllers.User do
     try do
       case Authorization.auth(adapter_0, args) do
         {:ok, user} ->
-          message = "Пользователь авторизован"
-          payload = %{
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            surname: user.surname,
-            created: user.created,
-            updated: user.updated
-          }
+            AppLogger.info("Пользователь авторизован")
 
-          Success.handle(conn, payload, message)
+            Success.handle(conn, user)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 

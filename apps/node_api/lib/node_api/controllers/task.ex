@@ -18,6 +18,7 @@ defmodule NodeApi.Controllers.Task do
   alias NodeApi.Handlers.Success
   alias NodeApi.Handlers.Error
   alias NodeApi.Handlers.Exception
+  alias NodeApi.Logger, as: AppLogger
 
   def create(conn) do
     args = %{
@@ -42,12 +43,11 @@ defmodule NodeApi.Controllers.Task do
     try do
       case Creating.create(adapter_0, adapter_1, adapter_2, adapter_3, adapter_4, args) do
         {:ok, true} -> 
-          message = "Создано задание"
-          payload = true
+          AppLogger.info("Создано задание")
 
           Node.notify(%{group_id: args.group_id})
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, true)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -83,12 +83,11 @@ defmodule NodeApi.Controllers.Task do
     try do
       case Updating.update(adapter_0, adapter_1, adapter_2, adapter_3, adapter_4, adapter_5, args) do
         {:ok, true} -> 
-          message = "Обновлено задание"
-          payload = true
+          AppLogger.info("Обновлено задание")
 
           Node.notify(%{group_id: args.group_id})
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, true)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -135,26 +134,9 @@ defmodule NodeApi.Controllers.Task do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          message = "Получен список заданий"
-          payload = Enum.map(list, fn (task) -> %{
-              id: task.id,
-              name: task.name,
-              type: task.type,
-              day: task.day,
-              start_hour: task.start_hour,
-              end_hour: task.end_hour,
-              start_minute: task.start_minute,
-              end_minute: task.end_minute,
-              start: task.start,
-              end: task.end,
-              created: task.created,
-              group: %{
-                id: task.group.id,
-                name: task.group.name
-              },
-          } end)
+          AppLogger.info("Получен список заданий")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, list)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -177,53 +159,9 @@ defmodule NodeApi.Controllers.Task do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, task} -> 
-          message = "Получено задание"
-          payload = %{
-            id: task.id,
-            name: task.name,
-            type: task.type,
-            day: task.day,
-            start_hour: task.start_hour,
-            end_hour: task.end_hour,
-            start_minute: task.start_minute,
-            end_minute: task.end_minute,
-            start: task.start,
-            end: task.end,
-            sum: task.sum,
-            created: task.created,
-            updated: task.updated,
-            playlist: %{
-              id: task.playlist.id, 
-              name: task.playlist.name,
-              sum: task.playlist.sum,
-              contents: Enum.map(task.playlist.contents, fn (content) -> %{
-                id: content.id,
-                name: content.name,
-                duration: content.duration,
-                file: %{
-                  id: content.file.id, 
-                  url: content.file.url, 
-                  extension: content.file.extension, 
-                  type: content.file.type, 
-                  size: content.file.size, 
-                  created: content.file.created
-                },
-                serial_number: content.serial_number,
-                created: content.created,
-                updated: content.updated
-              } end),
-              created: task.created,
-              updated: task.updated
-            },
-            group: %{
-              id: task.group.id,
-              name: task.group.name,
-              created: task.group.created, 
-              updated: task.group.updated
-            },
-          }
+          AppLogger.info("Получено задание")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, task)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 

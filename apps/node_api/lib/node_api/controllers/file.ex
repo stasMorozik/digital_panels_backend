@@ -14,6 +14,7 @@ defmodule NodeApi.Controllers.File do
   alias NodeApi.Handlers.Success
   alias NodeApi.Handlers.Error
   alias NodeApi.Handlers.Exception
+  alias NodeApi.Logger, as: AppLogger
 
   def create(conn) do
     try do
@@ -29,10 +30,9 @@ defmodule NodeApi.Controllers.File do
            adapter_1 <- FileInserting,
            adapter_2 <- FileUploading,
            {:ok ,true} <- Creating.create(adapter_0, adapter_1, adapter_2, args) do
-        message = "Создан файл"
-        payload = true
+        AppLogger.info("Создан файл")
 
-        Success.handle(conn, payload, message)
+        Success.handle(conn, true)
       else
         true ->
           Error.handle(conn, "Нет файла для загрузки")
@@ -42,7 +42,9 @@ defmodule NodeApi.Controllers.File do
           Exception.handle(conn, message)
       end
     rescue
-      e -> Exception.handle(conn, Map.get(e, :message))
+      e -> 
+        IO.inspect(e)
+        Exception.handle(conn, Map.get(e, :message))
     end
   end
   
@@ -78,17 +80,9 @@ defmodule NodeApi.Controllers.File do
     try do
       case GettingList.get(adapter_0, adapter_1, args) do
         {:ok, list} -> 
-          message = "Получен список файлов"
-          payload = Enum.map(list, fn (file) -> %{
-            id: file.id,
-            url: file.url,
-            extension: file.extension,
-            type: file.type,
-            size: file.size,
-            created: file.created
-          } end)
+          AppLogger.info("Получен список файлов")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, list)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 
@@ -111,18 +105,9 @@ defmodule NodeApi.Controllers.File do
     try do
       case Getting.get(adapter_0, adapter_1, args) do
         {:ok, file} -> 
-          message = "Получен файл"
-          payload = %{
-            id: file.id,
-            path: file.path,
-            url: file.url,
-            extension: file.extension,
-            type: file.type,
-            size: file.size,
-            created: file.created
-          }
+          AppLogger.info("Получен файл")
 
-          Success.handle(conn, payload, message)
+          Success.handle(conn, file)
         {:error, message} -> 
           Error.handle(conn, message)
         {:exception, message} -> 

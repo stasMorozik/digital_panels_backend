@@ -5,6 +5,9 @@ defmodule NodeWebsocketDevice.GenServers.Consumer do
   @exchange    "websocket_device"
   @queue       "content_change"
 
+  alias NodeWebsocketDevice.GenServers.Websocket
+  alias NodeWebsocketDevice.Logger, as: AppLogger
+
   def start_link do
     GenServer.start_link(__MODULE__, [], [])
   end
@@ -36,11 +39,11 @@ defmodule NodeWebsocketDevice.GenServers.Consumer do
   def handle_info({:basic_deliver, payload, %{delivery_tag: tag, redelivered: _}}, chann) do
     case Jason.decode(payload) do
       {:ok, %{"group_id" => group_id}} -> 
-        NodeWebsocketDevice.GenServers.Websocket.broadcast(group_id)
+        Websocket.broadcast(group_id)
       {:error, _} -> 
-        NodeWebsocketDevice.Logger.exception("Не валидный json для публикации на устройсвта")
+        AppLogger.exception("Не валидный json для публикации на устройсвта")
       _ ->
-        NodeWebsocketDevice.Logger.exception("Не валидные данные для публикации на устройсвта")
+        AppLogger.exception("Не валидные данные для публикации на устройсвта")
     end
 
     :ok = Basic.ack(chann, tag)
